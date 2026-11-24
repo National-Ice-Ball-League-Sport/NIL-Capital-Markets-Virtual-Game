@@ -1,0 +1,3273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="charter">
+  <title>NIL Capital Markets — Hardware-Powered NIL Financial Simulator</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Charter palette */
+      --background: #f7f4ec;
+      --surface-container-low: #fffdf8;
+      --surface-container: #ece5d4;
+      --surface-container-high: #e3dac4;
+
+      /* Ink */
+      --on-surface: #1c1f26;
+      --on-surface-variant: #4f5360;
+
+      /* Rules */
+      --outline: #b08d57;
+      --outline-variant: #d9cfb8;
+
+      /* Accents */
+      --primary: #14213d;
+      --on-primary: #f7f4ec;
+      --primary-container: #e3e6ee;
+      --on-primary-container: #14213d;
+      --secondary: #2d5a4a;
+      --tertiary: #8a6a35;
+      --error: #9b2c2c;
+      --on-error: #f7f4ec;
+
+      /* Data series */
+      --data-1: #14213d;
+      --data-2: #8a6a35;
+      --data-3: #2d5a4a;
+      --data-4: #5b7aa0;
+      --data-context: #c2bba9;
+
+      /* Fonts */
+      --font-headline: 'Libre Caslon Text', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-label: 'IBM Plex Mono', monospace;
+
+      /* Shape */
+      --rounded: 0.125rem;
+      --rounded-lg: 0.125rem;
+      --rounded-full: 0.125rem;
+
+      /* Style effects */
+      --brass-rule: 2px solid var(--outline);
+      --hairline: 1px solid var(--outline-variant);
+      --leaf-underline: 0 1px 0 var(--outline-variant);
+      --navy-band-shadow: 0 2px 8px rgb(20 33 61 / 0.08);
+      --modal-backdrop: rgb(20 33 61 / 0.56);
+      --positive-wash: color-mix(in srgb, var(--secondary) 12%, var(--surface-container-low));
+      --error-wash: color-mix(in srgb, var(--error) 10%, var(--surface-container-low));
+      --warning-wash: color-mix(in srgb, var(--tertiary) 12%, var(--surface-container-low));
+
+      /* Semantic */
+      --positive: #2d5a4a;
+      --warning: #8a6a35;
+      --focus: #14213d;
+
+      /* Type scale (Dashboard) */
+      --display-size: clamp(1.65rem, 1.3rem + 1.1vw, 2.2rem);
+      --headline-size: clamp(1.2rem, 1.05rem + 0.45vw, 1.45rem);
+      --subhead-size: clamp(1.02rem, 0.96rem + 0.25vw, 1.15rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.12vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: var(--body-size);
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Header & Investopedia-styled institutional top band */
+    .title-band {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-bottom: 3px solid var(--outline);
+      padding: var(--space-lg) var(--space-lg) var(--space-md);
+    }
+    .title-band-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .brand-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-md);
+      border-bottom: 1px solid color-mix(in srgb, var(--outline) 45%, transparent);
+      padding-bottom: var(--space-md);
+    }
+    .brand-kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: color-mix(in srgb, var(--outline) 82%, var(--on-primary));
+      margin-bottom: var(--space-xs);
+    }
+    .title-band h1 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--display-size);
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+      margin: 0;
+      color: var(--on-primary);
+    }
+    .title-band .lede {
+      margin: var(--space-xs) 0 0;
+      font-size: 0.9375rem;
+      color: color-mix(in srgb, var(--on-primary) 80%, var(--primary));
+      max-width: 68ch;
+    }
+    .market-ticker-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    .ticker-chip {
+      background: color-mix(in srgb, var(--on-primary) 9%, var(--primary));
+      border: 1px solid color-mix(in srgb, var(--outline) 55%, transparent);
+      border-radius: var(--rounded);
+      padding: var(--space-xs) var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-primary);
+      display: inline-flex;
+      gap: var(--space-sm);
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .ticker-chip .pos { color: color-mix(in srgb, var(--secondary) 35%, var(--on-primary)); font-weight: 600; }
+    .ticker-chip .neg { color: color-mix(in srgb, var(--error) 45%, var(--on-primary)); font-weight: 600; }
+
+    /* Investopedia Navigation Bar */
+    .nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .primary-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .nav-tab {
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      background: transparent;
+      color: color-mix(in srgb, var(--on-primary) 82%, var(--primary));
+      border: 1px solid transparent;
+      border-bottom: 3px solid transparent;
+      border-radius: var(--rounded);
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.875rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .nav-tab:hover {
+      background: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
+      color: var(--on-primary);
+    }
+    .nav-tab.is-active {
+      color: var(--on-primary);
+      border-bottom: 3px solid var(--outline);
+      background: color-mix(in srgb, var(--on-primary) 14%, var(--primary));
+      font-weight: 600;
+    }
+    .nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    /* Live Session Bar */
+    .session-bar {
+      background: var(--surface-container-low);
+      border-bottom: var(--hairline);
+      padding: var(--space-sm) var(--space-lg);
+    }
+    .session-bar-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+    .session-identity {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .role-stamp {
+      border: 1px solid var(--outline);
+      background: transparent;
+      color: var(--tertiary);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+    }
+    .session-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.875rem;
+    }
+    .wallet-code {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      background: var(--surface-container);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+      border: var(--hairline);
+      color: var(--on-surface);
+    }
+    .persona-quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Main Container */
+    .page-grid {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      max-width: 1320px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    .view-panel { display: none; flex-direction: column; gap: var(--space-lg); }
+    .view-panel.is-active { display: flex; }
+
+    /* Charter Figure Cards & Sections */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .figure-card {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .figure-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface-variant);
+    }
+    .figure-value {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: clamp(1.35rem, 1.15rem + 0.6vw, 1.75rem);
+      font-variant-numeric: tabular-nums lining-nums;
+      color: var(--on-surface);
+      line-height: 1.2;
+    }
+    .figure-delta {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--tertiary);
+    }
+    .figure-delta.is-pos { color: var(--positive); }
+    .figure-delta.is-neg { color: var(--error); }
+
+    .section-head {
+      border-top: var(--brass-rule);
+      padding-top: var(--space-md);
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .section-head h2 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--headline-size);
+      line-height: 1.2;
+      margin: 0;
+      color: var(--on-surface);
+    }
+    .section-sub {
+      font-size: 0.875rem;
+      color: var(--on-surface-variant);
+      margin: 0;
+    }
+
+    .leaf-panel {
+      background: var(--surface-container-low);
+      border: var(--hairline);
+      border-top: var(--brass-rule);
+      border-radius: var(--rounded);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .leaf-panel h3 {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: var(--subhead-size);
+      margin: 0;
+      color: var(--on-surface);
+    }
+
+    /* Asymmetric 2-col Grids */
+    .split-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .split-even {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    /* Buttons */
+    .btn {
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.875rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+      border: 1px solid var(--primary);
+    }
+    .btn-primary:hover {
+      background: color-mix(in srgb, var(--primary) 82%, var(--on-surface));
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .btn-secondary:hover {
+      background: var(--primary-container);
+    }
+    .btn-brass {
+      background: var(--surface-container);
+      color: var(--on-surface);
+      border: 1px solid var(--outline);
+    }
+    .btn-brass:hover {
+      background: var(--surface-container-high);
+    }
+    .btn-positive {
+      background: var(--secondary);
+      color: var(--on-primary);
+      border: 1px solid var(--secondary);
+    }
+    .btn-positive:hover {
+      background: color-mix(in srgb, var(--secondary) 85%, var(--on-surface));
+    }
+    .btn-danger {
+      background: var(--error);
+      color: var(--on-error);
+      border: 1px solid var(--error);
+    }
+    .btn-danger:hover {
+      background: color-mix(in srgb, var(--error) 85%, var(--on-surface));
+    }
+    .btn-on-navy {
+      background: color-mix(in srgb, var(--outline) 22%, var(--primary));
+      color: var(--on-primary);
+      border: 1px solid var(--outline);
+    }
+    .btn-on-navy:hover {
+      background: color-mix(in srgb, var(--outline) 35%, var(--primary));
+    }
+    .btn-sm {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.8125rem;
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Form Controls with always-visible labels */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+      gap: var(--space-md);
+      align-items: end;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .field label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+      font-weight: 500;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      color: var(--on-surface);
+      width: 100%;
+    }
+    .field select {
+      padding-right: var(--space-xl);
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+    }
+
+    /* Sub-tabs */
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-xs);
+    }
+    .sub-tab {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      background: transparent;
+      border: 1px solid transparent;
+      border-bottom: 2px solid transparent;
+      color: var(--on-surface-variant);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+    .sub-tab.is-active {
+      color: var(--primary);
+      font-weight: 600;
+      border-bottom: 2px solid var(--outline);
+      background: var(--primary-container);
+    }
+
+    /* Tables */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-bottom: var(--brass-rule);
+    }
+    table.ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .ledger-table th {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      text-align: left;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--brass-rule);
+      white-space: nowrap;
+    }
+    .ledger-table th.num,
+    .ledger-table td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-label);
+    }
+    .ledger-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--hairline);
+      vertical-align: middle;
+    }
+    .ledger-table tbody tr:hover {
+      background: var(--primary-container);
+    }
+    .ledger-table tfoot td {
+      border-top: var(--brass-rule);
+      font-weight: 600;
+      background: var(--surface-container);
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-sm);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .badge-pos {
+      border-color: var(--secondary);
+      color: var(--secondary);
+      background: var(--positive-wash);
+    }
+    .badge-warn {
+      border-color: var(--outline);
+      color: var(--tertiary);
+      background: var(--warning-wash);
+    }
+    .badge-err {
+      border-color: var(--error);
+      color: var(--error);
+      background: var(--error-wash);
+    }
+    .badge-navy {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-container);
+    }
+
+    /* Callouts & Alerts */
+    .status-banner {
+      padding: var(--space-sm) var(--space-md);
+      border-left: 4px solid var(--outline);
+      background: var(--surface-container);
+      font-size: 0.875rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .status-banner.is-pos { border-left-color: var(--secondary); background: var(--positive-wash); }
+    .status-banner.is-err { border-left-color: var(--error); background: var(--error-wash); }
+
+    /* Chart & Canvas Containers */
+    .chart-box {
+      width: 100%;
+      min-height: 360px;
+      background: var(--surface-container-low);
+      border: var(--hairline);
+      position: relative;
+      padding: var(--space-sm);
+    }
+    .chart-box canvas {
+      display: block;
+      width: 100%;
+      height: 340px;
+    }
+    .xr-canvas-box {
+      width: 100%;
+      min-height: 380px;
+      background: var(--primary);
+      border: 2px solid var(--outline);
+      position: relative;
+      padding: var(--space-sm);
+    }
+    .xr-canvas-box canvas {
+      display: block;
+      width: 100%;
+      height: 360px;
+    }
+
+    /* Waterfall Bars */
+    .waterfall-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .waterfall-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 2fr) auto;
+      gap: var(--space-md);
+      align-items: center;
+      padding: var(--space-xs) 0;
+      border-bottom: var(--hairline);
+    }
+    .meter-track {
+      height: 12px;
+      background: var(--surface-container);
+      border: var(--hairline);
+      position: relative;
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width var(--dur-short) var(--ease-out);
+    }
+    .meter-fill.is-pos { background: var(--secondary); }
+    .meter-fill.is-warn { background: var(--tertiary); }
+    .meter-fill.is-err { background: var(--error); }
+
+    /* Hardware Signal Bars & JSON Console */
+    .rssi-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 18px;
+    }
+    .rssi-bar {
+      width: 4px;
+      background: var(--outline-variant);
+    }
+    .rssi-bar.is-lit { background: var(--secondary); }
+    .code-console {
+      font-family: var(--font-label);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      background: var(--surface-container);
+      border: var(--hairline);
+      padding: var(--space-md);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    /* Adaptive Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .card-wrapper { container-type: inline-size; }
+    .card-inner {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-sm);
+    }
+    @container (min-width: 380px) {
+      .card-inner-2col { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Funnel Steps */
+    .funnel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+      gap: var(--space-sm);
+    }
+    .funnel-step {
+      background: var(--surface-container-low);
+      border: var(--hairline);
+      border-top: var(--brass-rule);
+      padding: var(--space-md);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      transition: background-color var(--dur-micro) var(--ease-out);
+    }
+    .funnel-step:hover,
+    .funnel-step.is-selected {
+      background: var(--primary-container);
+      border-color: var(--primary);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--modal-backdrop);
+      z-index: 1000;
+      padding: var(--space-lg);
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.is-open { display: flex; }
+    .modal-dialog {
+      background: var(--surface-container-low);
+      border: 2px solid var(--primary);
+      border-top: 4px solid var(--outline);
+      border-radius: var(--rounded);
+      width: 100%;
+      max-width: 680px;
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-md);
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-sm);
+    }
+    .modal-header h2 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--headline-size);
+      margin: 0;
+    }
+
+    /* Footer */
+    .site-footer {
+      max-width: 1320px;
+      margin: var(--space-xl) auto 0;
+      padding: var(--space-lg);
+      border-top: var(--brass-rule);
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+
+    @media (max-width: 900px) {
+      .split-layout,
+      .split-even {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+        padding: var(--space-sm);
+      }
+      .title-band { padding: var(--space-md) var(--space-sm); }
+      .session-bar { padding: var(--space-sm); }
+      .waterfall-row { grid-template-columns: 1fr; gap: var(--space-xs); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Institutional Navy Title Band + Investopedia Simulator Navigation -->
+  <header class="title-band">
+    <div class="title-band-inner">
+      <div class="brand-row">
+        <div>
+          <div class="brand-kicker">Bledsoe Investment Management (BIM-APES) · Institutional NIL Exchange Simulator</div>
+          <h1>NIL Capital Markets: Hardware-Powered Financial Simulator</h1>
+          <p class="lede">Real-time biometric telemetry, BLE 5.3 smart equipment ingestion, Synthetically Collateralized Options Contracts (SCOC), and multi-tenant institutional clearing.</p>
+        </div>
+        <div class="market-ticker-strip" id="ticker-strip" aria-label="Live Biometric Asset Quotes"></div>
+      </div>
+
+      <nav class="nav-bar" aria-label="Primary Simulator Navigation">
+        <div class="primary-tabs" role="tablist">
+          <button type="button" class="nav-tab is-active" data-tab="portfolio" onclick="switchTab('portfolio')">Portfolio</button>
+          <button type="button" class="nav-tab" data-tab="trade" onclick="switchTab('trade')">Trade</button>
+          <button type="button" class="nav-tab" data-tab="research" onclick="switchTab('research')">Research &amp; Hardware</button>
+          <button type="button" class="nav-tab" data-tab="index-store" onclick="switchTab('index-store')">Index Store</button>
+          <button type="button" class="nav-tab" data-tab="xr-lab" onclick="switchTab('xr-lab')">XR Lab</button>
+          <button type="button" class="nav-tab" data-tab="admin-crm" onclick="switchTab('admin-crm')">Admin CRM</button>
+        </div>
+        <div class="nav-actions">
+          <button type="button" class="btn btn-on-navy btn-sm" onclick="openSignupModal()">Sign Up / Onboard</button>
+          <button type="button" class="btn btn-on-navy btn-sm" onclick="openGpuWaitlistModal()">Reserve GPU Card</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Multi-Tenant Live Session Bar -->
+  <section class="session-bar" aria-label="Active User Session">
+    <div class="session-bar-inner">
+      <div class="session-identity">
+        <span class="role-stamp" id="session-role-badge">Quant Desk &amp; Hedge Fund</span>
+        <div class="session-meta">
+          <strong id="session-user-name">Dashawn Ramel Bledsoe</strong>
+          <span id="session-user-org">BLEI-E Quantitative Desk · Columbia SPS</span>
+          <span class="wallet-code" id="session-wallet">Onyx: 0x71C8…9A4F (T+0)</span>
+        </div>
+      </div>
+      <div class="persona-quick-row">
+        <div class="field">
+          <label for="quick-persona-select">1-Click Switch Persona</label>
+          <select id="quick-persona-select" onchange="switchPersonaQuick(this.value)">
+            <option value="athlete">Student-Athlete &amp; Youth Recruit</option>
+            <option value="faculty">Academic Lab &amp; B-School Faculty</option>
+            <option value="quant" selected>Quant Desk &amp; Hedge Fund</option>
+            <option value="coach">Coach, AD &amp; Medical Staff</option>
+            <option value="sponsor">Corporate Sponsor &amp; Brand Partner</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="signOutSession()">Sign Out</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace -->
+  <main class="page-grid">
+    <div id="global-toast" class="status-banner" role="status" aria-live="polite" style="display:none;"></div>
+
+    <!-- ==================== TAB 1: PORTFOLIO ==================== -->
+    <section id="tab-portfolio" class="view-panel is-active" aria-label="Portfolio Overview">
+      <div class="kpi-grid">
+        <div class="figure-card">
+          <span class="figure-label">Total Portfolio Equity</span>
+          <span class="figure-value" id="kpi-total-equity">$100,000.00</span>
+          <span class="figure-delta is-pos" id="kpi-total-pnl">+$0.00 (+0.00%)</span>
+        </div>
+        <div class="figure-card">
+          <span class="figure-label">5x Margin Buying Power</span>
+          <span class="figure-value" id="kpi-buying-power">$500,000.00</span>
+          <span class="figure-delta" id="kpi-cash-balance">Cash: $100,000.00 · 5x Facility</span>
+        </div>
+        <div class="figure-card">
+          <span class="figure-label">SCOC Master Unit AUM</span>
+          <span class="figure-value">$500,000.00</span>
+          <span class="figure-delta is-pos">100,000 Performance Tokens Locked</span>
+        </div>
+        <div class="figure-card">
+          <span class="figure-label">Parametric Margin Vault (10%)</span>
+          <span class="figure-value" id="kpi-margin-vault">$50,000.00</span>
+          <span class="figure-delta">CRS-3 Circuit Breaker Protection Active</span>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <!-- Sub-Portfolios Table -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>Holdings &amp; Sub-Portfolios</h2>
+            <p class="section-sub">Equities, SCOC Options, and Short Exposure</p>
+          </div>
+          <div class="sub-tabs" role="tablist">
+            <button type="button" class="sub-tab is-active" data-subport="stocks" onclick="switchSubPortfolio('stocks')">Biometric Equities</button>
+            <button type="button" class="sub-tab" data-subport="options" onclick="switchSubPortfolio('options')">SCOC Options</button>
+            <button type="button" class="sub-tab" data-subport="shorts" onclick="switchSubPortfolio('shorts')">Short Positions</button>
+          </div>
+          <div class="table-wrap">
+            <table class="ledger-table" id="portfolio-table">
+              <thead>
+                <tr>
+                  <th>Symbol / Contract</th>
+                  <th>Discipline</th>
+                  <th class="num">Units</th>
+                  <th class="num">Entry / Strike</th>
+                  <th class="num">Model-NIL</th>
+                  <th class="num">Unrealized P&amp;L</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="portfolio-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 60/20/10/10 Settlement Waterfall -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>60/20/10/10 Settlement Waterfall</h2>
+            <p class="section-sub">MicroRailClearing.sol &amp; J.P. Morgan Onyx T+0</p>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="waterfall-spread">Model-NIL − Market Strike ($)</label>
+              <input type="number" id="waterfall-spread" value="18.50" step="0.50" oninput="recalcWaterfall()">
+            </div>
+            <div class="field">
+              <label for="waterfall-units">SCOC Contract Units</label>
+              <input type="number" id="waterfall-units" value="1000" step="100" oninput="recalcWaterfall()">
+            </div>
+          </div>
+          <div class="status-banner is-pos">
+            <span>Gross Spread Settlement Pool:</span>
+            <strong id="waterfall-pool-total" style="font-family:var(--font-label);">$18,500.00</strong>
+          </div>
+          <div class="waterfall-list">
+            <div class="waterfall-row">
+              <span><strong>60%</strong> Athlete Sovereign Digital Trust</span>
+              <div class="meter-track"><div class="meter-fill is-pos" style="width:60%;"></div></div>
+              <strong id="wf-60" style="font-family:var(--font-label);">$11,100.00</strong>
+            </div>
+            <div class="waterfall-row">
+              <span><strong>20%</strong> Team Ops &amp; Hardware Maintenance</span>
+              <div class="meter-track"><div class="meter-fill" style="width:20%;"></div></div>
+              <strong id="wf-20" style="font-family:var(--font-label);">$3,700.00</strong>
+            </div>
+            <div class="waterfall-row">
+              <span><strong>10%</strong> Exchange Clearing &amp; Gas Reserve</span>
+              <div class="meter-track"><div class="meter-fill is-warn" style="width:10%;"></div></div>
+              <strong id="wf-10a" style="font-family:var(--font-label);">$1,850.00</strong>
+            </div>
+            <div class="waterfall-row">
+              <span><strong>10%</strong> Corporate Sponsor Rebate Sweep</span>
+              <div class="meter-track"><div class="meter-fill is-warn" style="width:10%;"></div></div>
+              <strong id="wf-10b" style="font-family:var(--font-label);">$1,850.00</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sunk Cost Fallacy Behavioral Challenge -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Sunk Cost Fallacy Challenge: Volatility Horizon Desk</h2>
+          <p class="section-sub">MBDCC Simulator Mode — Rational Exit vs. Escalation of Commitment</p>
+        </div>
+        <div class="split-even">
+          <div>
+            <p style="margin-top:0;">
+              <strong>Scenario:</strong> You staked <strong>$25,000</strong> of L2E capital in an MBDCC team ALT token (<strong>$BOX-STRIKE</strong>). During Round 4, the fighter's smart-glove cadence drops 22% and the temple patch registers a <strong>192 BPM autonomic spike</strong>, triggering administrative red flags.
+            </p>
+            <div class="field" style="margin-bottom:var(--space-md);">
+              <label for="sunk-horizon-bar">Volatility Horizon Remaining (<span id="sunk-horizon-pct">42%</span>)</label>
+              <div class="meter-track" id="sunk-horizon-bar" style="height:18px;">
+                <div class="meter-fill is-err" id="sunk-horizon-fill" style="width:42%;"></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);">
+              <button type="button" class="btn btn-positive" onclick="resolveSunkCost('rational')">Rational Exit (Cut Loss &amp; Reallocate)</button>
+              <button type="button" class="btn btn-danger" onclick="resolveSunkCost('escalate')">Sunk Cost Trap (+$10,000 Double Down)</button>
+              <button type="button" class="btn btn-secondary" onclick="resetSunkCost()">Reset Scenario</button>
+            </div>
+          </div>
+          <div class="status-banner" id="sunk-cost-outcome">
+            <span>Select an execution path to test capital preservation under biometric distress.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: TRADE DESK ==================== -->
+    <section id="tab-trade" class="view-panel" aria-label="Bledsoe Brokerage Trade Desk">
+      <div class="split-layout">
+        <!-- Candlestick Chart & Signal Controls -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>Biometric Fatigue Doji Candlestick Desk</h2>
+            <p class="section-sub">Upper Wick = Kinetic Impulse · Lower Tail = Neuromuscular Strain</p>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="trade-symbol-select">Target Biometric Asset</label>
+              <select id="trade-symbol-select" onchange="selectTradeSymbol(this.value)">
+                <option value="HOOP">$HOOP — Basketball Performance Index</option>
+                <option value="BOX-STRIKE">$BOX-STRIKE — Boxing Combat Strike Index</option>
+                <option value="HNDL-6M">$HNDL-6M — Team Handball 6m Crease Index</option>
+                <option value="RUGBY-GLOU">$RUGBY-GLOU — Gloucester Rugby Collision Index</option>
+                <option value="FBALL-QB">$FBALL-QB — American Football Spiral Index</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Selected Asset Quotes</label>
+              <div class="status-banner" id="trade-quote-strip" style="min-height:44px;">
+                <span>Market: <strong>$40.00</strong> · Model-NIL: <strong>$58.50</strong> · Spread: <strong>+$18.50</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-box">
+            <canvas id="doji-chart-canvas" aria-label="Biometric OHLC Candlestick Chart"></canvas>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);align-items:center;justify-content:space-between;">
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);">
+              <button type="button" class="btn btn-positive btn-sm" onclick="simulateCandleEvent('impulse')">Simulate Kinetic Surge (&gt;15 m/s)</button>
+              <button type="button" class="btn btn-danger btn-sm" onclick="simulateCandleEvent('fatigue')">Trigger Fatigue-Doji (HR &gt;190 BPM)</button>
+              <button type="button" class="btn btn-brass btn-sm" onclick="simulateCandleEvent('recovery')">Simulate Recovery Efficiency</button>
+            </div>
+            <span class="badge badge-warn" id="doji-signal-badge">Signal: Monitoring PRI / CSI</span>
+          </div>
+        </div>
+
+        <!-- Bledsoe Brokerage OMS -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>Bledsoe Brokerage OMS</h2>
+            <p class="section-sub">Conditional Biometric &amp; Kinetic Order Routing</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="order-action">Action</label>
+              <select id="order-action" onchange="updateOrderPreview()">
+                <option value="BUY">Buy Long</option>
+                <option value="SELL">Sell Long</option>
+                <option value="SHORT">Sell Short (Margin)</option>
+                <option value="COVER">Buy to Cover</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="order-type">Order Type</label>
+              <select id="order-type" onchange="updateOrderPreview()">
+                <option value="MARKET">Market (Immediate)</option>
+                <option value="LIMIT">Limit Order</option>
+                <option value="BIO-SL">Bio-SL (HRV Drop &gt;15%)</option>
+                <option value="KIN-LIMIT">Kin-Limit (Velocity &ge; 15 m/s)</option>
+                <option value="TRAILING">Biometric Adaptive Trailing Stop</option>
+                <option value="OCO">OCO (One-Cancels-Other)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="order-qty">Units (Contracts)</label>
+              <input type="number" id="order-qty" value="100" min="1" step="10" oninput="updateOrderPreview()">
+            </div>
+            <div class="field">
+              <label for="order-price">Limit / Trigger Price ($)</label>
+              <input type="number" id="order-price" value="58.50" step="0.25" oninput="updateOrderPreview()">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="order-bio-rule">Biometric Confirmation Condition (3–5 Cycle Rule)</label>
+            <input type="text" id="order-bio-rule" value="Velocity >= 15.0 m/s OR Punch Force >= 42G">
+          </div>
+
+          <div class="status-banner">
+            <span>Est. Notional / Margin (20%):</span>
+            <strong id="order-notional-preview" style="font-family:var(--font-label);">$5,850.00 ($1,170.00 Margin)</strong>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="submitBrokerageOrder()">Submit Order to Bledsoe OMS</button>
+          <div id="order-feedback" class="status-banner" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Armed & Executed Orders Ledger -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Order Execution &amp; Conditional Trigger Blotter</h2>
+          <p class="section-sub">Bio-SL, Kin-Limit, and Market Fills</p>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Symbol</th>
+                <th>Action</th>
+                <th>Order Type</th>
+                <th class="num">Units</th>
+                <th class="num">Price</th>
+                <th>Biometric Rule</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: RESEARCH & HARDWARE ==================== -->
+    <section id="tab-research" class="view-panel" aria-label="Hardware Telemetry and Alpha Quant GPU">
+
+      <!-- 3A & 3B: BLE 5.3 GATT + Cloud-to-Cloud Bridge -->
+      <div class="split-even">
+        <!-- Web Bluetooth BLE 5.3 GATT Direct Connection -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>Web Bluetooth (BLE 5.3 GATT) Match Pairing</h2>
+            <p class="section-sub">Direct Edge Hardware Handshake &amp; Zero-Bias Calibration</p>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="ble-device-select">Hardware Device UUID</label>
+              <select id="ble-device-select" onchange="updateBleDeviceSelection()">
+                <option value="tb-core-v4">Tech+Ball Core-v4 IMU (UUID: 0xTB04-99A1)</option>
+                <option value="box-glove-lr">Boxing 5-Axis Smart Gloves L/R (UUID: 0xBX5A-44C2)</option>
+                <option value="gilbert-rugby">Gilbert / Sportable Rugby BLE (UUID: 0xRG12-88E0)</option>
+                <option value="spalding-iq">Spalding SportIQ Smart Ball (UUID: 0xBB3D-71F9)</option>
+                <option value="lilygo-tdeck">LilyGo T-Deck ESP32 Edge Hub (UUID: 0xESP3-20D4)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>RSSI Signal &amp; Stream Rate</label>
+              <div class="status-banner" style="min-height:44px;">
+                <div class="rssi-bars" id="ble-rssi-bars" aria-label="RSSI Signal Strength">
+                  <div class="rssi-bar is-lit" style="height:5px;"></div>
+                  <div class="rssi-bar is-lit" style="height:8px;"></div>
+                  <div class="rssi-bar is-lit" style="height:11px;"></div>
+                  <div class="rssi-bar is-lit" style="height:14px;"></div>
+                  <div class="rssi-bar" style="height:17px;"></div>
+                </div>
+                <span id="ble-rssi-text" style="font-family:var(--font-label);font-size:0.78rem;">-54 dBm · 100 Hz</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);">
+            <button type="button" class="btn btn-primary btn-sm" onclick="connectBleHardware()">Pair Live BLE Device</button>
+            <button type="button" class="btn btn-brass btn-sm" onclick="runZeroBiasCalibration()">Run 3-Step Zero-Bias Calibration</button>
+          </div>
+
+          <div class="status-banner" id="ble-status-banner">
+            <span>Status: <strong>Ready for GATT Discovery</strong> — Click Pair or Calibrate for physical match initialization.</span>
+          </div>
+        </div>
+
+        <!-- Cloud-to-Cloud Partner Ingestion Bridge -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>Cloud-to-Cloud (C2C) Partner Bridge</h2>
+            <p class="section-sub">Hosted Ball Ingestion → POST /api/v1/partner/ballTelemetry</p>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="c2c-provider">Hosted Partner Ecosystem</label>
+              <select id="c2c-provider" onchange="refreshC2CPayload()">
+                <option value="adidas">Adidas Connected Football App</option>
+                <option value="nike">Nike / Wilson NextGen Cloud</option>
+                <option value="sportable">Gilbert (Sportable Cloud API)</option>
+                <option value="sportiq">Spalding Smart Ball (SportIQ)</option>
+                <option value="dribbleup">Dribbleup Smart Ball Stream</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="c2c-oauth">Partner OAuth2 API Key</label>
+              <input type="text" id="c2c-oauth" value="oa2_live_98f2b1c4_partner_bridge">
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);align-items:center;">
+            <button type="button" class="btn btn-positive btn-sm" onclick="streamHostedBallFeed()">Simulate Hosted C2C Stream</button>
+            <span class="badge badge-navy" id="c2c-endpoint-badge">GET /stream/ballMetrics · Active</span>
+          </div>
+          <pre class="code-console" id="c2c-json-console"></pre>
+        </div>
+      </div>
+
+      <!-- 3C: Multi-Sport Sensor Array (Featuring Boxing NEW ORG) -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Multi-Sport Sensor Array (Featuring Boxing NEW ORG)</h2>
+          <p class="section-sub">Live Telemetry Normalized to 7-Factor Performance Score (PS) &amp; Asset Pricing</p>
+        </div>
+        <div class="sub-tabs" role="tablist">
+          <button type="button" class="sub-tab is-active" data-sport="boxing" onclick="selectSportArray('boxing')">Boxing (NEW ORG)</button>
+          <button type="button" class="sub-tab" data-sport="handball" onclick="selectSportArray('handball')">Team Handball</button>
+          <button type="button" class="sub-tab" data-sport="rugby" onclick="selectSportArray('rugby')">Rugby</button>
+          <button type="button" class="sub-tab" data-sport="basketball" onclick="selectSportArray('basketball')">Basketball</button>
+          <button type="button" class="sub-tab" data-sport="football" onclick="selectSportArray('football')">American Football</button>
+        </div>
+        <div class="kpi-grid" id="sport-metrics-grid"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);align-items:center;justify-content:space-between;">
+          <div id="sport-detail-note" class="status-banner" style="flex:1;"></div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="pulseSportTelemetry()">Stream Live Match Burst</button>
+        </div>
+      </div>
+
+      <!-- 3D: Camera Production Rigs & iPhone Mobile Vision Station -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Camera Production Rigs &amp; iPhone Mobile Vision Station</h2>
+          <p class="section-sub">AI Optical Pose Tracking, Ball Flight &amp; Ringside Dual-Plane Capture</p>
+        </div>
+        <div class="split-even">
+          <div>
+            <div class="form-grid" style="margin-bottom:var(--space-md);">
+              <div class="field">
+                <label for="camera-rig-select">Active Optical Rig</label>
+                <select id="camera-rig-select" onchange="selectCameraRig(this.value)">
+                  <option value="ballercam">BallerCam on iPhone Pro Rig (Fan + Sun Shade)</option>
+                  <option value="sandmarc">Sandmarc / ShiftCam ProGrip + SmallRig All-in-One</option>
+                  <option value="leica">Leica AI Action Camera (Auto Highlight Clip)</option>
+                  <option value="hawkeye">Hawk-Eye 120fps Pylon / Ringside Dual-Plane</option>
+                  <option value="visionpro">Apple Vision Pro (VisionOS 26 Spatial Feed)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Environmental &amp; Thermal Guard</label>
+                <div class="status-banner is-pos" id="camera-thermal-badge" style="min-height:44px;">
+                  <span>Cooling Fan Active · 24.2°C (Range 0–35°C)</span>
+                </div>
+              </div>
+            </div>
+            <div id="camera-spec-list" class="kpi-grid"></div>
+          </div>
+          <div>
+            <div class="figure-label" style="margin-bottom:var(--space-xs);">Optical Fusion &amp; Skeletal Pose Feed</div>
+            <pre class="code-console" id="camera-telemetry-log"></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4: Alpha Quant Stream GPU Card(s) Showcase (Coming Soon) -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Alpha Quant Stream GPU Cards for Hedge Fund APIs <span class="badge badge-warn">Coming Soon</span></h2>
+          <p class="section-sub">Ultra-Low Latency Tensor Streamers (AQS-100G) for Sub-Millisecond SCOC Arbitrage</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="figure-card">
+            <span class="figure-label">Tensor Compute Architecture</span>
+            <span class="figure-value">1,979 TFLOPS</span>
+            <span class="figure-delta">FP8 / FP16 Stochastic Jump-Diffusion</span>
+          </div>
+          <div class="figure-card">
+            <span class="figure-label">Direct Network Ingest</span>
+            <span class="figure-value">100 Gbps RDMA</span>
+            <span class="figure-delta">RoCEv2 Kernel-Bypass NIC Ingest</span>
+          </div>
+          <div class="figure-card">
+            <span class="figure-label">Execution Latency</span>
+            <span class="figure-value" id="gpu-latency-readout">38.4 µs</span>
+            <span class="figure-delta is-pos">Sub-50 Microsecond Target Verified</span>
+          </div>
+          <div class="figure-card">
+            <span class="figure-label">Institutional Waitlist</span>
+            <span class="figure-value" id="gpu-reservation-count">14 Desks</span>
+            <span class="figure-delta">PCIe Gen5 · Q1 2027 Allocation</span>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th class="num">RDMA Bid</th>
+                <th class="num">RDMA Ask</th>
+                <th class="num">Model-NIL</th>
+                <th class="num">Arb Spread</th>
+                <th class="num">Wire Latency</th>
+              </tr>
+            </thead>
+            <tbody id="gpu-quotes-tbody"></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);align-items:center;justify-content:space-between;">
+          <button type="button" class="btn btn-primary" onclick="openGpuWaitlistModal()">Reserve API Card (Institutional Waitlist)</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="tickGpuStream()">Pulse RDMA Quote Tick</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: BIOMETRIC INDEX STORE ==================== -->
+    <section id="tab-index-store" class="view-panel" aria-label="Biometric Index Marketplace">
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Curated Pilot Sport Index Bundles</h2>
+          <p class="section-sub">10-Index Clusters Combining Physical Output &amp; Coalition Trust</p>
+        </div>
+        <div class="card-grid" id="bundle-packs-grid"></div>
+      </div>
+
+      <div class="split-layout">
+        <!-- Searchable 1,000 Biometric Indices Catalog -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>1,000 Biometric Indices Library Catalog</h2>
+            <p class="section-sub">Filter by Domain &amp; Deploy to Trade Watchlist</p>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="index-search">Search Index Code or Name</label>
+              <input type="text" id="index-search" placeholder="e.g. PRI, Strike, Fatigue, Coalition..." oninput="renderIndexCatalog()">
+            </div>
+            <div class="field">
+              <label for="index-domain-filter">Biometric Domain</label>
+              <select id="index-domain-filter" onchange="renderIndexCatalog()">
+                <option value="ALL">All Domains</option>
+                <option value="Domain 1: Vital Signals">Domain 1: Vital Signals</option>
+                <option value="Domain 3: Performance & Recovery">Domain 3: Performance &amp; Recovery</option>
+                <option value="Domain 4: Financial Biometrics">Domain 4: Financial Biometrics</option>
+                <option value="Domain 5: Media & Engagement">Domain 5: Media &amp; Engagement</option>
+                <option value="Domain 6: Coalition Dynamics">Domain 6: Coalition Dynamics</option>
+                <option value="Domain 8: Legacy & Governance">Domain 8: Legacy &amp; Governance</option>
+                <option value="Domain 10: Commercialization">Domain 10: Commercialization</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Index #</th>
+                  <th>Code &amp; Name</th>
+                  <th>Domain</th>
+                  <th class="num">Live Score</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="index-catalog-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Custom Index Synthesizer -->
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>Custom Index Synthesizer</h2>
+            <p class="section-sub">Composite Performance Score (PS) &amp; Model-NIL Valuation</p>
+          </div>
+          <div class="field">
+            <label for="synth-name">Synthetic Ticker Symbol</label>
+            <input type="text" id="synth-name" value="$ALPHA-COMBAT-3">
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="synth-w1">Physical Readiness (PRI %)</label>
+              <input type="number" id="synth-w1" value="40" min="0" max="100" oninput="recalcSynthesizer()">
+            </div>
+            <div class="field">
+              <label for="synth-w2">Kinetic Impulse (Velocity/G %)</label>
+              <input type="number" id="synth-w2" value="35" min="0" max="100" oninput="recalcSynthesizer()">
+            </div>
+            <div class="field">
+              <label for="synth-w3">Sponsor Resonance (SRI %)</label>
+              <input type="number" id="synth-w3" value="25" min="0" max="100" oninput="recalcSynthesizer()">
+            </div>
+          </div>
+          <div class="status-banner is-pos" id="synth-output">
+            <span>Composite PS: <strong>0.842</strong> · Synthesized Model-NIL: <strong>$63.15</strong></span>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="deploySyntheticIndex()">Add Synthetic Index to Market</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: XR LAB & VR WAR ROOM ==================== -->
+    <section id="tab-xr-lab" class="view-panel" aria-label="XR Performance Lab and VR NIL War Room">
+      <div class="split-layout">
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>BiomechFlow Capsule &amp; 3D VR Glow Rings</h2>
+            <p class="section-sub">6 Geometric Components: Top/Bottom Arcs, Center Line, Left/Right Bars &amp; Glow Ring</p>
+          </div>
+          <div class="xr-canvas-box">
+            <canvas id="xr-capsule-canvas" aria-label="BiomechFlow Capsule 3D Visualization"></canvas>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="xr-stress-slider">Top Arc Mechanical Stress (<span id="xr-stress-val">68%</span>)</label>
+              <input type="range" id="xr-stress-slider" min="10" max="100" value="68" oninput="updateXrParams()">
+            </div>
+            <div class="field">
+              <label for="xr-recovery-slider">Center Line Recovery Velocity (<span id="xr-recovery-val">82%</span>)</label>
+              <input type="range" id="xr-recovery-slider" min="10" max="100" value="82" oninput="updateXrParams()">
+            </div>
+            <div class="field">
+              <label for="xr-glow-slider">Glow Ring Sponsor Momentum (<span id="xr-glow-val">91%</span>)</label>
+              <input type="range" id="xr-glow-slider" min="10" max="100" value="91" oninput="updateXrParams()">
+            </div>
+          </div>
+        </div>
+
+        <div class="leaf-panel">
+          <div class="section-head">
+            <h2>AR Exit Engine &amp; Spread Diagnostics</h2>
+            <p class="section-sub">Real-Time Wobble / Bloom / Drift &amp; Model vs. Market Arbitrage</p>
+          </div>
+          <div class="kpi-grid">
+            <div class="figure-card">
+              <span class="figure-label">SSI (Spatial Sync)</span>
+              <span class="figure-value" id="xr-ssi">0.89</span>
+              <span class="figure-delta is-pos">Formation Coherence Nominal</span>
+            </div>
+            <div class="figure-card">
+              <span class="figure-label">ARC (Athlete Risk Coeff)</span>
+              <span class="figure-value" id="xr-arc">0.24</span>
+              <span class="figure-delta" id="xr-arc-note">Below CRS-3 Kill Threshold</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="ar-drift-select">AR Exit Engine Scenario</label>
+            <select id="ar-drift-select" onchange="updateXrParams()">
+              <option value="nba">NBA — Shot Arc Wobble &amp; Goaltending Drift</option>
+              <option value="nfl">NFL — Pass Spiral Drift &amp; Crosswind Vector</option>
+              <option value="boxing">Boxing — Punch Trajectory Drift &amp; Guard Gap</option>
+              <option value="handball">Team Handball — 6m Crease Jump-Toss Vector</option>
+            </select>
+          </div>
+          <div class="status-banner" id="ar-exit-readout">
+            <span>AR Predictive Timeline: +140ms Release Stability · Model-NIL $58.50 vs Market $40.00 (+$18.50)</span>
+          </div>
+          <div class="table-wrap">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>XR Lab Module</th>
+                  <th>Primary Sport Telemetry</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>XR Command Center</td><td>Live 3D Hawk-Eye pose capsules, sprint speed, punch velocity</td></tr>
+                <tr><td>VR NIL War Room</td><td>3D Glow Rings, playoff &amp; title fight Model vs. Market spreads</td></tr>
+                <tr><td>Spatial Intelligence</td><td>Shot heatmaps, zone coverage coherence, boxing ring-cut control</td></tr>
+                <tr><td>AR Exit Engine</td><td>Shot/pass/punch wobble, bloom, and defensive drift cues</td></tr>
+                <tr><td>VR Playbook Sim</td><td>Route/set-play editor with instant SSI &amp; TPI recalculation</td></tr>
+                <tr><td>VR Athlete Training</td><td>Ghost overlays for pick-and-roll, QB reads, &amp; boxing footwork</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: EXECUTIVE ADMIN CRM ==================== -->
+    <section id="tab-admin-crm" class="view-panel" aria-label="Executive Admin Client CRM and Sales Pipeline">
+      <div class="kpi-grid">
+        <div class="figure-card">
+          <span class="figure-label">Total Registered Users</span>
+          <span class="figure-value" id="crm-kpi-users">0</span>
+          <span class="figure-delta is-pos">Multi-Tenant Live Roster</span>
+        </div>
+        <div class="figure-card">
+          <span class="figure-label">Academic Site Licenses</span>
+          <span class="figure-value">$420,000</span>
+          <span class="figure-delta is-pos">ARR · 18 B-Schools &amp; Labs</span>
+        </div>
+        <div class="figure-card">
+          <span class="figure-label">Quant API Desks</span>
+          <span class="figure-value">$140,000</span>
+          <span class="figure-delta is-pos">MRR · $1.5k–$10k/mo Tiers</span>
+        </div>
+        <div class="figure-card">
+          <span class="figure-label">Biometric Index Store GMV</span>
+          <span class="figure-value">$1,240,000+</span>
+          <span class="figure-delta">Sponsor Rebates Cleared: $840,000</span>
+        </div>
+      </div>
+
+      <!-- Visual Conversion Funnel -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Ecosystem Conversion Funnel (Click Stage to Filter CRM)</h2>
+          <p class="section-sub">L2E Youth &amp; Student Signups → Academic Site Licenses → Institutional Quant Desks</p>
+        </div>
+        <div class="funnel-grid" id="crm-funnel-grid"></div>
+      </div>
+
+      <!-- Client Database Table & Admin Exports -->
+      <div class="leaf-panel">
+        <div class="section-head">
+          <h2>Client Database &amp; License Governance</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);">
+            <button type="button" class="btn btn-primary btn-sm" onclick="exportCrmCsv()">Export CRM to CSV</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="downloadJsonLedger()">Download JSON Ledger</button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="crm-search">Search Name, Email, or Organization</label>
+            <input type="text" id="crm-search" placeholder="Filter client records..." oninput="renderCrmTable()">
+          </div>
+          <div class="field">
+            <label for="crm-role-filter">Filter by Persona Role</label>
+            <select id="crm-role-filter" onchange="renderCrmTable()">
+              <option value="ALL">All 5 User Segments</option>
+              <option value="athlete">Student-Athletes &amp; Youth Recruits</option>
+              <option value="faculty">Academic Labs &amp; B-School Faculty</option>
+              <option value="quant">Quant Desks &amp; Hedge Funds</option>
+              <option value="coach">Coaches, ADs &amp; Medical Staff</option>
+              <option value="sponsor">Corporate Sponsors &amp; Brands</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="crm-status-filter">License Status</label>
+            <select id="crm-status-filter" onchange="renderCrmTable()">
+              <option value="ALL">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Persona Role</th>
+                <th>Organization / School</th>
+                <th>Join Date</th>
+                <th>Status</th>
+                <th class="num">Wallet / AUM</th>
+                <th>Admin Controls</th>
+              </tr>
+            </thead>
+            <tbody id="crm-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>NIL Capital Markets Simulator · Bledsoe Investment Management (BIM-APES) &amp; Tech+Ball Ecosystem · Institutional Educational Simulation</span>
+    <span>Grounded in Tech+Ball REST API, 1,000 Biometric Indices Library, XR Performance Lab Stack, BallerCam &amp; Sportable C2C Bridge</span>
+  </footer>
+
+  <!-- ==================== MODAL 1: MULTI-TENANT ROLE-BASED SIGN-UP ==================== -->
+  <div id="signup-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <div class="figure-label">Multi-Tenant Onboarding Flow</div>
+          <h2 id="signup-modal-title">Role-Based Institutional Sign-Up</h2>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeSignupModal()">Close</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="su-role">1. Select Target User Segment</label>
+          <select id="su-role" onchange="renderSignupRoleFields()">
+            <option value="athlete">Student-Athlete &amp; Youth Recruit</option>
+            <option value="faculty">Academic Lab &amp; B-School Faculty</option>
+            <option value="quant">Quant Desk &amp; Hedge Fund</option>
+            <option value="coach">Coach, Athletic Director &amp; Medical Staff</option>
+            <option value="sponsor">Corporate Sponsor &amp; Brand Partner</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="su-name">Full Name</label>
+          <input type="text" id="su-name" placeholder="Enter full name">
+        </div>
+        <div class="field">
+          <label for="su-email">Email Address</label>
+          <input type="email" id="su-email" placeholder="name@institution.edu">
+        </div>
+      </div>
+
+      <div id="su-dynamic-fields" class="form-grid">
+        <div class="field"><label for="su-f1">Organization / School</label><input type="text" id="su-f1" value=""></div>
+        <div class="field"><label for="su-f2">Discipline / Course / Desk</label><input type="text" id="su-f2" value=""></div>
+        <div class="field"><label for="su-f3">Position / Capacity / Tier</label><input type="text" id="su-f3" value=""></div>
+        <div class="field"><label for="su-f4">Jersey / API Key</label><input type="text" id="su-f4" value=""></div>
+        <div class="field"><label for="su-f5">Sovereign Wallet</label><input type="text" id="su-f5" value=""></div>
+      </div>
+
+      <div id="su-error-msg" class="status-banner is-err" style="display:none;"></div>
+
+      <div style="display:flex;justify-content:flex-end;gap:var(--space-sm);">
+        <button type="button" class="btn btn-secondary" onclick="closeSignupModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitRoleSignup()">Complete Onboarding &amp; Activate Session</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: ALPHA QUANT GPU RESERVE WAITLIST ==================== -->
+  <div id="gpu-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="gpu-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <div class="figure-label">Alpha Quant Stream Hardware Allocation</div>
+          <h2 id="gpu-modal-title">Reserve AQS-100G Hedge Fund API Card</h2>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeGpuWaitlistModal()">Close</button>
+      </div>
+
+      <p style="margin:0;font-size:0.9rem;">
+        Pre-order institutional PCIe Gen5 Tensor Streamers featuring FP8/FP16 jump-diffusion acceleration, 100Gbps RDMA RoCEv2 direct ingest, and sub-50 microsecond SCOC execution.
+      </p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="gpu-firm">Fund / Quant Firm Name</label>
+          <input type="text" id="gpu-firm" placeholder="e.g. Hudson River Sports Alpha">
+        </div>
+        <div class="field">
+          <label for="gpu-email">Institutional Desk Email</label>
+          <input type="email" id="gpu-email" placeholder="desk@fund.com">
+        </div>
+        <div class="field">
+          <label for="gpu-units">Requested GPU Card Units</label>
+          <select id="gpu-units">
+            <option value="1">1x AQS-100G Card ($10,000/mo API)</option>
+            <option value="4">4x Node Cluster ($35,000/mo API)</option>
+            <option value="8">8x Colocation Rack ($64,000/mo API)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="gpu-colo">Target Colocation Facility</label>
+          <select id="gpu-colo">
+            <option value="NY4">Equinix NY4 (Secaucus, NJ)</option>
+            <option value="CME">Aurora CME Data Center</option>
+            <option value="LD4">Equinix LD4 (Slough, UK)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="gpu-modal-feedback" class="status-banner is-err" style="display:none;"></div>
+
+      <div style="display:flex;justify-content:flex-end;gap:var(--space-sm);">
+        <button type="button" class="btn btn-secondary" onclick="closeGpuWaitlistModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitGpuReservation()">Confirm Waitlist Reservation</button>
+      </div>
+    </div>
+  </div>
+
+  <api-shim></api-shim>
+
+  <script>
+    // ==================== STATE & SEED DATA ====================
+    const PERSONA_PRESETS = {
+      athlete: {
+        id: 'usr-ath-01',
+        role: 'athlete',
+        roleLabel: `Student-Athlete & Youth Recruit`,
+        name: `Marcus Vance`,
+        email: `m.vance@columbia.edu`,
+        org: `Columbia Tech+Ball · Boxing (154 lb) #14`,
+        wallet: `Onyx: 0x39A1…4E08 (Trust)`,
+        aum: `$18,450.00`,
+        status: `Active`
+      },
+      faculty: {
+        id: 'usr-fac-01',
+        role: 'faculty',
+        roleLabel: `Academic Lab & B-School Faculty`,
+        name: `Dr. Elena Rostova`,
+        email: `erostova@gsb.columbia.edu`,
+        org: `Columbia SPS · COLUMBIA-SPS-2026 (120 Seats)`,
+        wallet: `Site License: $25,000/yr`,
+        aum: `$25,000.00`,
+        status: `Approved`
+      },
+      quant: {
+        id: 'usr-qnt-01',
+        role: 'quant',
+        roleLabel: `Quant Desk & Hedge Fund`,
+        name: `Dashawn Ramel Bledsoe`,
+        email: `dbledsoe@bleie-quant.io`,
+        org: `BLEI-E Quantitative Desk · Tier $10k/mo`,
+        wallet: `Onyx: 0x71C8…9A4F (T+0)`,
+        aum: `$500,000.00`,
+        status: `Active`
+      },
+      coach: {
+        id: 'usr-cch-01',
+        role: 'coach',
+        roleLabel: `Coach, AD & Medical Staff`,
+        name: `Coach Tramaine Tyson`,
+        email: `ttyson@nycathletics.org`,
+        org: `Head Coach · 24 Smart Ball + Glove Kits`,
+        wallet: `Dept Vault: 0x84B2…11D0`,
+        aum: `$85,000.00`,
+        status: `Approved`
+      },
+      sponsor: {
+        id: 'usr-spn-01',
+        role: 'sponsor',
+        roleLabel: `Corporate Sponsor & Brand Partner`,
+        name: `Jordan Chen (Everlast)`,
+        email: `jchen@everlast-partners.com`,
+        org: `Everlast Combat · 10% Rebate Sweep`,
+        wallet: `Rebate Sweep: 0x99F0…77C3`,
+        aum: `$250,000.00`,
+        status: `Active`
+      }
+    };
+
+    const INITIAL_CRM_CLIENTS = [
+      { id: 'c1', name: `Dashawn Ramel Bledsoe`, email: `dbledsoe@bleie-quant.io`, role: `quant`, roleLabel: `Quant Desk & Hedge Fund`, org: `BLEI-E Quantitative Desk`, joinDate: `2026-09-12`, status: `Active`, walletAum: `$500,000` },
+      { id: 'c2', name: `Dr. Elena Rostova`, email: `erostova@gsb.columbia.edu`, role: `faculty`, roleLabel: `Academic Lab & B-School Faculty`, org: `Columbia SPS (COLUMBIA-SPS-2026)`, joinDate: `2026-09-18`, status: `Approved`, walletAum: `$25,000 ARR` },
+      { id: 'c3', name: `Marcus Vance`, email: `m.vance@columbia.edu`, role: `athlete`, roleLabel: `Student-Athlete & Youth Recruit`, org: `Columbia Boxing · #14`, joinDate: `2026-10-02`, status: `Active`, walletAum: `$18,450 Trust` },
+      { id: 'c4', name: `Coach Tramaine Tyson`, email: `ttyson@nycathletics.org`, role: `coach`, roleLabel: `Coach, AD & Medical Staff`, org: `UPenn / NYC Metro Club`, joinDate: `2026-10-14`, status: `Approved`, walletAum: `$85,000 Kit` },
+      { id: 'c5', name: `Jordan Chen`, email: `jchen@everlast-partners.com`, role: `sponsor`, roleLabel: `Corporate Sponsor & Brand Partner`, org: `Everlast Combat Underwriting`, joinDate: `2026-10-21`, status: `Active`, walletAum: `$250,000 Sweep` },
+      { id: 'c6', name: `Prof. William Mell`, email: `wmell@nyu-courant.edu`, role: `faculty`, roleLabel: `Academic Lab & B-School Faculty`, org: `NYU Courant Institute`, joinDate: `2026-11-01`, status: `Pending`, walletAum: `$24,000 ARR` },
+      { id: 'c7', name: `Sofia Alverez`, email: `salverez@howard.edu`, role: `athlete`, roleLabel: `Student-Athlete & Youth Recruit`, org: `Howard Univ. Team Handball #7`, joinDate: `2026-11-08`, status: `Active`, walletAum: `$9,200 Trust` },
+      { id: 'c8', name: `Victor Sterling`, email: `vsterling@hudsonalpha.com`, role: `quant`, roleLabel: `Quant Desk & Hedge Fund`, org: `Hudson Alpha SCOC Desk`, joinDate: `2026-11-15`, status: `Pending`, walletAum: `$320,000` },
+      { id: 'c9', name: `Hannah Brooks`, email: `hbrooks@nike-connected.com`, role: `sponsor`, roleLabel: `Corporate Sponsor & Brand Partner`, org: `Nike Connected Sports`, joinDate: `2026-11-19`, status: `Approved`, walletAum: `$400,000 Sweep` }
+    ];
+
+    const ASSETS_DATA = {
+      'HOOP': {
+        symbol: `$HOOP`, name: `Basketball Performance Index`, sport: `Basketball`,
+        marketPrice: 40.00, modelPrice: 58.50, deltaPct: 4.82,
+        candles: [
+          { o: 41.0, h: 44.2, l: 39.5, c: 42.8, label: `Q1 04:00` },
+          { o: 42.8, h: 46.1, l: 41.2, c: 45.4, label: `Q1 08:00` },
+          { o: 45.4, h: 49.0, l: 43.0, c: 45.2, label: `Q2 03:00` },
+          { o: 45.2, h: 52.5, l: 44.1, c: 50.8, label: `Q2 09:00` },
+          { o: 50.8, h: 53.0, l: 43.5, c: 50.6, label: `Q3 05:00` },
+          { o: 50.6, h: 59.8, l: 49.9, c: 58.5, label: `Q4 LIVE` }
+        ]
+      },
+      'BOX-STRIKE': {
+        symbol: `$BOX-STRIKE`, name: `Boxing Combat Strike Index`, sport: `Boxing (NEW ORG)`,
+        marketPrice: 52.00, modelPrice: 67.40, deltaPct: 6.15,
+        candles: [
+          { o: 48.0, h: 51.0, l: 47.0, c: 50.2, label: `R1` },
+          { o: 50.2, h: 55.4, l: 49.8, c: 54.6, label: `R2` },
+          { o: 54.6, h: 56.2, l: 48.1, c: 54.4, label: `R3` },
+          { o: 54.4, h: 61.5, l: 53.9, c: 60.1, label: `R4` },
+          { o: 60.1, h: 63.0, l: 55.2, c: 60.0, label: `R5` },
+          { o: 60.0, h: 69.2, l: 59.1, c: 67.4, label: `R6 LIVE` }
+        ]
+      },
+      'HNDL-6M': {
+        symbol: `$HNDL-6M`, name: `Team Handball 6m Crease Index`, sport: `Team Handball`,
+        marketPrice: 34.50, modelPrice: 43.20, deltaPct: 2.94,
+        candles: [
+          { o: 32.0, h: 35.1, l: 31.4, c: 34.2, label: `10:00` },
+          { o: 34.2, h: 37.8, l: 33.9, c: 37.1, label: `20:00` },
+          { o: 37.1, h: 38.4, l: 34.0, c: 37.0, label: `30:00` },
+          { o: 37.0, h: 41.6, l: 36.5, c: 40.8, label: `40:00` },
+          { o: 40.8, h: 44.5, l: 39.8, c: 43.2, label: `LIVE` }
+        ]
+      },
+      'RUGBY-GLOU': {
+        symbol: `$RUGBY-GLOU`, name: `Gloucester Rugby Collision Index`, sport: `Rugby`,
+        marketPrice: 61.00, modelPrice: 57.80, deltaPct: -1.85,
+        candles: [
+          { o: 64.0, h: 66.2, l: 62.5, c: 64.8, label: `15'` },
+          { o: 64.8, h: 65.5, l: 59.0, c: 61.4, label: `30'` },
+          { o: 61.4, h: 63.0, l: 56.2, c: 61.2, label: `45'` },
+          { o: 61.2, h: 62.1, l: 54.4, c: 58.6, label: `60'` },
+          { o: 58.6, h: 60.0, l: 55.1, c: 57.8, label: `72' LIVE` }
+        ]
+      },
+      'FBALL-QB': {
+        symbol: `$FBALL-QB`, name: `American Football Spiral Index`, sport: `American Football`,
+        marketPrice: 74.00, modelPrice: 88.90, deltaPct: 3.40,
+        candles: [
+          { o: 71.0, h: 75.5, l: 70.2, c: 74.8, label: `Q1` },
+          { o: 74.8, h: 80.1, l: 74.1, c: 79.2, label: `Q2` },
+          { o: 79.2, h: 82.0, l: 75.4, c: 79.0, label: `Q3` },
+          { o: 79.0, h: 86.5, l: 78.2, c: 85.1, label: `Q4 06:00` },
+          { o: 85.1, h: 90.4, l: 84.0, c: 88.9, label: `Q4 02:00` }
+        ]
+      }
+    };
+
+    const SPORT_ARRAY_DATA = {
+      boxing: {
+        title: `Boxing (NEW ORG) — 5-Axis Smart Glove & Ringside Telemetry`,
+        note: `Ringside dual-plane Hawk-Eye + Everlast/BIM 5-Axis Smart Gloves active. Last Combo: Hook-Cross (48.4G Peak, 14.2 m/s).`,
+        metrics: [
+          { label: `Punch Force (Peak)`, value: `48.4 G`, delta: `Hook · +6.2G vs Round Avg`, cls: `is-pos` },
+          { label: `Hand Velocity`, value: `14.2 m/s`, delta: `Cross · Jab 11.8 m/s · Uppercut 13.4 m/s`, cls: `is-pos` },
+          { label: `Strike Frequency`, value: `64 / min`, delta: `Classification: 38% Jab, 34% Cross, 28% Hook/Up`, cls: `` },
+          { label: `Head-Impact Decel`, value: `26.1 G`, delta: `Below 45G Concussion Circuit Threshold`, cls: `` },
+          { label: `HR / Ring-Cut Control`, value: `168 BPM`, delta: `Ring-Cut Spatial Coverage: 74.5%`, cls: `is-pos` }
+        ]
+      },
+      handball: {
+        title: `Team Handball — Tech+Ball 7v7 & 6m Crease Telemetry`,
+        note: `Core-v4 IMU tracking zero-bounce resin grip & >15 m/s jump-toss impulse.`,
+        metrics: [
+          { label: `Ball Release Velocity`, value: `16.85 m/s`, delta: `Exceeds 15.0 m/s Kin-Limit Trigger`, cls: `is-pos` },
+          { label: `6m Crease Penetration`, value: `68.4%`, delta: `Jump-Toss Conversion +12%`, cls: `is-pos` },
+          { label: `Resin Grip Stability`, value: `94.2%`, delta: `Zero-Bounce Ground Plane Calibrated`, cls: `` },
+          { label: `Mid-Air Steals (MAS)`, value: `4`, delta: `15% Weight in Composite PS Formula`, cls: `is-pos` },
+          { label: `Pass-to-Catch Ratio`, value: `91.0%`, delta: `21 Completed / 23 Attempted`, cls: `` }
+        ]
+      },
+      rugby: {
+        title: `Rugby — Gloucester Pilot / Gilbert Sportable BLE`,
+        note: `Collision recovery & coalition trust indices (PRI, IRI, BRLI, CTI, SRI) active.`,
+        metrics: [
+          { label: `Scrum Collision Force`, value: `7,420 N`, delta: `Peak Decel: 19.8 G`, cls: `` },
+          { label: `Forward Line-Breaks`, value: `6`, delta: `Team Flow Index (TFi): 0.84`, cls: `is-pos` },
+          { label: `Injury Risk Index (IRI)`, value: `0.38`, delta: `HRV Suppression -11% (Watch Zone)`, cls: `is-neg` },
+          { label: `Sponsor Resonance (SRI)`, value: `0.91`, delta: `Gloucester Activation Live`, cls: `is-pos` },
+          { label: `Recovery Lag (BRLI)`, value: `1.14x`, delta: `Autonomic Strain Nominal`, cls: `` }
+        ]
+      },
+      basketball: {
+        title: `Basketball — Spalding / SportIQ 3D Telemetry`,
+        note: `3D shot arc, rim trajectory, and 7-Factor Composite PS feeding $HOOP.`,
+        metrics: [
+          { label: `3D Backspin Rate`, value: `142 RPM`, delta: `Optimal Shooter Arc Envelope`, cls: `is-pos` },
+          { label: `Release Angle`, value: `47.5°`, delta: `Entry Angle 45.2° · Wobble 1.1°`, cls: `is-pos` },
+          { label: `Composite PS Score`, value: `0.864`, delta: `Threshold T=0.80 Surpassed`, cls: `is-pos` },
+          { label: `Sprint Max Speed`, value: `19.4 mph`, delta: `35 Mins Continuous Court Load`, cls: `` },
+          { label: `Stamina / HRV Index`, value: `81%`, delta: `Center Line Macro Switch Clear`, cls: `` }
+        ]
+      },
+      football: {
+        title: `American Football — Wilson / Nike NextGen C2C`,
+        note: `10Hz RFID & IMU spiral stability paired with FAI / BLSi / RTI financial biometrics.`,
+        metrics: [
+          { label: `Spiral Stability`, value: `89.2%`, delta: `612 RPM · Release 17.4 m/s`, cls: `is-pos` },
+          { label: `Launch Angle`, value: `24.8°`, delta: `Air Yards 38.4 · Drift 0.4 yd`, cls: `is-pos` },
+          { label: `Tackle Deceleration`, value: `22.6 G`, delta: `Fatigue Index (FAI): 0.41`, cls: `` },
+          { label: `NIL Trust Index (NTi)`, value: `0.93`, delta: `Sovereignty Score #731 High`, cls: `is-pos` },
+          { label: `Load Spike (BLSi)`, value: `+8.4%`, delta: `Within Parametric Hedge Band`, cls: `` }
+        ]
+      }
+    };
+
+    const CAMERA_RIGS = {
+      ballercam: {
+        specs: [
+          { label: `Hardware Platform`, value: `iPhone 13 Pro+`, delta: `Model-Specific Frame + Sun Shade` },
+          { label: `Thermal Management`, value: `Built-in Fan`, delta: `Operating Temp: 0°C to 35°C` },
+          { label: `Network & Power`, value: `5G / 5 Mbps Up`, delta: `USB-C / Lightning + Rain-Safe` },
+          { label: `Optical AI Output`, value: `60fps Pose`, delta: `Auto-Track Ball & Athlete Bounding` }
+        ],
+        log: `[BALLERCAM-01] iOS 16+ App Connected · Fan RPM: 3,200 · Temp: 24.2°C\n[STREAM] 5G Upload 8.4 Mbps (Req >=5 Mbps) · Sun Shade Mounted\n[TRACKING] 17 Skeletal Keypoints Locked · Ball Flight Vector Validated`
+      },
+      sandmarc: {
+        specs: [
+          { label: `Ergonomic Rig`, value: `ShiftCam / SmallRig`, delta: `SLR Grip + Two-Handed Cage` },
+          { label: `External Monitor`, value: `Vtrox DCT1`, delta: `USB-C Magnetic Rear-Camera Flip` },
+          { label: `Storage & Power`, value: `Pro SSD + Bank`, delta: `Continuous 4K ProRes Logging` },
+          { label: `Optics`, value: `Sandmarc Tele`, delta: `Sideline Close-Up Kinetic Capture` }
+        ],
+        log: `[MOBILE-STUDIO] SmallRig All-in-One Cage + ShiftCam ProGrip Armed\n[MONITOR] Vtrox DCT1 USB-C Active · External NVMe SSD 1.4 TB Free\n[OPTICS] 2x Telephoto Mounted · Shutter 1/1000s Motion Freeze`
+      },
+      leica: {
+        specs: [
+          { label: `Camera Core`, value: `Leica AI Action`, delta: `On-Device Neural Highlight Clipping` },
+          { label: `Sensor Pipeline`, value: `1-Inch CMOS`, delta: `Low-Light Arena Dynamic Range` },
+          { label: `Auto-Sync`, value: `EventBridge`, delta: `Sub-300ms Clip to Sponsor Portal` },
+          { label: `Ingress`, value: `IP68 Rugged`, delta: `All-Weather Field / Ring Mount` }
+        ],
+        log: `[LEICA-AI] Neural Highlight Engine Armed · EventBridge Webhook Ready\n[CLIP] Detected 48.4G Hook Combo -> Auto-Clipped 6s Replay to Sponsor Feed`
+      },
+      hawkeye: {
+        specs: [
+          { label: `Array Topology`, value: `Dual-Plane 120Hz`, delta: `Pylon & Ringside Multi-Camera` },
+          { label: `Pose Precision`, value: `±1.8 mm 3D`, delta: `29-Joint Biomechanical Mesh` },
+          { label: `End-to-End Latency`, value: `8.3 ms/frame`, delta: `Synced with 100Hz IMU Ball Feed` },
+          { label: `AR Exit Engine`, value: `Active`, delta: `Computes Shot Wobble & Strike Drift` }
+        ],
+        log: `[HAWK-EYE-120] 8 Pylon / Ringside Cameras Genlocked @ 120fps\n[FUSION] Optical Mesh + BLE Ball IMU Drift Delta: 0.31°\n[XR-SYNC] Streaming 3D Capsules to XR Command Center (<500ms SLA)`
+      },
+      visionpro: {
+        specs: [
+          { label: `Spatial OS`, value: `VisionOS 26`, delta: `Native Insta360 & GoPro Support` },
+          { label: `Render Pipeline`, value: `90Hz Spatial`, delta: `VR NIL War Room & 3D Glow Rings` },
+          { label: `Stakeholder Mode`, value: `War Room`, delta: `Multi-Angle Volumetric Court/Ring` },
+          { label: `Compliance`, value: `RBAC Encrypted`, delta: `NCAA / CSC / Title IX Audit Trail` }
+        ],
+        log: `[VISIONOS-26] Spatial Stream Mounted · Insta360 / GoPro Native Bridge\n[WAR-ROOM] Rendering 3D Glow Rings & BiomechFlow Capsule Overlays`
+      }
+    };
+
+    const BIOMETRIC_INDEX_LIBRARY = [
+      { id: `#201`, code: `PRI`, name: `Physical Readiness Index`, domain: `Domain 3: Performance & Recovery`, score: 0.88 },
+      { id: `#231`, code: `IRI`, name: `Injury Risk Index`, domain: `Domain 3: Performance & Recovery`, score: 0.29 },
+      { id: `#511`, code: `TFi`, name: `Team Flow Index`, domain: `Domain 6: Coalition Dynamics`, score: 0.84 },
+      { id: `#501`, code: `CTI`, name: `Coalition Trust Index`, domain: `Domain 6: Coalition Dynamics`, score: 0.91 },
+      { id: `#472`, code: `SRI`, name: `Sponsor Resonance Index`, domain: `Domain 5: Media & Engagement`, score: 0.93 },
+      { id: `#217`, code: `BRLI`, name: `Biometric Recovery Lag Index`, domain: `Domain 3: Performance & Recovery`, score: 0.76 },
+      { id: `#532`, code: `BLi`, name: `Biometric Legacy Index`, domain: `Domain 8: Legacy & Governance`, score: 0.82 },
+      { id: `#591`, code: `BGI`, name: `Biometric Governance Index`, domain: `Domain 8: Legacy & Governance`, score: 0.89 },
+      { id: `#63`, code: `BSI`, name: `Biometric Strength Index`, domain: `Domain 1: Vital Signals`, score: 0.85 },
+      { id: `#295`, code: `BPSi`, name: `Biometric Performance Spike Index`, domain: `Domain 3: Performance & Recovery`, score: 0.90 },
+      { id: `#211`, code: `FAI`, name: `Fatigue Accumulation Index`, domain: `Domain 3: Performance & Recovery`, score: 0.41 },
+      { id: `#239`, code: `BLSi`, name: `Biometric Load Spike Index`, domain: `Domain 3: Performance & Recovery`, score: 0.47 },
+      { id: `#301`, code: `RTI`, name: `Risk Tolerance Index`, domain: `Domain 4: Financial Biometrics`, score: 0.78 },
+      { id: `#381`, code: `NTi`, name: `NIL Trust Index`, domain: `Domain 4: Financial Biometrics`, score: 0.94 },
+      { id: `#385`, code: `BSFi`, name: `Biometric Sponsorship Forecast Index`, domain: `Domain 10: Commercialization`, score: 0.87 },
+      { id: `#731`, code: `BSI-SOV`, name: `Biometric Sovereignty Index`, domain: `Domain 8: Legacy & Governance`, score: 0.92 },
+      { id: `#812`, code: `BOX-G`, name: `Combat Strike Impulse & Guard Index`, domain: `Domain 3: Performance & Recovery`, score: 0.91 }
+    ];
+
+    const BUNDLE_PACKS = [
+      {
+        title: `Rugby Pilot Bundle (Gloucester Activation)`,
+        desc: `Collision recovery, squad flow, and sponsor trust calibration across 10 indices (PRI, IRI, TFi, CTI, SRI, BRLI, BLi, BGI, BSI, BPSi).`,
+        ticker: `$RUGBY-GLOU`,
+        yieldEst: `+14.2% Spread`
+      },
+      {
+        title: `American Football Risk & Sovereignty`,
+        desc: `Neuromuscular load & high-G strain hedged via NIL Trust & Sovereignty indices (FAI, BLSi, RTI, NTi, BCFi, BSFi, BGAI, BSRI, BCRI, BSI).`,
+        ticker: `$FBALL-QB`,
+        yieldEst: `+18.7% Spread`
+      },
+      {
+        title: `Boxing Combat Telemetry Pack (NEW ORG)`,
+        desc: `5-axis smart glove punch G-force, strike classification, head-decel circuit breaker, and ringside dual-plane spatial flow.`,
+        ticker: `$BOX-STRIKE`,
+        yieldEst: `+22.4% Spread`
+      }
+    ];
+
+    // Mutable App State (Persisted via notebookAppApi)
+    let appState = {
+      activeTab: `portfolio`,
+      activeSubPortfolio: `stocks`,
+      activeSport: `boxing`,
+      activeCameraRig: `ballercam`,
+      selectedSymbol: `HOOP`,
+      activeUser: PERSONA_PRESETS.quant,
+      cashBalance: 100000.00,
+      sunkCostResolved: false,
+      sunkCostMessage: `Select an execution path to test capital preservation under biometric distress.`,
+      sunkCostHorizon: 42,
+      gpuReservations: 14,
+      crmFilterStage: `ALL`,
+      positions: {
+        stocks: [
+          { symbol: `$HOOP`, discipline: `Basketball`, units: 250, entry: 40.00, model: 58.50 },
+          { symbol: `$BOX-STRIKE`, discipline: `Boxing (NEW ORG)`, units: 150, entry: 52.00, model: 67.40 },
+          { symbol: `$HNDL-6M`, discipline: `Team Handball`, units: 200, entry: 34.50, model: 43.20 }
+        ],
+        options: [
+          { symbol: `SCOC $HOOP 45C`, discipline: `Basketball SCOC`, units: 10, entry: 4.20, model: 13.50 },
+          { symbol: `SCOC $BOX 55C`, discipline: `Boxing SCOC`, units: 15, entry: 5.10, model: 12.40 }
+        ],
+        shorts: [
+          { symbol: `$RUGBY-GLOU (Short)`, discipline: `Rugby Fatigue`, units: 100, entry: 64.00, model: 57.80 }
+        ]
+      },
+      orders: [
+        { time: `09:32:14`, symbol: `$HOOP`, action: `BUY`, type: `KIN-LIMIT`, qty: 250, price: 40.00, rule: `Velocity >= 15.0 m/s`, status: `Filled` },
+        { time: `10:15:40`, symbol: `$BOX-STRIKE`, action: `BUY`, type: `MARKET`, qty: 150, price: 52.00, rule: `5-Axis Glove Sync`, status: `Filled` },
+        { time: `11:04:08`, symbol: `$RUGBY-GLOU`, action: `SHORT`, type: `BIO-SL`, qty: 100, price: 64.00, rule: `HRV Drop >= 15%`, status: `Armed / Short` }
+      ],
+      crmClients: INITIAL_CRM_CLIENTS.slice(),
+      watchlistCustom: []
+    };
+
+    // ==================== THEME COLOR HELPER FOR CANVAS ====================
+    function getThemeColors() {
+      const s = getComputedStyle(document.documentElement);
+      return {
+        primary: s.getPropertyValue('--primary').trim(),
+        onPrimary: s.getPropertyValue('--on-primary').trim(),
+        outline: s.getPropertyValue('--outline').trim(),
+        outlineVar: s.getPropertyValue('--outline-variant').trim(),
+        secondary: s.getPropertyValue('--secondary').trim(),
+        error: s.getPropertyValue('--error').trim(),
+        tertiary: s.getPropertyValue('--tertiary').trim(),
+        surfaceLow: s.getPropertyValue('--surface-container-low').trim(),
+        onSurface: s.getPropertyValue('--on-surface').trim(),
+        onSurfaceVar: s.getPropertyValue('--on-surface-variant').trim(),
+        data4: s.getPropertyValue('--data-4').trim()
+      };
+    }
+
+    // ==================== PERSISTENCE ====================
+    async function saveState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === 'function') {
+        try {
+          await window.notebookAppApi.setAppState(appState);
+        } catch (e) {
+          // Ignore transient save errors in preview
+        }
+      }
+    }
+
+    async function loadState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+        try {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === 'object') {
+            appState = Object.assign({}, appState, saved);
+          }
+        } catch (e) {
+          // Fallback to defaults
+        }
+      }
+    }
+
+    function showToast(msg, variant) {
+      const el = document.getElementById('global-toast');
+      if (!el) return;
+      el.className = 'status-banner' + (variant === 'pos' ? ' is-pos' : variant === 'err' ? ' is-err' : '');
+      el.innerHTML = `<span>${msg}</span><button type="button" class="btn btn-secondary btn-sm" onclick="hideToast()">Dismiss</button>`;
+      el.style.display = 'flex';
+    }
+    function hideToast() {
+      const el = document.getElementById('global-toast');
+      if (el) el.style.display = 'none';
+    }
+
+    // ==================== NAVIGATION & SESSION ====================
+    function switchTab(tabId) {
+      appState.activeTab = tabId;
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.view-panel').forEach(panel => {
+        panel.classList.toggle('is-active', panel.id === 'tab-' + tabId);
+      });
+      if (tabId === 'trade') renderDojiChart();
+      if (tabId === 'xr-lab') renderXrCanvas();
+      if (tabId === 'admin-crm') {
+        renderFunnel();
+        renderCrmTable();
+      }
+      saveState();
+    }
+
+    function renderSessionBar() {
+      const u = appState.activeUser || PERSONA_PRESETS.quant;
+      const roleEl = document.getElementById('session-role-badge');
+      const nameEl = document.getElementById('session-user-name');
+      const orgEl = document.getElementById('session-user-org');
+      const walletEl = document.getElementById('session-wallet');
+      const selEl = document.getElementById('quick-persona-select');
+
+      if (roleEl) roleEl.textContent = u.roleLabel;
+      if (nameEl) nameEl.textContent = u.name;
+      if (orgEl) orgEl.textContent = u.org;
+      if (walletEl) walletEl.textContent = u.wallet;
+      if (selEl && PERSONA_PRESETS[u.role]) selEl.value = u.role;
+    }
+
+    function switchPersonaQuick(roleKey) {
+      const preset = PERSONA_PRESETS[roleKey];
+      if (!preset) return;
+      appState.activeUser = Object.assign({}, preset);
+      renderSessionBar();
+      showToast(`Switched active session to ${preset.name} (${preset.roleLabel}).`, 'pos');
+      saveState();
+    }
+
+    function signOutSession() {
+      appState.activeUser = {
+        role: 'quant',
+        roleLabel: `Guest Observer`,
+        name: `Unauthenticated Session`,
+        email: `guest@nilmarkets.sim`,
+        org: `Click Sign Up / Onboard or Switch Persona`,
+        wallet: `No Wallet Connected`,
+        status: `Pending`
+      };
+      renderSessionBar();
+      showToast(`Signed out of active multi-tenant session. Use 1-Click Persona Switcher or Sign Up to resume.`, '');
+      saveState();
+    }
+
+    // ==================== SIGN-UP MODAL (5 SEGMENTS) ====================
+    function openSignupModal() {
+      const modal = document.getElementById('signup-modal');
+      if (!modal) return;
+      renderSignupRoleFields();
+      modal.classList.add('is-open');
+    }
+
+    function closeSignupModal() {
+      const modal = document.getElementById('signup-modal');
+      if (modal) modal.classList.remove('is-open');
+    }
+
+    function renderSignupRoleFields() {
+      const roleEl = document.getElementById('su-role');
+      const box = document.getElementById('su-dynamic-fields');
+      const err = document.getElementById('su-error-msg');
+      if (err) err.style.display = 'none';
+      if (!roleEl || !box) return;
+      const role = roleEl.value;
+
+      if (role === 'athlete') {
+        box.innerHTML = `
+          <div class="field">
+            <label for="su-f1">School / Club Name</label>
+            <input type="text" id="su-f1" value="Columbia University Tech+Ball Club">
+          </div>
+          <div class="field">
+            <label for="su-f2">Sport Discipline</label>
+            <select id="su-f2">
+              <option value="Boxing (NEW ORG)">Boxing (NEW ORG)</option>
+              <option value="Team Handball">Team Handball</option>
+              <option value="Rugby">Rugby</option>
+              <option value="Basketball">Basketball</option>
+              <option value="American Football">American Football</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="su-f3">Position / Weight Class</label>
+            <input type="text" id="su-f3" value="Welterweight (147 lb) / Guard">
+          </div>
+          <div class="field">
+            <label for="su-f4">Jersey #</label>
+            <input type="text" id="su-f4" value="#24">
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="su-f5">Non-Custodial Sovereign Web3 / J.P. Morgan Onyx Wallet</label>
+            <input type="text" id="su-f5" value="0x4A92C81B770F12E9084A11F3">
+          </div>`;
+      } else if (role === 'faculty') {
+        box.innerHTML = `
+          <div class="field">
+            <label for="su-f1">Institution (.edu Verified)</label>
+            <input type="text" id="su-f1" value="Columbia University SPS">
+          </div>
+          <div class="field">
+            <label for="su-f2">Course Code</label>
+            <input type="text" id="su-f2" value="COLUMBIA-SPS-2026">
+          </div>
+          <div class="field">
+            <label for="su-f3">Cohort Student Roster Capacity</label>
+            <input type="number" id="su-f3" value="120" min="10">
+          </div>`;
+      } else if (role === 'quant') {
+        box.innerHTML = `
+          <div class="field">
+            <label for="su-f1">Quant Firm / Hedge Fund</label>
+            <input type="text" id="su-f1" value="Pennant Biometric Capital">
+          </div>
+          <div class="field">
+            <label for="su-f2">Desk ID</label>
+            <input type="text" id="su-f2" value="SCOC-ARB-04">
+          </div>
+          <div class="field">
+            <label for="su-f3">API Subscription Tier</label>
+            <select id="su-f3">
+              <option value="$1,500/mo Starter">$1,500/mo REST Starter</option>
+              <option value="$5,000/mo Pro">$5,000/mo WebSocket Pro</option>
+              <option value="$10,000/mo Alpha">$10,000/mo Institutional RDMA</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="su-f4">Provisioned WebSocket / REST Key</label>
+            <input type="text" id="su-f4" value="bleie_live_${Math.random().toString(36).slice(2, 10)}" readonly>
+          </div>`;
+      } else if (role === 'coach') {
+        box.innerHTML = `
+          <div class="field">
+            <label for="su-f1">Staff Role</label>
+            <select id="su-f1">
+              <option value="Head Coach">Head Coach</option>
+              <option value="Athletic Director">Athletic Director</option>
+              <option value="Medical / Sports Medicine">Medical Staff / ATC</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="su-f2">Athletic Department / Club</label>
+            <input type="text" id="su-f2" value="NYC Metro Collegiate Athletics">
+          </div>
+          <div class="field">
+            <label for="su-f3">Hardware Kit Fleet Allocation (Balls/Gloves/Vests)</label>
+            <input type="number" id="su-f3" value="30" min="1">
+          </div>`;
+      } else if (role === 'sponsor') {
+        box.innerHTML = `
+          <div class="field">
+            <label for="su-f1">Corporate Brand Partner</label>
+            <select id="su-f1">
+              <option value="Nike">Nike</option>
+              <option value="Adidas">Adidas</option>
+              <option value="Puma">Puma</option>
+              <option value="Wilson">Wilson</option>
+              <option value="Everlast">Everlast</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="su-f2">Underwriting Budget ($)</label>
+            <input type="number" id="su-f2" value="150000" step="10000">
+          </div>
+          <div class="field">
+            <label for="su-f3">10% Rebate Sweep Account ID</label>
+            <input type="text" id="su-f3" value="SWEEP-10PCT-ONYX-882">
+          </div>`;
+      }
+    }
+
+    function submitRoleSignup() {
+      const role = document.getElementById('su-role').value;
+      const name = (document.getElementById('su-name').value || '').trim();
+      const email = (document.getElementById('su-email').value || '').trim();
+      const errEl = document.getElementById('su-error-msg');
+      const f1 = document.getElementById('su-f1') ? document.getElementById('su-f1').value.trim() : '';
+      const f2 = document.getElementById('su-f2') ? document.getElementById('su-f2').value.trim() : '';
+      const f3 = document.getElementById('su-f3') ? document.getElementById('su-f3').value.trim() : '';
+      const f4 = document.getElementById('su-f4') ? document.getElementById('su-f4').value.trim() : '';
+      const f5 = document.getElementById('su-f5') ? document.getElementById('su-f5').value.trim() : '';
+
+      if (!name || !email || !email.includes('@')) {
+        if (errEl) {
+          errEl.textContent = `Please provide a valid Full Name and Email Address before onboarding.`;
+          errEl.style.display = 'flex';
+        }
+        return;
+      }
+      if (role === 'faculty' && !email.toLowerCase().endsWith('.edu')) {
+        if (errEl) {
+          errEl.textContent = `Academic Labs & Faculty require a verified .edu institutional email address.`;
+          errEl.style.display = 'flex';
+        }
+        return;
+      }
+
+      const roleLabels = {
+        athlete: `Student-Athlete & Youth Recruit`,
+        faculty: `Academic Lab & B-School Faculty`,
+        quant: `Quant Desk & Hedge Fund`,
+        coach: `Coach, AD & Medical Staff`,
+        sponsor: `Corporate Sponsor & Brand Partner`
+      };
+
+      let orgSummary = f1;
+      let walletSummary = `Onyx: 0x92D1…3B7E`;
+      let aumSummary = `$25,000`;
+
+      if (role === 'athlete') {
+        orgSummary = `${f1} · ${f2} (${f3} ${f4})`;
+        walletSummary = `Onyx: ${f5.slice(0, 12)}…`;
+        aumSummary = `$5,000 L2E`;
+      } else if (role === 'faculty') {
+        orgSummary = `${f1} · ${f2} (${f3} seats)`;
+        walletSummary = `Site License Verified`;
+        aumSummary = `$25,000 ARR`;
+      } else if (role === 'quant') {
+        orgSummary = `${f1} · ${f2} (${f3})`;
+        walletSummary = `API Key: ${f4}`;
+        aumSummary = `$500,000 AUM`;
+      } else if (role === 'coach') {
+        orgSummary = `${f1} · ${f2} (${f3} Kits)`;
+        walletSummary = `Fleet Vault Active`;
+        aumSummary = `$45,000 Fleet`;
+      } else if (role === 'sponsor') {
+        orgSummary = `${f1} Partner · Sweep ${f3}`;
+        walletSummary = `Rebate Sweep: ${f3}`;
+        aumSummary = `$${Number(f2 || 100000).toLocaleString()}`;
+      }
+
+      const newUser = {
+        id: `usr-${Date.now()}`,
+        name,
+        email,
+        role,
+        roleLabel: roleLabels[role],
+        org: orgSummary,
+        wallet: walletSummary,
+        joinDate: `2026-11-22`,
+        status: role === 'quant' ? `Pending` : `Active`,
+        walletAum: aumSummary
+      };
+
+      appState.crmClients.unshift(newUser);
+      appState.activeUser = newUser;
+      renderSessionBar();
+      renderCrmTable();
+      renderFunnel();
+      closeSignupModal();
+      showToast(`Onboarded ${name} (${roleLabels[role]}) and added record to Executive Admin CRM.`, 'pos');
+      saveState();
+    }
+
+    // ==================== TICKER & PORTFOLIO ====================
+    function renderTickerStrip() {
+      const el = document.getElementById('ticker-strip');
+      if (!el) return;
+      el.innerHTML = Object.values(ASSETS_DATA).map(a => {
+        const cls = a.deltaPct >= 0 ? 'pos' : 'neg';
+        const sign = a.deltaPct >= 0 ? '+' : '';
+        return `<span class="ticker-chip"><strong>${a.symbol}</strong> $${a.modelPrice.toFixed(2)} <span class="${cls}">${sign}${a.deltaPct.toFixed(2)}%</span></span>`;
+      }).join('');
+    }
+
+    function switchSubPortfolio(sub) {
+      appState.activeSubPortfolio = sub;
+      document.querySelectorAll('[data-subport]').forEach(b => {
+        b.classList.toggle('is-active', b.dataset.subport === sub);
+      });
+      renderPortfolio();
+      saveState();
+    }
+
+    function renderPortfolio() {
+      const tbody = document.getElementById('portfolio-tbody');
+      if (!tbody) return;
+      const list = appState.positions[appState.activeSubPortfolio] || [];
+      let totalUnrealized = 0;
+
+      ['stocks', 'options', 'shorts'].forEach(k => {
+        (appState.positions[k] || []).forEach(p => {
+          const mult = k === 'options' ? 100 : 1;
+          const diff = k === 'shorts' ? (p.entry - p.model) : (p.model - p.entry);
+          totalUnrealized += diff * p.units * mult;
+        });
+      });
+
+      const totalEquity = appState.cashBalance + totalUnrealized;
+      const buyingPower = totalEquity * 5;
+      const eqEl = document.getElementById('kpi-total-equity');
+      const pnlEl = document.getElementById('kpi-total-pnl');
+      const bpEl = document.getElementById('kpi-buying-power');
+      const cashEl = document.getElementById('kpi-cash-balance');
+
+      if (eqEl) eqEl.textContent = `$${totalEquity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (bpEl) bpEl.textContent = `$${buyingPower.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (cashEl) cashEl.textContent = `Cash: $${appState.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · 5x Facility`;
+      if (pnlEl) {
+        const pct = (totalUnrealized / 100000) * 100;
+        const sign = totalUnrealized >= 0 ? '+' : '';
+        pnlEl.textContent = `${sign}$${totalUnrealized.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${sign}${pct.toFixed(2)}%)`;
+        pnlEl.className = 'figure-delta ' + (totalUnrealized >= 0 ? 'is-pos' : 'is-neg');
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7">No open positions in this sub-portfolio. Place a trade on the Trade Desk to populate.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((p, idx) => {
+        const mult = appState.activeSubPortfolio === 'options' ? 100 : 1;
+        const diff = appState.activeSubPortfolio === 'shorts' ? (p.entry - p.model) : (p.model - p.entry);
+        const pnl = diff * p.units * mult;
+        const badgeCls = pnl >= 0 ? 'badge-pos' : 'badge-err';
+        const sign = pnl >= 0 ? '+' : '';
+        return `
+          <tr>
+            <td><strong>${p.symbol}</strong></td>
+            <td>${p.discipline}</td>
+            <td class="num">${p.units}</td>
+            <td class="num">$${p.entry.toFixed(2)}</td>
+            <td class="num">$${p.model.toFixed(2)}</td>
+            <td class="num"><span class="badge ${badgeCls}">${sign}$${pnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></td>
+            <td><button type="button" class="btn btn-secondary btn-sm" onclick="closePosition('${appState.activeSubPortfolio}', ${idx})">Settle / Close</button></td>
+          </tr>`;
+      }).join('');
+    }
+
+    function closePosition(sub, idx) {
+      const list = appState.positions[sub];
+      if (!list || !list[idx]) return;
+      const p = list[idx];
+      const mult = sub === 'options' ? 100 : 1;
+      const diff = sub === 'shorts' ? (p.entry - p.model) : (p.model - p.entry);
+      const realized = diff * p.units * mult;
+      appState.cashBalance += realized;
+      list.splice(idx, 1);
+
+      const wfSpread = document.getElementById('waterfall-spread');
+      const wfUnits = document.getElementById('waterfall-units');
+      if (wfSpread && wfUnits && realized > 0) {
+        wfSpread.value = Math.abs(diff).toFixed(2);
+        wfUnits.value = p.units * mult;
+        recalcWaterfall();
+      }
+
+      renderPortfolio();
+      showToast(`Settled ${p.symbol} via J.P. Morgan Onyx T+0 rails. Realized P&L: ${realized >= 0 ? '+' : ''}$${realized.toFixed(2)}.`, realized >= 0 ? 'pos' : 'err');
+      saveState();
+    }
+
+    function recalcWaterfall() {
+      const spread = parseFloat(document.getElementById('waterfall-spread').value) || 0;
+      const units = parseFloat(document.getElementById('waterfall-units').value) || 0;
+      const pool = Math.max(0, spread * units);
+      const fmt = v => `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const elTotal = document.getElementById('waterfall-pool-total');
+      if (elTotal) elTotal.textContent = fmt(pool);
+      if (document.getElementById('wf-60')) document.getElementById('wf-60').textContent = fmt(pool * 0.60);
+      if (document.getElementById('wf-20')) document.getElementById('wf-20').textContent = fmt(pool * 0.20);
+      if (document.getElementById('wf-10a')) document.getElementById('wf-10a').textContent = fmt(pool * 0.10);
+      if (document.getElementById('wf-10b')) document.getElementById('wf-10b').textContent = fmt(pool * 0.10);
+    }
+
+    // Sunk Cost Challenge
+    function resolveSunkCost(choice) {
+      const out = document.getElementById('sunk-cost-outcome');
+      const fill = document.getElementById('sunk-horizon-fill');
+      const pct = document.getElementById('sunk-horizon-pct');
+      if (choice === 'rational') {
+        appState.sunkCostHorizon = 78;
+        appState.sunkCostMessage = `RATIONAL EXIT EXECUTED: Absorbed -$4,200 drawdown, preserved $20,800 L2E capital, and reallocated into $HOOP (+12% recovery).`;
+        if (out) { out.className = 'status-banner is-pos'; out.innerHTML = `<span>${appState.sunkCostMessage}</span>`; }
+      } else {
+        appState.sunkCostHorizon = 0;
+        appState.sunkCostMessage = `SUNK COST TRAP TRIGGERED: Volatility Horizon decayed to 0%. Capital reserve frozen and sequential ledger scan flagged an immediate portfolio wipeout (-$35,000).`;
+        if (out) { out.className = 'status-banner is-err'; out.innerHTML = `<span>${appState.sunkCostMessage}</span>`; }
+      }
+      if (fill) fill.style.width = appState.sunkCostHorizon + '%';
+      if (pct) pct.textContent = appState.sunkCostHorizon + '%';
+      saveState();
+    }
+
+    function resetSunkCost() {
+      appState.sunkCostHorizon = 42;
+      appState.sunkCostMessage = `Select an execution path to test capital preservation under biometric distress.`;
+      const out = document.getElementById('sunk-cost-outcome');
+      const fill = document.getElementById('sunk-horizon-fill');
+      const pct = document.getElementById('sunk-horizon-pct');
+      if (out) { out.className = 'status-banner'; out.innerHTML = `<span>${appState.sunkCostMessage}</span>`; }
+      if (fill) fill.style.width = '42%';
+      if (pct) pct.textContent = '42%';
+      saveState();
+    }
+
+    // ==================== TRADE DESK & BIOMETRIC DOJI CHART ====================
+    function selectTradeSymbol(sym) {
+      appState.selectedSymbol = sym;
+      const a = ASSETS_DATA[sym] || ASSETS_DATA.HOOP;
+      const strip = document.getElementById('trade-quote-strip');
+      if (strip) {
+        const spr = (a.modelPrice - a.marketPrice).toFixed(2);
+        strip.innerHTML = `<span>Market: <strong>$${a.marketPrice.toFixed(2)}</strong> · Model-NIL: <strong>$${a.modelPrice.toFixed(2)}</strong> · Spread: <strong>${spr >= 0 ? '+' : ''}$${spr}</strong></span>`;
+      }
+      const priceInput = document.getElementById('order-price');
+      if (priceInput) priceInput.value = a.modelPrice.toFixed(2);
+      updateOrderPreview();
+      renderDojiChart();
+    }
+
+    function renderDojiChart() {
+      const canvas = document.getElementById('doji-chart-canvas');
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.parentElement ? canvas.parentElement.clientWidth - 16 : 640;
+      const h = 340;
+      canvas.width = Math.max(300, w) * dpr;
+      canvas.height = h * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const cw = Math.max(300, w);
+      const c = getThemeColors();
+
+      ctx.fillStyle = c.surfaceLow;
+      ctx.fillRect(0, 0, cw, h);
+
+      const asset = ASSETS_DATA[appState.selectedSymbol] || ASSETS_DATA.HOOP;
+      const candles = asset.candles;
+      const padL = 54, padR = 24, padT = 24, padB = 36;
+      const plotW = cw - padL - padR;
+      const plotH = h - padT - padB;
+
+      let minP = Infinity, maxP = -Infinity;
+      candles.forEach(d => {
+        if (d.l < minP) minP = d.l;
+        if (d.h > maxP) maxP = d.h;
+      });
+      minP = Math.floor(minP - 2);
+      maxP = Math.ceil(maxP + 2);
+      const yOf = val => padT + plotH - ((val - minP) / (maxP - minP || 1)) * plotH;
+
+      // Gridlines
+      ctx.strokeStyle = c.outlineVar;
+      ctx.lineWidth = 1;
+      ctx.font = '11px IBM Plex Mono, monospace';
+      ctx.fillStyle = c.onSurfaceVar;
+      for (let i = 0; i <= 4; i++) {
+        const val = minP + ((maxP - minP) * i) / 4;
+        const y = yOf(val);
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(cw - padR, y);
+        ctx.stroke();
+        ctx.fillText(`$${val.toFixed(1)}`, 6, y + 4);
+      }
+
+      // Market-NIL Strike reference line
+      const strikeY = yOf(asset.marketPrice);
+      ctx.save();
+      ctx.strokeStyle = c.outline;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(padL, strikeY);
+      ctx.lineTo(cw - padR, strikeY);
+      ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle = c.tertiary;
+      ctx.fillText(`Market Strike $${asset.marketPrice.toFixed(2)}`, padL + 6, strikeY - 5);
+
+      // Candles
+      const step = plotW / candles.length;
+      const bodyW = Math.min(34, step * 0.48);
+
+      candles.forEach((d, idx) => {
+        const cx = padL + step * idx + step / 2;
+        const yHigh = yOf(d.h);
+        const yLow = yOf(d.l);
+        const yOpen = yOf(d.o);
+        const yClose = yOf(d.c);
+        const isDoji = Math.abs(d.c - d.o) <= 0.45;
+        const isBull = d.c >= d.o;
+        const color = isDoji ? c.tertiary : (isBull ? c.secondary : c.error);
+
+        // Wicks
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, yHigh);
+        ctx.lineTo(cx, yLow);
+        ctx.stroke();
+
+        // Body
+        ctx.fillStyle = color;
+        const top = Math.min(yOpen, yClose);
+        const bh = Math.max(3, Math.abs(yClose - yOpen));
+        ctx.fillRect(cx - bodyW / 2, top, bodyW, bh);
+
+        if (isDoji) {
+          ctx.fillStyle = c.error;
+          ctx.fillText(`DOJI`, cx - 14, yLow + 13);
+        }
+
+        // X label
+        ctx.fillStyle = c.onSurfaceVar;
+        ctx.fillText(d.label, cx - 18, h - 10);
+      });
+    }
+
+    function simulateCandleEvent(kind) {
+      const asset = ASSETS_DATA[appState.selectedSymbol] || ASSETS_DATA.HOOP;
+      const last = asset.candles[asset.candles.length - 1];
+      const badge = document.getElementById('doji-signal-badge');
+      let next;
+
+      if (kind === 'impulse') {
+        const newC = +(last.c + 3.8).toFixed(2);
+        next = { o: last.c, h: +(newC + 2.6).toFixed(2), l: +(last.c - 0.5).toFixed(2), c: newC, label: `NOW` };
+        asset.modelPrice = newC;
+        asset.deltaPct = +(asset.deltaPct + 2.4).toFixed(2);
+        if (badge) { badge.className = 'badge badge-pos'; badge.textContent = `Signal: Upper Wick Kinetic Surge (>15 m/s)`; }
+      } else if (kind === 'fatigue') {
+        next = { o: last.c, h: +(last.c + 1.1).toFixed(2), l: +(last.c - 6.8).toFixed(2), c: +(last.c - 0.2).toFixed(2), label: `DOJI` };
+        asset.modelPrice = next.c;
+        asset.deltaPct = +(asset.deltaPct - 3.6).toFixed(2);
+        if (badge) { badge.className = 'badge badge-err'; badge.textContent = `Alert: Fatigue-Doji (HR >190 BPM / Bio-SL Armed)`; }
+      } else {
+        const newC = +(last.c + 1.9).toFixed(2);
+        next = { o: last.c, h: +(newC + 1.0).toFixed(2), l: +(last.c - 0.8).toFixed(2), c: newC, label: `REC` };
+        asset.modelPrice = newC;
+        asset.deltaPct = +(asset.deltaPct + 1.2).toFixed(2);
+        if (badge) { badge.className = 'badge badge-navy'; badge.textContent = `Signal: Center Line HRR Recovery Confirmed`; }
+      }
+
+      asset.candles.push(next);
+      if (asset.candles.length > 9) asset.candles.shift();
+      selectTradeSymbol(appState.selectedSymbol);
+      renderTickerStrip();
+      renderGpuQuotes();
+    }
+
+    function updateOrderPreview() {
+      const qty = parseFloat(document.getElementById('order-qty').value) || 0;
+      const price = parseFloat(document.getElementById('order-price').value) || 0;
+      const notional = qty * price;
+      const margin = notional * 0.20;
+      const el = document.getElementById('order-notional-preview');
+      if (el) el.textContent = `$${notional.toLocaleString(undefined, { minimumFractionDigits: 2 })} ($${margin.toLocaleString(undefined, { minimumFractionDigits: 2 })} Margin)`;
+    }
+
+    function submitBrokerageOrder() {
+      const sym = document.getElementById('trade-symbol-select').value;
+      const action = document.getElementById('order-action').value;
+      const type = document.getElementById('order-type').value;
+      const qty = parseInt(document.getElementById('order-qty').value, 10) || 0;
+      const price = parseFloat(document.getElementById('order-price').value) || 0;
+      const rule = document.getElementById('order-bio-rule').value.trim();
+      const fb = document.getElementById('order-feedback');
+      const asset = ASSETS_DATA[sym] || ASSETS_DATA.HOOP;
+
+      if (qty <= 0 || price <= 0) {
+        if (fb) { fb.className = 'status-banner is-err'; fb.textContent = `Enter valid positive units and price.`; fb.style.display = 'flex'; }
+        return;
+      }
+
+      const marginRequired = qty * price * 0.20;
+      if (marginRequired > appState.cashBalance * 5) {
+        if (fb) { fb.className = 'status-banner is-err'; fb.textContent = `Insufficient 5x buying power for this order.`; fb.style.display = 'flex'; }
+        return;
+      }
+
+      const now = new Date();
+      const tStr = now.toTimeString().slice(0, 8);
+      const isConditional = type !== 'MARKET';
+
+      appState.orders.unshift({
+        time: tStr,
+        symbol: asset.symbol,
+        action,
+        type,
+        qty,
+        price,
+        rule: rule || `Standard Execution`,
+        status: isConditional ? `Armed (3-Cycle)` : `Filled`
+      });
+
+      if (action === 'BUY') {
+        appState.positions.stocks.push({ symbol: asset.symbol, discipline: asset.sport, units: qty, entry: price, model: asset.modelPrice });
+      } else if (action === 'SHORT') {
+        appState.positions.shorts.push({ symbol: `${asset.symbol} (Short)`, discipline: asset.sport, units: qty, entry: price, model: asset.modelPrice });
+      }
+
+      renderOrdersTable();
+      renderPortfolio();
+      if (fb) {
+        fb.className = 'status-banner is-pos';
+        fb.textContent = `${type} ${action} ${qty} ${asset.symbol} @ $${price.toFixed(2)} routed to Bledsoe OMS.`;
+        fb.style.display = 'flex';
+      }
+      saveState();
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('orders-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = appState.orders.map(o => `
+        <tr>
+          <td style="font-family:var(--font-label);">${o.time}</td>
+          <td><strong>${o.symbol}</strong></td>
+          <td>${o.action}</td>
+          <td><span class="badge badge-navy">${o.type}</span></td>
+          <td class="num">${o.qty}</td>
+          <td class="num">$${Number(o.price).toFixed(2)}</td>
+          <td>${o.rule}</td>
+          <td><span class="badge ${o.status.includes('Filled') ? 'badge-pos' : 'badge-warn'}">${o.status}</span></td>
+        </tr>`).join('');
+    }
+
+    // ==================== HARDWARE STREAM: BLE 5.3 + C2C + BOXING + CAMERAS + GPU ====================
+    function updateBleDeviceSelection() {
+      const sel = document.getElementById('ble-device-select');
+      const rssiTxt = document.getElementById('ble-rssi-text');
+      if (!sel || !rssiTxt) return;
+      const rssiMap = {
+        'tb-core-v4': `-52 dBm · 100 Hz`,
+        'box-glove-lr': `-46 dBm · 100 Hz`,
+        'gilbert-rugby': `-59 dBm · 100 Hz`,
+        'spalding-iq': `-61 dBm · 100 Hz`,
+        'lilygo-tdeck': `-44 dBm · 8-15s Edge`
+      };
+      rssiTxt.textContent = rssiMap[sel.value] || `-54 dBm · 100 Hz`;
+    }
+
+    async function connectBleHardware() {
+      const devSel = document.getElementById('ble-device-select');
+      const banner = document.getElementById('ble-status-banner');
+      const devName = devSel ? devSel.options[devSel.selectedIndex].text : `Tech+Ball Core-v4`;
+
+      if (navigator.bluetooth && typeof navigator.bluetooth.requestDevice === 'function') {
+        try {
+          const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['battery_service', 'heart_rate']
+          });
+          if (banner) {
+            banner.className = 'status-banner is-pos';
+            banner.innerHTML = `<span>Status: <strong>BLE 5.3 GATT Paired (${device.name || devName})</strong> · Live Hardware Stream Active T+0</span>`;
+          }
+          return;
+        } catch (err) {
+          // Graceful fallback inside sandboxed viewer
+        }
+      }
+      if (banner) {
+        banner.className = 'status-banner is-pos';
+        banner.innerHTML = `<span>Status: <strong>CONNECTED · STREAMING ACTIVE T+0</strong> (${devName}) · Web Bluetooth GATT Edge Session Active</span>`;
+      }
+    }
+
+    function runZeroBiasCalibration() {
+      const banner = document.getElementById('ble-status-banner');
+      if (!banner) return;
+      banner.className = 'status-banner is-pos';
+      banner.innerHTML = `<span><strong>3-Step Calibration Complete:</strong> 1) UUID Paired → 2) 3-Axis Accelerometer/Gyro Zero-Bias Ground Plane Locked → 3) 100 Hz Packets Streaming.</span>`;
+      pulseSportTelemetry();
+    }
+
+    function refreshC2CPayload() {
+      const prov = document.getElementById('c2c-provider').value;
+      const consoleEl = document.getElementById('c2c-json-console');
+      if (!consoleEl) return;
+      const sampleMap = {
+        adidas: { provider: `Adidas Connected Football`, endpoint: `POST /api/v1/partner/ballTelemetry`, velocity_ms: 17.42, spinRate_rpm: 584, trajectoryAngle_deg: 26.4, impactForce_norm: 0.87, compositePS: 0.86 },
+        nike: { provider: `Nike / Wilson NextGen Cloud`, endpoint: `POST /api/v1/partner/ballTelemetry`, velocity_ms: 18.10, spinRate_rpm: 618, trajectoryAngle_deg: 24.1, impactForce_norm: 0.91, compositePS: 0.89 },
+        sportable: { provider: `Gilbert (Sportable Cloud API)`, endpoint: `POST /api/v1/partner/ballTelemetry`, velocity_ms: 15.60, spinRate_rpm: 412, trajectoryAngle_deg: 31.0, impactForce_norm: 0.94, compositePS: 0.82 },
+        sportiq: { provider: `Spalding Smart Ball (SportIQ)`, endpoint: `POST /api/v1/partner/ballTelemetry`, velocity_ms: 8.95, spinRate_rpm: 146, trajectoryAngle_deg: 47.8, impactForce_norm: 0.62, compositePS: 0.88 },
+        dribbleup: { provider: `Dribbleup Smart Ball Stream`, endpoint: `POST /api/v1/partner/ballTelemetry`, velocity_ms: 11.20, spinRate_rpm: 310, trajectoryAngle_deg: 18.5, impactForce_norm: 0.71, compositePS: 0.81 }
+      };
+      const payload = sampleMap[prov] || sampleMap.adidas;
+      payload.timestamp = new Date().toISOString();
+      payload.normalizedSchema = `/stream/ballMetrics`;
+      consoleEl.textContent = JSON.stringify(payload, null, 2);
+    }
+
+    function streamHostedBallFeed() {
+      refreshC2CPayload();
+      showToast(`Hosted partner C2C telemetry normalized into /stream/ballMetrics and Model-NIL pricing updated.`, 'pos');
+    }
+
+    function selectSportArray(sport) {
+      appState.activeSport = sport;
+      document.querySelectorAll('[data-sport]').forEach(b => {
+        b.classList.toggle('is-active', b.dataset.sport === sport);
+      });
+      renderSportArray();
+    }
+
+    function renderSportArray() {
+      const data = SPORT_ARRAY_DATA[appState.activeSport] || SPORT_ARRAY_DATA.boxing;
+      const grid = document.getElementById('sport-metrics-grid');
+      const note = document.getElementById('sport-detail-note');
+      if (grid) {
+        grid.innerHTML = data.metrics.map(m => `
+          <div class="figure-card">
+            <span class="figure-label">${m.label}</span>
+            <span class="figure-value">${m.value}</span>
+            <span class="figure-delta ${m.cls}">${m.delta}</span>
+          </div>`).join('');
+      }
+      if (note) note.innerHTML = `<span><strong>${data.title}:</strong> ${data.note}</span>`;
+    }
+
+    function pulseSportTelemetry() {
+      if (appState.activeSport === 'boxing') {
+        const combos = [`Jab`, `Cross`, `Lead Hook`, `Rear Uppercut`];
+        const pick = combos[Math.floor(Math.random() * combos.length)];
+        const gForce = (34 + Math.random() * 19).toFixed(1);
+        const vel = (11.5 + Math.random() * 4.2).toFixed(1);
+        SPORT_ARRAY_DATA.boxing.metrics[0].value = `${gForce} G`;
+        SPORT_ARRAY_DATA.boxing.metrics[0].delta = `${pick} · Live Sparring Telemetry`;
+        SPORT_ARRAY_DATA.boxing.metrics[1].value = `${vel} m/s`;
+        SPORT_ARRAY_DATA.boxing.note = `Live 5-Axis Glove Burst: ${pick} recorded ${gForce}G @ ${vel} m/s. Head-impact decel nominal.`;
+        ASSETS_DATA['BOX-STRIKE'].modelPrice = +(65 + Math.random() * 6).toFixed(2);
+      } else if (appState.activeSport === 'handball') {
+        const vel = (15.2 + Math.random() * 2.4).toFixed(2);
+        SPORT_ARRAY_DATA.handball.metrics[0].value = `${vel} m/s`;
+        ASSETS_DATA['HNDL-6M'].modelPrice = +(42 + Math.random() * 4).toFixed(2);
+      }
+      renderSportArray();
+      renderTickerStrip();
+      renderPortfolio();
+    }
+
+    function selectCameraRig(rigKey) {
+      appState.activeCameraRig = rigKey;
+      const rig = CAMERA_RIGS[rigKey] || CAMERA_RIGS.ballercam;
+      const list = document.getElementById('camera-spec-list');
+      const log = document.getElementById('camera-telemetry-log');
+      const therm = document.getElementById('camera-thermal-badge');
+      if (list) {
+        list.innerHTML = rig.specs.map(s => `
+          <div class="figure-card">
+            <span class="figure-label">${s.label}</span>
+            <span class="figure-value" style="font-size:1.2rem;">${s.value}</span>
+            <span class="figure-delta">${s.delta}</span>
+          </div>`).join('');
+      }
+      if (log) log.textContent = rig.log;
+      if (therm) {
+        therm.innerHTML = rigKey === 'ballercam'
+          ? `<span>Cooling Fan Active · 24.2°C (0°C–35°C Safe) · Sun Shade On</span>`
+          : `<span>Optical Sync Locked · 0 Frame Drops · Live Edge Feed</span>`;
+      }
+    }
+
+    // Alpha Quant GPU Quotes & Waitlist
+    function renderGpuQuotes() {
+      const tbody = document.getElementById('gpu-quotes-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = Object.values(ASSETS_DATA).map(a => {
+        const bid = +(a.marketPrice - 0.04).toFixed(2);
+        const ask = +(a.marketPrice + 0.04).toFixed(2);
+        const spr = +(a.modelPrice - a.marketPrice).toFixed(2);
+        const lat = (34.0 + Math.random() * 12).toFixed(1);
+        return `
+          <tr>
+            <td><strong>${a.symbol}</strong></td>
+            <td class="num">$${bid.toFixed(2)}</td>
+            <td class="num">$${ask.toFixed(2)}</td>
+            <td class="num">$${a.modelPrice.toFixed(2)}</td>
+            <td class="num"><span class="badge ${spr >= 0 ? 'badge-pos' : 'badge-err'}">${spr >= 0 ? '+' : ''}$${spr.toFixed(2)}</span></td>
+            <td class="num">${lat} µs</td>
+          </tr>`;
+      }).join('');
+    }
+
+    function tickGpuStream() {
+      const latEl = document.getElementById('gpu-latency-readout');
+      if (latEl) latEl.textContent = `${(32 + Math.random() * 14).toFixed(1)} µs`;
+      renderGpuQuotes();
+    }
+
+    function openGpuWaitlistModal() {
+      const m = document.getElementById('gpu-modal');
+      const fb = document.getElementById('gpu-modal-feedback');
+      if (fb) fb.style.display = 'none';
+      if (m) m.classList.add('is-open');
+    }
+
+    function closeGpuWaitlistModal() {
+      const m = document.getElementById('gpu-modal');
+      if (m) m.classList.remove('is-open');
+    }
+
+    function submitGpuReservation() {
+      const firm = (document.getElementById('gpu-firm').value || '').trim();
+      const email = (document.getElementById('gpu-email').value || '').trim();
+      const units = document.getElementById('gpu-units').value;
+      const colo = document.getElementById('gpu-colo').value;
+      const fb = document.getElementById('gpu-modal-feedback');
+
+      if (!firm || !email || !email.includes('@')) {
+        if (fb) {
+          fb.textContent = `Please enter a valid Hedge Fund name and institutional desk email.`;
+          fb.style.display = 'flex';
+        }
+        return;
+      }
+      appState.gpuReservations += 1;
+      const cntEl = document.getElementById('gpu-reservation-count');
+      if (cntEl) cntEl.textContent = `${appState.gpuReservations} Desks`;
+
+      appState.crmClients.unshift({
+        id: `gpu-${Date.now()}`,
+        name: `${firm} (GPU Waitlist)`,
+        email,
+        role: `quant`,
+        roleLabel: `Quant Desk & Hedge Fund`,
+        org: `AQS-100G ${units}x Card · ${colo}`,
+        joinDate: `2026-11-22`,
+        status: `Pending`,
+        walletAum: `$${Number(units) * 10000}/mo Waitlist`
+      });
+
+      closeGpuWaitlistModal();
+      renderCrmTable();
+      renderFunnel();
+      showToast(`Reserved ${units}x AQS-100G Alpha Quant Stream Card(s) at ${colo} for ${firm}. Logged in Admin CRM.`, 'pos');
+      saveState();
+    }
+
+    // ==================== INDEX STORE ====================
+    function renderBundlePacks() {
+      const grid = document.getElementById('bundle-packs-grid');
+      if (!grid) return;
+      grid.innerHTML = BUNDLE_PACKS.map(b => `
+        <div class="leaf-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-sm);">
+            <span class="badge badge-navy">${b.ticker}</span>
+            <span class="badge badge-pos">${b.yieldEst}</span>
+          </div>
+          <h3>${b.title}</h3>
+          <p style="margin:0;font-size:0.875rem;color:var(--on-surface-variant);">${b.desc}</p>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="jumpToAssetTrade('${b.ticker.replace('$', '')}')">Open on Trade Desk</button>
+        </div>`).join('');
+    }
+
+    function jumpToAssetTrade(symKey) {
+      const sel = document.getElementById('trade-symbol-select');
+      if (sel && ASSETS_DATA[symKey]) {
+        sel.value = symKey;
+        selectTradeSymbol(symKey);
+      }
+      switchTab('trade');
+    }
+
+    function renderIndexCatalog() {
+      const tbody = document.getElementById('index-catalog-tbody');
+      if (!tbody) return;
+      const q = (document.getElementById('index-search').value || '').toLowerCase();
+      const dom = document.getElementById('index-domain-filter').value;
+      const rows = BIOMETRIC_INDEX_LIBRARY.filter(item => {
+        const matchText = !q || item.code.toLowerCase().includes(q) || item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
+        const matchDom = dom === 'ALL' || item.domain === dom;
+        return matchText && matchDom;
+      });
+      tbody.innerHTML = rows.map(item => `
+        <tr>
+          <td style="font-family:var(--font-label);">${item.id}</td>
+          <td><strong>${item.code}</strong> — ${item.name}</td>
+          <td>${item.domain}</td>
+          <td class="num">${item.score.toFixed(2)}</td>
+          <td><button type="button" class="btn btn-secondary btn-sm" onclick="pinIndexToSynth('${item.code}')">Stage</button></td>
+        </tr>`).join('');
+    }
+
+    function pinIndexToSynth(code) {
+      const el = document.getElementById('synth-name');
+      if (el) el.value = `$SYN-${code}`;
+      showToast(`Staged ${code} into Custom Index Synthesizer.`, '');
+    }
+
+    function recalcSynthesizer() {
+      const w1 = parseFloat(document.getElementById('synth-w1').value) || 0;
+      const w2 = parseFloat(document.getElementById('synth-w2').value) || 0;
+      const w3 = parseFloat(document.getElementById('synth-w3').value) || 0;
+      const sum = w1 + w2 + w3 || 1;
+      const ps = ((w1 / sum) * 0.88 + (w2 / sum) * 0.85 + (w3 / sum) * 0.91);
+      const price = ps * 75;
+      const out = document.getElementById('synth-output');
+      if (out) out.innerHTML = `<span>Composite PS: <strong>${ps.toFixed(3)}</strong> · Synthesized Model-NIL: <strong>$${price.toFixed(2)}</strong></span>`;
+      return { ps, price };
+    }
+
+    function deploySyntheticIndex() {
+      const rawName = (document.getElementById('synth-name').value || '$CUSTOM-IDX').trim().toUpperCase();
+      const sym = rawName.startsWith('$') ? rawName : '$' + rawName;
+      const { ps, price } = recalcSynthesizer();
+      appState.positions.stocks.push({
+        symbol: sym,
+        discipline: `Synthetic (${ps.toFixed(2)} PS)`,
+        units: 50,
+        entry: +(price * 0.85).toFixed(2),
+        model: +price.toFixed(2)
+      });
+      renderPortfolio();
+      showToast(`Synthesized ${sym} (PS ${ps.toFixed(3)}, Model-NIL $${price.toFixed(2)}) and allocated 50 seed units to Portfolio.`, 'pos');
+      saveState();
+    }
+
+    // ==================== XR PERFORMANCE LAB & GLOW RINGS ====================
+    function updateXrParams() {
+      const s = document.getElementById('xr-stress-slider').value;
+      const r = document.getElementById('xr-recovery-slider').value;
+      const g = document.getElementById('xr-glow-slider').value;
+      if (document.getElementById('xr-stress-val')) document.getElementById('xr-stress-val').textContent = s + '%';
+      if (document.getElementById('xr-recovery-val')) document.getElementById('xr-recovery-val').textContent = r + '%';
+      if (document.getElementById('xr-glow-val')) document.getElementById('xr-glow-val').textContent = g + '%';
+
+      const arc = ((Number(s) * 0.6 + (100 - Number(r)) * 0.4) / 100).toFixed(2);
+      const ssi = ((Number(r) * 0.5 + Number(g) * 0.5) / 100).toFixed(2);
+      if (document.getElementById('xr-arc')) document.getElementById('xr-arc').textContent = arc;
+      if (document.getElementById('xr-ssi')) document.getElementById('xr-ssi').textContent = ssi;
+      const arcNote = document.getElementById('xr-arc-note');
+      if (arcNote) {
+        arcNote.textContent = Number(arc) > 0.65 ? `CRS-3 Alert: Macro-Kill Switch Armed` : `Below CRS-3 Kill Threshold`;
+        arcNote.className = 'figure-delta ' + (Number(arc) > 0.65 ? 'is-neg' : 'is-pos');
+      }
+
+      const driftSel = document.getElementById('ar-drift-select');
+      const readout = document.getElementById('ar-exit-readout');
+      if (driftSel && readout) {
+        const msgs = {
+          nba: `NBA AR Exit: +140ms Release Stability · Shot Arc 47.5° · Model-NIL $58.50 vs Market $40.00 (+$18.50)`,
+          nfl: `NFL AR Exit: Crosswind Drift +0.4 yd · Spiral 612 RPM · Model-NIL $88.90 vs Market $74.00 (+$14.90)`,
+          boxing: `Boxing AR Exit: Hook Trajectory Drift -1.2° · Guard Recovery 82% · Model-NIL $67.40 vs Market $52.00 (+$15.40)`,
+          handball: `Handball AR Exit: 6m Crease Jump-Toss 16.85 m/s · Model-NIL $43.20 vs Market $34.50 (+$8.70)`
+        };
+        readout.innerHTML = `<span>${msgs[driftSel.value] || msgs.nba}</span>`;
+      }
+      renderXrCanvas();
+    }
+
+    function renderXrCanvas() {
+      const canvas = document.getElementById('xr-capsule-canvas');
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.parentElement ? canvas.parentElement.clientWidth - 16 : 560;
+      const h = 360;
+      canvas.width = Math.max(300, w) * dpr;
+      canvas.height = h * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const cw = Math.max(300, w);
+      const c = getThemeColors();
+
+      ctx.fillStyle = c.primary;
+      ctx.fillRect(0, 0, cw, h);
+
+      const cx = cw / 2;
+      const cy = h / 2;
+      const stress = Number(document.getElementById('xr-stress-slider')?.value || 68) / 100;
+      const rec = Number(document.getElementById('xr-recovery-slider')?.value || 82) / 100;
+      const glow = Number(document.getElementById('xr-glow-slider')?.value || 91) / 100;
+
+      // 3D Projected Glow Rings (ellipses)
+      for (let i = 0; i < 3; i++) {
+        ctx.strokeStyle = i === 0 ? c.outline : c.secondary;
+        ctx.lineWidth = i === 0 ? 3 : 1.5;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 40, (90 + i * 28) * glow + 25, (28 + i * 9), 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Top Arc (Mechanical Stress)
+      ctx.strokeStyle = c.outline;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(cx, cy - 10, 86, Math.PI * 1.1, Math.PI * (1.1 + 0.8 * stress));
+      ctx.stroke();
+
+      // Bottom Arc (Cardiovascular Fatigue)
+      ctx.strokeStyle = c.error;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(cx, cy - 10, 86, Math.PI * 0.1, Math.PI * (0.1 + 0.8 * (1 - rec * 0.5)));
+      ctx.stroke();
+
+      // Center Line (Recovery Velocity Macro Kill-Switch)
+      ctx.strokeStyle = c.secondary;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(cx - 72 * rec, cy - 10);
+      ctx.lineTo(cx + 72 * rec, cy - 10);
+      ctx.stroke();
+
+      // Left & Right Bars (Sub Prob & Injury Risk)
+      ctx.fillStyle = c.data4;
+      ctx.fillRect(cx - 126, cy - 60, 12, 100 * stress);
+      ctx.fillStyle = c.error;
+      ctx.fillRect(cx + 114, cy - 60, 12, 100 * (1 - rec * 0.6));
+
+      // Labels
+      ctx.fillStyle = c.onPrimary;
+      ctx.font = '12px IBM Plex Mono, monospace';
+      ctx.fillText(`TOP ARC: STRESS ${(stress * 100).toFixed(0)}%`, cx - 86, cy - 115);
+      ctx.fillText(`CENTER LINE: HRR ${(rec * 100).toFixed(0)}%`, cx - 76, cy - 22);
+      ctx.fillText(`GLOW RING: SPONSOR ${(glow * 100).toFixed(0)}%`, cx - 88, cy + 125);
+      ctx.fillText(`L-BAR`, cx - 140, cy + 62);
+      ctx.fillText(`R-BAR`, cx + 106, cy + 62);
+    }
+
+    // ==================== EXECUTIVE ADMIN CRM ====================
+    function renderFunnel() {
+      const grid = document.getElementById('crm-funnel-grid');
+      if (!grid) return;
+      const counts = {
+        ALL: appState.crmClients.length,
+        athlete: appState.crmClients.filter(x => x.role === 'athlete').length,
+        coach: appState.crmClients.filter(x => x.role === 'coach').length,
+        faculty: appState.crmClients.filter(x => x.role === 'faculty').length,
+        quant: appState.crmClients.filter(x => x.role === 'quant').length,
+        sponsor: appState.crmClients.filter(x => x.role === 'sponsor').length
+      };
+      const stages = [
+        { key: 'ALL', label: `All Pipeline Leads`, count: counts.ALL, rev: `$2.6M Ecosystem` },
+        { key: 'athlete', label: `1. Free L2E Athletes`, count: counts.athlete, rev: `Sovereign Trust Wallets` },
+        { key: 'coach', label: `2. Coaches & AD Kits`, count: counts.coach, rev: `Hardware Fleet` },
+        { key: 'faculty', label: `3. B-School Licenses`, count: counts.faculty, rev: `$420k ARR` },
+        { key: 'quant', label: `4. Quant API Desks`, count: counts.quant, rev: `$140k MRR` },
+        { key: 'sponsor', label: `5. Brand Sponsors`, count: counts.sponsor, rev: `$840k Rebates` }
+      ];
+      grid.innerHTML = stages.map(st => `
+        <button type="button" class="funnel-step ${appState.crmFilterStage === st.key ? 'is-selected' : ''}" onclick="filterCrmByFunnel('${st.key}')">
+          <span class="figure-label">${st.label}</span>
+          <span class="figure-value" style="font-size:1.35rem;">${st.count}</span>
+          <span class="figure-delta">${st.rev}</span>
+        </button>`).join('');
+    }
+
+    function filterCrmByFunnel(stageKey) {
+      appState.crmFilterStage = stageKey;
+      const roleSel = document.getElementById('crm-role-filter');
+      if (roleSel) roleSel.value = stageKey;
+      renderFunnel();
+      renderCrmTable();
+    }
+
+    function renderCrmTable() {
+      const tbody = document.getElementById('crm-tbody');
+      const kpiUsers = document.getElementById('crm-kpi-users');
+      if (kpiUsers) kpiUsers.textContent = String(appState.crmClients.length);
+      if (!tbody) return;
+
+      const q = (document.getElementById('crm-search')?.value || '').toLowerCase();
+      const roleF = document.getElementById('crm-role-filter')?.value || 'ALL';
+      const statusF = document.getElementById('crm-status-filter')?.value || 'ALL';
+
+      const filtered = appState.crmClients.filter(c => {
+        const matchQ = !q || c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.org.toLowerCase().includes(q);
+        const matchR = roleF === 'ALL' || c.role === roleF;
+        const matchS = statusF === 'ALL' || c.status === statusF;
+        return matchQ && matchR && matchS;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8">No matching client records found for the active filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const badgeCls = c.status === 'Active' || c.status === 'Approved' ? 'badge-pos' : c.status === 'Pending' ? 'badge-warn' : 'badge-err';
+        return `
+          <tr>
+            <td><strong>${c.name}</strong></td>
+            <td style="font-family:var(--font-label);font-size:0.78rem;">${c.email}</td>
+            <td>${c.roleLabel}</td>
+            <td>${c.org}</td>
+            <td style="font-family:var(--font-label);">${c.joinDate}</td>
+            <td><span class="badge ${badgeCls}">${c.status}</span></td>
+            <td class="num">${c.walletAum}</td>
+            <td>
+              <div style="display:flex;gap:var(--space-xs);flex-wrap:wrap;">
+                <button type="button" class="btn btn-positive btn-sm" onclick="updateClientStatus('${c.id}', 'Approved')">Approve</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="updateClientStatus('${c.id}', 'Suspended')">Suspend</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function updateClientStatus(id, newStatus) {
+      const target = appState.crmClients.find(c => c.id === id);
+      if (!target) return;
+      target.status = newStatus;
+      renderCrmTable();
+      showToast(`Updated license status for ${target.name} to ${newStatus}.`, newStatus === 'Suspended' ? 'err' : 'pos');
+      saveState();
+    }
+
+    function exportCrmCsv() {
+      const headers = [`Name`, `Email`, `Persona Role`, `Organization`, `Join Date`, `Status`, `Wallet / AUM`];
+      const rows = appState.crmClients.map(c => [c.name, c.email, c.roleLabel, c.org, c.joinDate, c.status, c.walletAum]
+        .map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === 'function') {
+        window.notebookAppApi.triggerFileDownload({
+          content: csv,
+          contentType: 'text/csv',
+          encoding: 'UTF-8',
+          filename: 'nil-capital-markets-crm.csv'
+        });
+      }
+      showToast(`Exported ${appState.crmClients.length} client records to nil-capital-markets-crm.csv.`, 'pos');
+    }
+
+    function downloadJsonLedger() {
+      const ledger = {
+        exportedAt: new Date().toISOString(),
+        activeUser: appState.activeUser,
+        cashBalance: appState.cashBalance,
+        positions: appState.positions,
+        orders: appState.orders,
+        crmClients: appState.crmClients
+      };
+      const jsonStr = JSON.stringify(ledger, null, 2);
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === 'function') {
+        window.notebookAppApi.triggerFileDownload({
+          content: jsonStr,
+          contentType: 'text/plain',
+          encoding: 'UTF-8',
+          filename: 'nil-capital-markets-ledger.json'
+        });
+      }
+      showToast(`Downloaded full JSON institutional ledger (nil-capital-markets-ledger.json).`, 'pos');
+    }
+
+    // ==================== INITIALIZATION ====================
+    async function initApp() {
+      await loadState();
+      renderTickerStrip();
+      renderSessionBar();
+      renderPortfolio();
+      recalcWaterfall();
+      selectTradeSymbol(appState.selectedSymbol || 'HOOP');
+      renderOrdersTable();
+      updateBleDeviceSelection();
+      refreshC2CPayload();
+      renderSportArray();
+      selectCameraRig(appState.activeCameraRig || 'ballercam');
+      renderGpuQuotes();
+      renderBundlePacks();
+      renderIndexCatalog();
+      recalcSynthesizer();
+      updateXrParams();
+      renderFunnel();
+      renderCrmTable();
+      switchTab(appState.activeTab || 'portfolio');
+
+      if (appState.sunkCostHorizon !== 42) {
+        const fill = document.getElementById('sunk-horizon-fill');
+        const pct = document.getElementById('sunk-horizon-pct');
+        const out = document.getElementById('sunk-cost-outcome');
+        if (fill) fill.style.width = appState.sunkCostHorizon + '%';
+        if (pct) pct.textContent = appState.sunkCostHorizon + '%';
+        if (out) out.innerHTML = `<span>${appState.sunkCostMessage}</span>`;
+      }
+
+      window.addEventListener('resize', () => {
+        if (appState.activeTab === 'trade') renderDojiChart();
+        if (appState.activeTab === 'xr-lab') renderXrCanvas();
+      });
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === 'function') {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>

@@ -1,0 +1,3701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="charter">
+  <title>BIM-APES Institutional Terminal — Biometric-Linked Equity Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page & Pure/Off-White Surfaces */
+      --background: #f4f6f8;
+      --surface-offwhite: #f8f9fa;
+      --surface-container-low: #ffffff;
+      --surface-glass: rgba(255, 255, 255, 0.88);
+      --surface-glass-strong: rgba(255, 255, 255, 0.95);
+      --surface-container: #edf1f6;
+      --surface-container-high: #e3e8f0;
+
+      /* Deep Navy Branding & Ink */
+      --primary: #0a192f;
+      --primary-mid: #1e3a8a;
+      --on-primary: #ffffff;
+      --primary-container: #e8eef7;
+      --on-primary-container: #0a192f;
+      --on-surface: #0a192f;
+      --on-surface-variant: #475569;
+
+      /* Metallic Gold Trim & Accessible Text Gold */
+      --outline: #d4af37;
+      --gold-mid: #c5a059;
+      --gold-deep: #b8860b;
+      --tertiary: #7c5c10; /* Accessible >= 5.2:1 gold-brass for text on white */
+      --outline-variant: rgba(30, 58, 138, 0.14);
+      --outline-gold-soft: rgba(212, 175, 55, 0.45);
+      --outline-gold-hairline: rgba(197, 160, 89, 0.3);
+
+      /* Semantic Status */
+      --secondary: #15803d;
+      --positive: #15803d;
+      --positive-bg: rgba(21, 128, 61, 0.1);
+      --warning: #b45309;
+      --warning-bg: rgba(180, 83, 9, 0.1);
+      --error: #b91c1c;
+      --error-bg: rgba(185, 28, 28, 0.1);
+      --on-error: #ffffff;
+      --focus: #1e3a8a;
+
+      /* Data Series */
+      --data-1: #0a192f;
+      --data-2: #b8860b;
+      --data-3: #15803d;
+      --data-4: #1e3a8a;
+      --data-context: #cbd5e1;
+
+      /* Typography */
+      --font-headline: 'Libre Caslon Text', Georgia, serif;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-label: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      --display-size: clamp(1.5rem, 1.25rem + 1vw, 2.05rem);
+      --headline-size: clamp(1.1875rem, 1.05rem + 0.45vw, 1.4375rem);
+      --subhead-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+      --body-size: clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem);
+      --label-size: 0.75rem;
+
+      /* Shape & Glass Effects */
+      --rounded: 0.25rem;
+      --rounded-lg: 0.375rem;
+      --rounded-full: 0.25rem;
+      --brass-rule: 2px solid var(--outline);
+      --gold-trim: 1px solid var(--outline-gold-soft);
+      --navy-hairline: 1px solid var(--outline-variant);
+      --glass-blur: blur(12px);
+      --shadow-glass: 0 6px 24px rgba(10, 25, 47, 0.06);
+      --shadow-elevated: 0 14px 36px rgba(10, 25, 47, 0.12);
+
+      /* Spacing Scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.25rem;
+      --space-2xl: 3.5rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+
+      /* Helper Surface Overlays */
+      --navy-tint-light: rgba(255, 255, 255, 0.12);
+      --navy-tint-border: rgba(212, 175, 55, 0.5);
+      --pitch-bg: #081426;
+      --pitch-line: rgba(212, 175, 55, 0.35);
+    }
+
+    /* Base Reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+    h1, h2, h3, h4, p { margin: 0; }
+    button, input, select, textarea { font-family: inherit; }
+
+    /* Focus Ring */
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Executive Header Band */
+    .exec-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+      color: var(--on-primary);
+      border-bottom: 3px solid var(--outline);
+      padding: var(--space-lg) var(--space-xl) var(--space-md);
+    }
+    .exec-header-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .brand-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--navy-tint-border);
+    }
+    .brand-identity {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .brand-emblem {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      background: var(--navy-tint-light);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+    }
+    .brand-kicker {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--outline);
+      font-weight: 500;
+    }
+    .brand-title {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--display-size);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--on-primary);
+    }
+    .brand-subtitle {
+      font-size: 0.8125rem;
+      color: color-mix(in srgb, var(--on-primary) 80%, var(--primary));
+      margin-top: var(--space-xs);
+    }
+    .header-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .onyx-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--navy-tint-light);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      color: var(--on-primary);
+      letter-spacing: 0.03em;
+    }
+    .copilot-trigger-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      min-height: 44px;
+      background: var(--outline);
+      color: var(--primary);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+    }
+    .copilot-trigger-btn:hover {
+      background: var(--gold-mid);
+    }
+
+    /* Multi-Tenant Role Switcher */
+    .role-switcher-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .role-label {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--outline);
+    }
+    .role-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .role-btn {
+      min-height: 36px;
+      padding: 6px 12px;
+      background: transparent;
+      color: color-mix(in srgb, var(--on-primary) 82%, var(--primary));
+      border: 1px solid var(--navy-tint-border);
+      border-radius: var(--rounded);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+    }
+    .role-btn:hover {
+      background: var(--navy-tint-light);
+      color: var(--on-primary);
+    }
+    .role-btn.active {
+      background: var(--on-primary);
+      color: var(--primary);
+      border-color: var(--outline);
+      font-weight: 600;
+    }
+
+    /* Account KPI Strip */
+    .kpi-strip {
+      max-width: 1380px;
+      margin: calc(var(--space-md) * -0.5) auto 0;
+      padding: 0 var(--space-xl);
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+    .figure-card {
+      background: var(--surface-glass-strong);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: var(--navy-hairline);
+      border-top: 3px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-sm) var(--space-md);
+      box-shadow: var(--shadow-glass);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+    .figure-label {
+      font-family: var(--font-label);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface-variant);
+    }
+    .figure-value {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: 1.25rem;
+      font-variant-numeric: tabular-nums lining-nums;
+      color: var(--on-surface);
+      margin-top: 2px;
+    }
+    .figure-delta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--tertiary);
+      margin-top: 2px;
+    }
+    .figure-delta.positive { color: var(--positive); }
+    .figure-delta.negative { color: var(--error); }
+
+    .health-bar-track {
+      width: 100%;
+      height: 6px;
+      background: var(--surface-container-high);
+      border-radius: var(--rounded);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .health-bar-fill {
+      height: 100%;
+      background: var(--positive);
+      transition: width var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+    }
+
+    /* Desktop Tab Bar */
+    .desktop-nav-wrap {
+      max-width: 1380px;
+      margin: var(--space-md) auto 0;
+      padding: 0 var(--space-xl);
+    }
+    .desktop-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      border-bottom: 2px solid var(--outline-variant);
+      padding-bottom: 2px;
+    }
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 44px;
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -4px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: color var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .nav-tab:hover {
+      color: var(--primary);
+      background: var(--surface-offwhite);
+    }
+    .nav-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--outline);
+      background: var(--surface-container-low);
+    }
+
+    /* Main Workspace Container */
+    .page-grid {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-xl) 6rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-lg);
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Role Briefing Banner */
+    .persona-banner {
+      background: var(--surface-glass);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: var(--gold-trim);
+      border-left: 4px solid var(--primary-mid);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      box-shadow: var(--shadow-glass);
+    }
+    .persona-banner-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .persona-role-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--tertiary);
+      font-weight: 600;
+    }
+    .persona-desc {
+      font-size: 0.875rem;
+      color: var(--on-surface);
+    }
+
+    /* Tab Panels */
+    .tab-panel { display: none; }
+    .tab-panel.active {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      animation: fadeSlide var(--dur-short) var(--ease-out);
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glass Panels & Charter Section Rules */
+    .glass-panel {
+      background: var(--surface-glass);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: var(--navy-hairline);
+      box-shadow: var(--shadow-glass);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+    }
+    .glass-panel.gold-edged {
+      border-top: var(--brass-rule);
+      border-right: var(--gold-trim);
+      border-bottom: var(--navy-hairline);
+      border-left: var(--gold-trim);
+    }
+    .section-head {
+      border-top: var(--brass-rule);
+      padding-top: var(--space-sm);
+      border-bottom: var(--navy-hairline);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .section-title {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--headline-size);
+      color: var(--primary);
+    }
+    .section-subtitle {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Asymmetric 2-Column Workspace Grids */
+    .grid-asymmetric {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-lg);
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(265px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .card-grid-compact {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+      gap: var(--space-sm);
+    }
+
+    /* Buttons & Badges */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      padding: 8px 16px;
+      border-radius: var(--rounded);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+    }
+    .btn-sm {
+      min-height: 36px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover {
+      background: var(--primary-mid);
+      border-color: var(--primary-mid);
+    }
+    .btn-gold {
+      background: var(--outline);
+      color: var(--primary);
+      border-color: var(--gold-deep);
+    }
+    .btn-gold:hover {
+      background: var(--gold-mid);
+    }
+    .btn-outline {
+      background: var(--surface-container-low);
+      color: var(--primary);
+      border-color: var(--primary-mid);
+    }
+    .btn-outline:hover {
+      background: var(--primary-container);
+    }
+    .btn-danger {
+      background: var(--error);
+      color: var(--on-error);
+      border-color: var(--error);
+    }
+
+    .stamp-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border: 1px solid var(--gold-mid);
+      color: var(--tertiary);
+      background: var(--surface-offwhite);
+      border-radius: var(--rounded);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stamp-tag.pos {
+      border-color: var(--positive);
+      color: var(--positive);
+      background: var(--positive-bg);
+    }
+    .stamp-tag.neg {
+      border-color: var(--error);
+      color: var(--error);
+      background: var(--error-bg);
+    }
+    .stamp-tag.navy {
+      border-color: var(--primary-mid);
+      color: var(--primary-mid);
+      background: var(--primary-container);
+    }
+
+    /* Form Controls with Always-Visible Labels */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+      align-items: end;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .field-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+    }
+    .field-control {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 12px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      color: var(--on-surface);
+      font-size: 0.875rem;
+      transition: box-shadow var(--dur-micro) var(--ease-out);
+    }
+    select.field-control {
+      padding-right: 28px;
+    }
+    .field-control:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary-mid);
+    }
+
+    /* Tables */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--rounded);
+      border: var(--navy-hairline);
+      background: var(--surface-container-low);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    table.data-table thead th {
+      background: var(--surface-container);
+      color: var(--primary);
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--outline);
+      white-space: nowrap;
+    }
+    table.data-table thead th.num,
+    table.data-table tbody td.num {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    table.data-table tbody td {
+      padding: 10px 12px;
+      border-bottom: var(--navy-hairline);
+      vertical-align: middle;
+    }
+    table.data-table tbody tr:hover {
+      background: var(--surface-offwhite);
+    }
+    table.data-table tbody tr.selected-row {
+      background: var(--primary-container);
+    }
+
+    /* Segmented Track / Sub-Tab Bar */
+    .seg-bar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+      background: var(--surface-container);
+      border: var(--navy-hairline);
+      border-radius: var(--rounded);
+    }
+    .seg-btn {
+      min-height: 36px;
+      padding: 6px 14px;
+      background: transparent;
+      border: none;
+      border-radius: var(--rounded);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+    }
+    .seg-btn.active {
+      background: var(--surface-container-low);
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(10, 25, 47, 0.12);
+      border-bottom: 2px solid var(--outline);
+    }
+
+    /* Candlestick & 3D Containers */
+    .chart-box {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      background: var(--surface-container-low);
+      border: var(--navy-hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-sm);
+    }
+    .canvas-full {
+      width: 100%;
+      height: 300px;
+      display: block;
+    }
+    .xr-stage {
+      position: relative;
+      width: 100%;
+      min-height: 390px;
+      height: 390px;
+      background: var(--pitch-bg);
+      border: 2px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      overflow: hidden;
+    }
+    .xr-hud-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .xr-hud-overlay > * { pointer-events: auto; }
+    .xr-chip {
+      padding: 4px 10px;
+      background: var(--surface-glass-strong);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* BiomechFlow Capsule HUD */
+    .capsule-hud-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .capsule-pill {
+      background: var(--surface-offwhite);
+      border: var(--gold-trim);
+      border-radius: var(--rounded);
+      padding: 8px 10px;
+    }
+    .capsule-pill-title {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+    }
+    .capsule-pill-val {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 2px;
+    }
+
+    /* Inline Confirmation & Alert Boxes */
+    .inline-msg {
+      padding: 10px 14px;
+      border-radius: var(--rounded);
+      font-size: 0.84rem;
+      border: 1px solid var(--outline-variant);
+      background: var(--surface-offwhite);
+      color: var(--on-surface);
+      margin-top: var(--space-sm);
+    }
+    .inline-msg.success {
+      border-color: var(--positive);
+      background: var(--positive-bg);
+      color: var(--positive);
+    }
+    .inline-msg.warn {
+      border-color: var(--warning);
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+    .inline-msg.error {
+      border-color: var(--error);
+      background: var(--error-bg);
+      color: var(--error);
+    }
+
+    /* Sport Tile Matrix */
+    .sport-tile {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 10px 12px;
+      background: var(--surface-container-low);
+      border: var(--navy-hairline);
+      border-top: 2px solid transparent;
+      border-radius: var(--rounded);
+      text-align: left;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .sport-tile:hover {
+      background: var(--surface-offwhite);
+      border-top-color: var(--gold-mid);
+    }
+    .sport-tile.active {
+      background: var(--primary-container);
+      border-color: var(--primary-mid);
+      border-top: 3px solid var(--outline);
+    }
+
+    /* Code Block */
+    .code-pane {
+      background: var(--primary);
+      color: var(--on-primary);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: var(--space-md);
+      border-radius: var(--rounded);
+      border: 1px solid var(--outline);
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Modal Backdrop (Inline Accessible Overlay) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 47, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-md);
+      z-index: 900;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--surface-container-low);
+      border: 2px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-elevated);
+    }
+
+    /* Copilot + AWS Pega Drawer */
+    .copilot-drawer {
+      position: fixed;
+      right: 20px;
+      bottom: 84px;
+      width: min(400px, calc(100vw - 24px));
+      max-height: 70vh;
+      background: var(--surface-glass-strong);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 2px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      box-shadow: var(--shadow-elevated);
+      display: none;
+      flex-direction: column;
+      z-index: 850;
+      overflow: hidden;
+    }
+    .copilot-drawer.open { display: flex; }
+    .copilot-head {
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--outline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .copilot-body {
+      padding: 12px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 220px;
+      max-height: 340px;
+      background: var(--surface-offwhite);
+    }
+    .chat-msg {
+      padding: 9px 12px;
+      border-radius: var(--rounded);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      max-width: 92%;
+    }
+    .chat-msg.bot {
+      align-self: flex-start;
+      background: var(--surface-container-low);
+      border: var(--gold-trim);
+      color: var(--on-surface);
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .copilot-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px 12px;
+      background: var(--surface-container-low);
+      border-top: var(--navy-hairline);
+    }
+    .chip-btn {
+      padding: 4px 8px;
+      background: var(--surface-offwhite);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    .chip-btn:hover { background: var(--primary-container); }
+    .copilot-form {
+      display: flex;
+      gap: 6px;
+      padding: 10px 12px;
+      background: var(--surface-container-low);
+      border-top: var(--navy-hairline);
+    }
+
+    /* Mobile Bottom Dock */
+    .mobile-dock {
+      display: none;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1080px) {
+      .kpi-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-asymmetric, .grid-2col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .exec-header { padding: var(--space-md); }
+      .kpi-strip {
+        padding: 0 var(--space-md);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .desktop-nav-wrap { display: none; }
+      .page-grid { padding: var(--space-md) var(--space-md) 5.5rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .capsule-hud-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .mobile-dock {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--primary);
+        border-top: 2px solid var(--outline);
+        z-index: 800;
+        padding: 4px 2px;
+      }
+      .dock-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        min-height: 52px;
+        background: transparent;
+        border: none;
+        color: color-mix(in srgb, var(--on-primary) 75%, var(--primary));
+        font-size: 0.64rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 4px 2px;
+      }
+      .dock-btn.active {
+        color: var(--outline);
+      }
+    }
+    @media (max-width: 640px) {
+      .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .brand-title { font-size: 1.35rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- EXECUTIVE INSTITUTIONAL HEADER -->
+  <header class="exec-header">
+    <div class="exec-header-inner">
+      <div class="brand-bar">
+        <div class="brand-identity">
+          <div class="brand-emblem" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="14" r="11" stroke="#d4af37" stroke-width="1.5"/>
+              <path d="M14 3V25M3 14H25" stroke="#d4af37" stroke-width="1" stroke-opacity="0.5"/>
+              <path d="M7 18L12 12L16 15L21 8" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18 8H21V11" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-kicker">Bledsoe Investment Management // BLEI-E Institutional &amp; Scholastic Terminal</div>
+            <h1 class="brand-title">BIM-APES Biometric Exchange</h1>
+            <p class="brand-subtitle">The Dashawn Ramel Bledsoe Principle &middot; Zero Raw Biometric Custody &middot; Output-Only FICO-Style 0–100 Scalars</p>
+          </div>
+        </div>
+        <div class="header-badges">
+          <span class="onyx-badge">
+            <i data-lucide="shield-check" style="width:15px;height:15px;" aria-hidden="true"></i>
+            J.P. Morgan Onyx T+0
+          </span>
+          <span class="onyx-badge">
+            <i data-lucide="cpu" style="width:15px;height:15px;" aria-hidden="true"></i>
+            LNX Fairness Verified
+          </span>
+          <button type="button" class="copilot-trigger-btn" onclick="toggleCopilot()">
+            <i data-lucide="bot" style="width:16px;height:16px;" aria-hidden="true"></i>
+            Copilot + AWS Pega Bot
+          </button>
+        </div>
+      </div>
+
+      <!-- 1-Click Multi-Tenant Role Switcher -->
+      <div class="role-switcher-row">
+        <span class="role-label">Multi-Tenant Workspace Role:</span>
+        <div class="role-pills" id="role-switcher" role="group" aria-label="Select Institutional Role">
+          <button type="button" class="role-btn active" data-role="student" onclick="switchRole('student')">Student-Athlete</button>
+          <button type="button" class="role-btn" data-role="faculty" onclick="switchRole('faculty')">Academic Faculty / B-School</button>
+          <button type="button" class="role-btn" data-role="quant" onclick="switchRole('quant')">Quant Hedge Fund CIO / Trader</button>
+          <button type="button" class="role-btn" data-role="coach" onclick="switchRole('coach')">Athletic Dir / Coach / Medical</button>
+          <button type="button" class="role-btn" data-role="sponsor" onclick="switchRole('sponsor')">Corporate Brand Sponsor</button>
+          <button type="button" class="role-btn" data-role="admin" onclick="switchRole('admin')">Executive System Admin</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LIVE INSTITUTIONAL ACCOUNT OVERVIEW -->
+  <section class="kpi-strip" aria-label="Institutional Account Overview">
+    <div class="figure-card">
+      <div class="figure-label">Account Value (Virtual)</div>
+      <div class="figure-value" id="kpi-account-value">$100,000.00</div>
+      <div class="figure-delta positive" id="kpi-total-return">+0.00% ($0.00)</div>
+    </div>
+    <div class="figure-card">
+      <div class="figure-label">5x Buying Power</div>
+      <div class="figure-value" id="kpi-buying-power">$500,000.00</div>
+      <div class="figure-delta">50% Single-Asset Cap Enforced</div>
+    </div>
+    <div class="figure-card">
+      <div class="figure-label">Cash Balance</div>
+      <div class="figure-value" id="kpi-cash-balance">$100,000.00</div>
+      <div class="figure-delta">NIL Collegiate Open Pool</div>
+    </div>
+    <div class="figure-card">
+      <div class="figure-label">Maintenance Buffer</div>
+      <div class="figure-value" id="kpi-maint-buffer">25.0%</div>
+      <div class="figure-delta">SCOC Margin Vault Ready</div>
+    </div>
+    <div class="figure-card">
+      <div class="figure-label">Margin Health Meter</div>
+      <div class="figure-value" id="kpi-margin-health">100.0%</div>
+      <div class="health-bar-track">
+        <div class="health-bar-fill" id="kpi-health-bar" style="width: 100%;"></div>
+      </div>
+    </div>
+    <div class="figure-card">
+      <div class="figure-label">Settlement &amp; Custody</div>
+      <div class="figure-value" style="font-size:1rem;">Onyx T+0 (60/20/10/10)</div>
+      <div class="figure-delta positive" id="kpi-custody-status">Zero Raw Biometric Custody</div>
+    </div>
+  </section>
+
+  <!-- DESKTOP TAB NAVIGATION -->
+  <div class="desktop-nav-wrap">
+    <nav class="desktop-nav" aria-label="Terminal Modules">
+      <button type="button" class="nav-tab active" data-tab="trading" onclick="switchTab('trading')">
+        <i data-lucide="candlestick-chart" style="width:16px;height:16px;" aria-hidden="true"></i>
+        Trading &amp; Portfolio
+      </button>
+      <button type="button" class="nav-tab" data-tab="telemetry" onclick="switchTab('telemetry')">
+        <i data-lucide="radio" style="width:16px;height:16px;" aria-hidden="true"></i>
+        Multi-Sport Sensors &amp; Rigs
+      </button>
+      <button type="button" class="nav-tab" data-tab="marketplace" onclick="switchTab('marketplace')">
+        <i data-lucide="layers" style="width:16px;height:16px;" aria-hidden="true"></i>
+        Index Marketplace
+      </button>
+      <button type="button" class="nav-tab" data-tab="xr" onclick="switchTab('xr')">
+        <i data-lucide="box" style="width:16px;height:16px;" aria-hidden="true"></i>
+        XR Performance Lab
+      </button>
+      <button type="button" class="nav-tab" data-tab="quant" onclick="switchTab('quant')">
+        <i data-lucide="cpu" style="width:16px;height:16px;" aria-hidden="true"></i>
+        Alpha Quant &amp; Desk
+      </button>
+      <button type="button" class="nav-tab" data-tab="crm" onclick="switchTab('crm')">
+        <i data-lucide="building-2" style="width:16px;height:16px;" aria-hidden="true"></i>
+        Admin CRM
+      </button>
+    </nav>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="page-grid">
+
+    <!-- Role Context Banner -->
+    <div class="persona-banner" id="persona-banner">
+      <div class="persona-banner-text">
+        <span class="persona-role-tag" id="persona-tag">Active Workspace: Student-Athlete Mode</span>
+        <span class="persona-desc" id="persona-desc">Monitoring Track A Amateur NIL Units, 60% Onyx T+0 trust disbursements, BallerCam pose verification, and the Sunk Cost Fallacy behavioral challenge.</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm btn-outline" id="persona-cta" onclick="runPersonaQuickAction()">Jump to Sunk Cost Challenge</button>
+        <button type="button" class="btn btn-sm btn-gold" onclick="resetTerminalPrompt(this)">Reset Virtual Account</button>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: DUAL-TRACK TRADING SUITE & PORTFOLIO                  -->
+    <!-- ============================================================ -->
+    <section id="tab-trading" class="tab-panel active" aria-label="Dual-Track Trading Suite">
+
+      <!-- Track Switcher & Market Watch -->
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Dual-Track Biometric Exchange (Track A &amp; Track B)</h2>
+            <p class="section-subtitle">Investopedia Execution UX &middot; BLEI-E 5-Factor Risk Engine &middot; FICO-Style 0–100 Readiness Scalars</p>
+          </div>
+          <div class="seg-bar" role="group" aria-label="Select Trading Track">
+            <button type="button" class="seg-btn active" id="track-a-btn" onclick="setTrack('A')">Track A: Collegiate NIL Units</button>
+            <button type="button" class="seg-btn" id="track-b-btn" onclick="setTrack('B')">Track B: Pro Swaps &amp; BLEI-E Baskets</button>
+          </div>
+        </div>
+
+        <div id="track-context-bar" class="inline-msg" style="margin-top:0;margin-bottom:var(--space-md);">
+          <strong>Track A — Amateur &amp; Collegiate NIL:</strong> Tracks Model NIL vs. Market NIL dislocation spread, CPM/CPI media settlement, and automated <strong>60% Student-Athlete Trust Disbursements</strong> via J.P. Morgan Onyx T+0.
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Asset / Cohort</th>
+                <th>Sport</th>
+                <th class="num">Market Price</th>
+                <th class="num">Model Fair Value</th>
+                <th class="num">Spread (&Delta;)</th>
+                <th class="num">Readiness (0–100)</th>
+                <th>Primary Factor</th>
+                <th class="num">Action</th>
+              </tr>
+            </thead>
+            <tbody id="market-assets-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Candlestick + BiomechFlow HUD (Left) & Order Ticket (Right) -->
+      <div class="grid-asymmetric">
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title" id="doji-chart-title">Biometric Fatigue Doji — D. BLEDSOE-NIL</h2>
+              <p class="section-subtitle" id="doji-chart-sub">OHLC NIL Valuation + Fatigue Accumulation Index (FAi) &amp; BiomechFlow Capsule HUD</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;">
+              <div class="field-group">
+                <label class="field-label" for="doji-overlay-select">Overlay Index</label>
+                <select id="doji-overlay-select" class="field-control" style="min-height:36px;padding:4px 28px 4px 10px;" onchange="renderDojiChart()">
+                  <option value="FAI">FAI (Fatigue Accumulation)</option>
+                  <option value="RHRi">RHRi (Autonomic Readiness)</option>
+                  <option value="VVE-E">VVE-E (Virality Velocity)</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline" onclick="simulateTelemetryTick()">Simulate 100Hz Tick</button>
+            </div>
+          </div>
+
+          <div class="chart-box">
+            <canvas id="doji-canvas" class="canvas-full" aria-label="Biometric Fatigue Doji Candlestick Chart"></canvas>
+          </div>
+
+          <!-- BiomechFlow Capsule HUDs -->
+          <div class="capsule-hud-grid" id="biomech-capsule-hud">
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Center Line (Recovery)</div>
+              <div class="capsule-pill-val" id="hud-recovery">84.2 / 100</div>
+            </div>
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Top Arc (Stress Load)</div>
+              <div class="capsule-pill-val" id="hud-stress">38.6 N&middot;m</div>
+            </div>
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Bottom Arc (FAi Risk)</div>
+              <div class="capsule-pill-val" id="hud-fai">24.1% Low</div>
+            </div>
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Kinematics (Ball Vel)</div>
+              <div class="capsule-pill-val" id="hud-velocity">16.4 m/s</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investopedia Interactive Order Ticket -->
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Investopedia Order Ticket</h2>
+              <p class="section-subtitle">50% Diversification Rule &middot; Bio-SL &amp; Kin-Limit Triggers</p>
+            </div>
+            <span class="stamp-tag navy" id="ticket-quote-pill">Quote: $142.80</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <label class="field-label" for="order-symbol">Symbol</label>
+              <select id="order-symbol" class="field-control" onchange="onOrderSymbolChange()"></select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="order-action">Action</label>
+              <select id="order-action" class="field-control" onchange="updateOrderPreviewEstimate()">
+                <option value="BUY">Buy Long</option>
+                <option value="SELL">Sell</option>
+                <option value="SHORT">Sell Short</option>
+                <option value="COVER">Buy to Cover</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="order-type">Order Type</label>
+              <select id="order-type" class="field-control" onchange="onOrderTypeChange()">
+                <option value="MARKET">Market</option>
+                <option value="LIMIT">Limit</option>
+                <option value="BIO-SL">Bio-SL (Biometric Stop-Loss)</option>
+                <option value="KIN-LIMIT">Kin-Limit (Smart-Ball &gt;15 m/s)</option>
+                <option value="TRAILING">Trailing Stop (5%)</option>
+                <option value="OCO">OCO (One-Cancels-Other)</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="order-leverage">Leverage Tier</label>
+              <select id="order-leverage" class="field-control" onchange="updateOrderPreviewEstimate()">
+                <option value="1">1x (Unlevered Cash)</option>
+                <option value="2">2x (Standard Margin)</option>
+                <option value="5">5x (Institutional Max)</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="order-qty">Quantity (Units)</label>
+              <input type="number" id="order-qty" class="field-control" min="1" step="1" value="50" oninput="updateOrderPreviewEstimate()">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="order-trigger" id="order-trigger-label">Limit / Biometric Trigger</label>
+              <input type="text" id="order-trigger" class="field-control" value="Market Spot" oninput="updateOrderPreviewEstimate()">
+            </div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--space-md);">
+            <button type="button" class="btn btn-outline" onclick="applyShowMaxCap()">Show Max (50% Cap)</button>
+            <button type="button" class="btn btn-primary" style="flex:1;" onclick="openOrderPreviewModal()">Preview Order</button>
+          </div>
+
+          <div id="order-ticket-estimate" class="inline-msg">
+            Estimated Notional: <strong>$7,140.00</strong> &middot; Margin Req: <strong>$7,140.00</strong> &middot; 50% Cap Compliance: <strong>PASS</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Three Investopedia Sub-Portfolios -->
+      <div class="glass-panel">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Portfolio Holdings &amp; Sub-Ledgers</h2>
+            <p class="section-subtitle">Stock &amp; NIL Units &middot; SCOC Synthetic Options &middot; Shorted Positions</p>
+          </div>
+          <div class="seg-bar" role="group" aria-label="Select Sub-Portfolio">
+            <button type="button" class="seg-btn active" id="subport-stock-btn" onclick="switchSubPortfolio('stock')">Stock &amp; NIL Units</button>
+            <button type="button" class="seg-btn" id="subport-option-btn" onclick="switchSubPortfolio('option')">SCOC Options Portfolio</button>
+            <button type="button" class="seg-btn" id="subport-short-btn" onclick="switchSubPortfolio('short')">Shorted Stock Portfolio</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead id="subportfolio-thead"></thead>
+            <tbody id="subportfolio-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sunk Cost Fallacy Challenge (Scholastic Behavioral Risk Assessment) -->
+      <div class="glass-panel gold-edged" id="sunk-cost-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Sunk Cost Fallacy Challenge — Behavioral Risk Module</h2>
+            <p class="section-subtitle">Scholastic Assessment &middot; Volatility Horizon &amp; Biometric Circuit-Breaker Discipline</p>
+          </div>
+          <span class="stamp-tag" id="sunk-cost-score-badge">Challenge Score: 0 / 3</span>
+        </div>
+
+        <div class="inline-msg warn" style="margin-top:0;margin-bottom:var(--space-md);">
+          <strong>Volatility Horizon Warning:</strong> Holding losing athletic positions after Fatigue Accumulation Index (FAi) breaches 75% or Center Line Recovery drops below 50 exposes portfolios to non-linear injury drawdown. Evaluate each scenario objectively without anchoring to sunk entry cost.
+        </div>
+
+        <div class="grid-asymmetric">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--tertiary);margin-bottom:4px;" id="sc-scenario-counter">SCENARIO 1 OF 3</div>
+            <h3 style="font-family:var(--font-headline);font-size:1.15rem;color:var(--primary);margin-bottom:8px;" id="sc-scenario-title"></h3>
+            <p style="color:var(--on-surface-variant);margin-bottom:14px;" id="sc-scenario-prompt"></p>
+            <div style="display:flex;flex-direction:column;gap:8px;" id="sc-options-container"></div>
+          </div>
+          <div class="glass-panel" style="background:var(--surface-offwhite);padding:var(--space-md);">
+            <div class="figure-label">Quantitative Decision Telemetry</div>
+            <div id="sc-feedback-box" style="margin-top:8px;font-size:0.875rem;color:var(--on-surface);">
+              Select an execution choice to evaluate against the Dashawn Bledsoe Risk Protocol and BLEI-E stop-loss math.
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button type="button" class="btn btn-sm btn-outline" onclick="prevSunkScenario()">Previous</button>
+              <button type="button" class="btn btn-sm btn-primary" onclick="nextSunkScenario()">Next Scenario</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: MULTI-SPORT SENSOR INGESTION & HARDWARE RIGS          -->
+    <!-- ============================================================ -->
+    <section id="tab-telemetry" class="tab-panel" aria-label="Multi-Sport Sensor Ingestion">
+
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">13-Sport Sensor Ingestion Matrix</h2>
+            <p class="section-subtitle">Click any discipline to inspect edge hardware, sampling frequency &amp; output-only FICO scalar</p>
+          </div>
+          <span class="stamp-tag navy">1,000Hz Edge &middot; LNX Provenance</span>
+        </div>
+
+        <div class="card-grid-compact" id="sports-grid"></div>
+
+        <div class="grid-asymmetric" style="margin-top:var(--space-lg);">
+          <div class="glass-panel" style="background:var(--surface-offwhite);">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <h3 id="sport-detail-title" style="font-family:var(--font-headline);font-size:1.25rem;color:var(--primary);"></h3>
+              <span class="stamp-tag pos" id="sport-detail-rate"></span>
+            </div>
+            <p id="sport-detail-desc" style="margin-top:8px;color:var(--on-surface-variant);"></p>
+            <div class="capsule-hud-grid" id="sport-detail-metrics" style="margin-top:14px;"></div>
+          </div>
+
+          <div class="glass-panel" style="background:var(--surface-container-low);">
+            <div class="figure-label">The Dashawn Bledsoe Principle Output</div>
+            <div class="figure-value" id="sport-fico-scalar" style="font-size:2rem;margin-top:6px;">88 / 100</div>
+            <div class="figure-delta positive" id="sport-fico-status">Exchange Readiness Scalar &middot; Zero Raw Bio Custody</div>
+            <p style="font-size:0.8rem;color:var(--on-surface-variant);margin-top:8px;">
+              Raw biological streams remain encrypted at edge hardware; clearinghouses receive only standardized 0–100 readiness scalars and Model-vs-Market spreads.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Smart Ball Bridge -->
+      <div class="grid-2col">
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Mode 1: Production BLE 5.3 GATT Direct Pairing</h2>
+              <p class="section-subtitle">Direct Hardware &middot; Live RSSI dBm &middot; 100Hz Polling &amp; Zero-Bias Calibration</p>
+            </div>
+            <span class="stamp-tag pos" id="ble-status-tag">Paired: Tech+Ball v4</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <label class="field-label" for="ble-device-select">Target Hardware Transceiver</label>
+              <select id="ble-device-select" class="field-control" onchange="selectBleDevice()">
+                <option value="Tech+Ball Pro v4 (7v7 IMU)">Tech+Ball Pro v4 (7v7 IMU)</option>
+                <option value="Boxing 5-Axis Smart Glove">Boxing 5-Axis Smart Glove (&gt;35G)</option>
+                <option value="LilyGo T-Deck ESP32 Gateway">LilyGo T-Deck ESP32 Gateway</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="ble-poll-rate">GATT Polling Rate</label>
+              <select id="ble-poll-rate" class="field-control" onchange="updateBleStats()">
+                <option value="100Hz">100Hz (Production Standard)</option>
+                <option value="500Hz">500Hz (Gyroscope Burst)</option>
+                <option value="1000Hz">1000Hz (Accelerometer Peak)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="capsule-hud-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Live RSSI</div>
+              <div class="capsule-pill-val" id="ble-rssi-val">-48 dBm</div>
+            </div>
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Zero-Bias Drift</div>
+              <div class="capsule-pill-val" id="ble-bias-val">0.002 g</div>
+            </div>
+            <div class="capsule-pill">
+              <div class="capsule-pill-title">Packet Loss</div>
+              <div class="capsule-pill-val" id="ble-loss-val">0.00%</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:var(--space-md);flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" onclick="runZeroBiasCalibration()">Run Zero-Bias Calibration</button>
+            <button type="button" class="btn btn-outline" onclick="pulseBleTelemetry()">Sample Live RSSI</button>
+          </div>
+          <div id="ble-calib-msg" class="inline-msg">Calibration hash verified via LNX Fairness Microchip.</div>
+        </div>
+
+        <!-- Mode 2: Hosted Cloud-to-Cloud Bridge -->
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Mode 2: Hosted Cloud-to-Cloud Bridge</h2>
+              <p class="section-subtitle">Partner Webhooks &rarr; Normalized /stream/ballMetrics Schema</p>
+            </div>
+            <span class="stamp-tag navy">REST + WebSocket</span>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--space-md);" id="cloud-partner-buttons">
+            <button type="button" class="btn btn-sm btn-primary" onclick="selectCloudPartner('Adidas')">Adidas</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="selectCloudPartner('Nike')">Nike</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="selectCloudPartner('Wilson')">Wilson</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="selectCloudPartner('Sportable')">Sportable</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="selectCloudPartner('Dribbleup')">Dribbleup</button>
+          </div>
+
+          <div class="code-pane" id="cloud-stream-json" aria-live="polite"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:var(--space-sm);flex-wrap:wrap;gap:8px;">
+            <span style="font-size:0.78rem;color:var(--on-surface-variant);">Endpoint: <code>POST /api/v1/partner/ballTelemetry</code></span>
+            <button type="button" class="btn btn-sm btn-gold" onclick="emitCloudBallEvent()">Emit Normalized Packet</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camera Production Rigs -->
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Camera Production Rigs — 120fps Skeletal Pose Tracking</h2>
+            <p class="section-subtitle">BallerCam AI (iPhone 16/18 Pro) &middot; Sandmarc Grips &middot; Leica AI Action Cams</p>
+          </div>
+          <div class="seg-bar">
+            <button type="button" class="seg-btn active" id="rig-ballercam-btn" onclick="selectCameraRig('ballercam')">BallerCam AI + iPhone 18 Pro</button>
+            <button type="button" class="seg-btn" id="rig-sandmarc-btn" onclick="selectCameraRig('sandmarc')">Sandmarc Pro Grip</button>
+            <button type="button" class="seg-btn" id="rig-leica-btn" onclick="selectCameraRig('leica')">Leica AI Action Cam</button>
+          </div>
+        </div>
+
+        <div class="grid-asymmetric">
+          <div class="chart-box" style="min-height:260px;">
+            <canvas id="pose-rig-canvas" style="width:100%;height:240px;display:block;" aria-label="120fps Skeletal Pose Tracking Preview"></canvas>
+          </div>
+          <div>
+            <h3 id="rig-title" style="font-family:var(--font-headline);font-size:1.15rem;color:var(--primary);"></h3>
+            <p id="rig-specs" style="margin-top:6px;font-size:0.86rem;color:var(--on-surface-variant);"></p>
+            <div class="capsule-hud-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px;">
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">Capture Frame Rate</div>
+                <div class="capsule-pill-val" id="rig-fps">120 fps</div>
+              </div>
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">Landmark Agreement</div>
+                <div class="capsule-pill-val" id="rig-agreement">99.2%</div>
+              </div>
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">Power &amp; Mounting</div>
+                <div class="capsule-pill-val" id="rig-mount">80" / 15' Tripod + 10Ah</div>
+              </div>
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">Pose Latency</div>
+                <div class="capsule-pill-val" id="rig-latency">7.8 ms</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: BIOMETRIC INDEX MARKETPLACE & SYNTHESIZER             -->
+    <!-- ============================================================ -->
+    <section id="tab-marketplace" class="tab-panel" aria-label="Biometric Index Marketplace">
+
+      <!-- Pre-built Packs -->
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Pre-Built Institutional Biometric Index Packs</h2>
+            <p class="section-subtitle">Turnkey Sport-Specific Telemetry Feeds Licensed per Desk</p>
+          </div>
+          <span class="stamp-tag" id="licensed-count-badge">Active Licenses: 1</span>
+        </div>
+
+        <div class="card-grid" id="prebuilt-packs-grid"></div>
+      </div>
+
+      <!-- A La Carte Catalog + Custom Composite Synthesizer -->
+      <div class="grid-asymmetric">
+        <div class="glass-panel">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">A La Carte Index Catalog ($150–$500)</h2>
+              <p class="section-subtitle">Select 2–5 Indices to Feed the Custom Composite Synthesizer</p>
+            </div>
+          </div>
+          <div class="card-grid-compact" id="alacarte-grid"></div>
+        </div>
+
+        <!-- Custom Index Synthesizer -->
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Custom Composite Synthesizer</h2>
+              <p class="section-subtitle">Choose 2–5 Indices &middot; Balance to 100% &middot; Mint for $500</p>
+            </div>
+            <span class="stamp-tag" id="synth-weight-status">Total: 100%</span>
+          </div>
+
+          <div class="field-group" style="margin-bottom:var(--space-md);">
+            <label class="field-label" for="custom-index-name">Custom Composite Ticker Name</label>
+            <input type="text" id="custom-index-name" class="field-control" value="BIM-ALPHA-100">
+          </div>
+
+          <div id="synth-sliders-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--space-md);">
+            <button type="button" class="btn btn-outline" onclick="autoBalanceSynthWeights()">Auto-Balance 100%</button>
+            <button type="button" class="btn btn-gold" style="flex:1;" onclick="mintCustomIndex()">Mint Custom Index ($500) &amp; Deploy</button>
+          </div>
+
+          <div id="synth-mint-msg" class="inline-msg">
+            Select 2 to 5 indices on the left. Once weights sum to 100%, minting deploys your composite directly into the Doji chart and Bio-SL order triggers.
+          </div>
+
+          <div style="margin-top:var(--space-md);">
+            <div class="field-label" style="margin-bottom:6px;">Minted Custom Composites</div>
+            <div id="minted-indices-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4: XR PERFORMANCE LAB & VR NIL WAR ROOM                  -->
+    <!-- ============================================================ -->
+    <section id="tab-xr" class="tab-panel" aria-label="XR Performance Lab">
+
+      <div class="grid-asymmetric">
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">XR Performance Lab — 3D Tactical Pitch &amp; Volumetric NIL Glow Rings</h2>
+              <p class="section-subtitle">Ring Radius = Market Cap &middot; Emerald = Composure &middot; Crimson = Fatigue Breach</p>
+            </div>
+            <div class="seg-bar">
+              <button type="button" class="seg-btn active" id="cam-centerline-btn" onclick="setXrCamera('centerline')">Centerline</button>
+              <button type="button" class="seg-btn" id="cam-aerial-btn" onclick="setXrCamera('aerial')">Aerial</button>
+              <button type="button" class="seg-btn" id="cam-goalline-btn" onclick="setXrCamera('goalline')">Goal-Line</button>
+            </div>
+          </div>
+
+          <div class="xr-stage" id="xr-stage-container">
+            <div class="xr-hud-overlay">
+              <span class="xr-chip" id="xr-cam-readout">Camera: Centerline (100Hz Sync)</span>
+              <span class="xr-chip" id="xr-selected-athlete">Selected: D. Bledsoe (#7) &middot; Composure 86</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--space-md);align-items:center;justify-content:space-between;">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;" id="xr-athlete-selector"></div>
+            <span style="font-size:0.78rem;color:var(--on-surface-variant);">Click an athlete button to focus volumetric ring telemetry</span>
+          </div>
+        </div>
+
+        <!-- Model-NIL vs Market-NIL Arbitrage & Stress Test -->
+        <div class="glass-panel gold-edged">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Model-NIL vs. Market-NIL Spread Arbitrage</h2>
+              <p class="section-subtitle">Scenario Stress-Test Sliders &amp; Dislocation Alpha</p>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="field-group">
+              <label class="field-label" for="stress-fatigue-slider">Fatigue Shock Adjustment (<span id="stress-fatigue-val">0%</span>)</label>
+              <input type="range" id="stress-fatigue-slider" min="-30" max="40" value="0" oninput="onStressSliderChange()">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="stress-virality-slider">Virality Surge VVE-E (<span id="stress-virality-val">+0%</span>)</label>
+              <input type="range" id="stress-virality-slider" min="-20" max="50" value="0" oninput="onStressSliderChange()">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="stress-cortisol-slider">Cortisol Stress Cap CSE-E (<span id="stress-cortisol-val">0%</span>)</label>
+              <input type="range" id="stress-cortisol-slider" min="-25" max="35" value="0" oninput="onStressSliderChange()">
+            </div>
+          </div>
+
+          <div class="chart-box" style="min-height:220px;margin-top:var(--space-md);">
+            <canvas id="arbitrage-chart" style="width:100%;height:200px;" aria-label="Model NIL vs Market NIL Arbitrage Chart"></canvas>
+          </div>
+
+          <div id="xr-arbitrage-summary" class="inline-msg success">
+            Net Arbitrage Alpha: <strong>+$18.40 / unit (+12.8%)</strong> &middot; Signal: <strong>LONG UNDERVALUED NIL</strong>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TAB 5: ALPHA QUANT STREAM PCIe & HEDGE FUND DESK HANDBOOK    -->
+    <!-- ============================================================ -->
+    <section id="tab-quant" class="tab-panel" aria-label="Alpha Quant Stream and Desk Handbook">
+
+      <!-- PCIe GPU Cards Showcase -->
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Alpha Quant Stream PCIe GPU Cards</h2>
+            <p class="section-subtitle">Institutional Low-Latency Telemetry Inference &amp; Hardware Execution</p>
+          </div>
+          <button type="button" class="btn btn-gold" onclick="openGpuWaitlistModal()">
+            <i data-lucide="cpu" style="width:16px;height:16px;" aria-hidden="true"></i>
+            Reserve GPU Card
+          </button>
+        </div>
+
+        <div class="card-grid" style="margin-bottom:var(--space-md);">
+          <div class="figure-card">
+            <div class="figure-label">Network Fabric</div>
+            <div class="figure-value">Dual 100Gbps RDMA</div>
+            <div class="figure-delta">RoCEv2 Kernel-Bypass NIC</div>
+          </div>
+          <div class="figure-card">
+            <div class="figure-label">Compute Precision</div>
+            <div class="figure-value">FP8 Tensor Cores</div>
+            <div class="figure-delta">BiomechFlow Matrix Inference</div>
+          </div>
+          <div class="figure-card">
+            <div class="figure-label">Execution Latency</div>
+            <div class="figure-value">&lt; 50 &micro;s (41.2 &micro;s)</div>
+            <div class="figure-delta positive">95% Basis Dislocation Cut</div>
+          </div>
+          <div class="figure-card">
+            <div class="figure-label">Streaming Protocol</div>
+            <div class="figure-value">C++ / Python gRPC</div>
+            <div class="figure-delta">Zero-Copy Protobuf Ticks</div>
+          </div>
+        </div>
+
+        <div class="grid-asymmetric">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <div class="seg-bar">
+                <button type="button" class="seg-btn active" id="code-cpp-btn" onclick="switchCodeLang('cpp')">C++20 gRPC Stream</button>
+                <button type="button" class="seg-btn" id="code-py-btn" onclick="switchCodeLang('py')">Python AsyncIO Client</button>
+              </div>
+              <span class="stamp-tag pos" id="gpu-waitlist-count">Reserved Cards: 0</span>
+            </div>
+            <div class="code-pane" id="quant-code-block"></div>
+          </div>
+          <div class="chart-box" style="min-height:240px;">
+            <canvas id="latency-chart" style="width:100%;height:220px;" aria-label="Execution Latency Comparison Chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hedge Fund Desk Workflow Handbook -->
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Hedge Fund Desk Workflow Handbook &amp; Onyx T+0 Settlement</h2>
+            <p class="section-subtitle">developer.jpm Clearing Rails &middot; RACI Governance &middot; SEC / FINRA WORM Audit Logs</p>
+          </div>
+          <span class="stamp-tag navy">124% BLEI-E Capital Matrix</span>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom:var(--space-lg);">
+          <!-- Interactive Onyx 60/20/10/10 Settlement Calculator -->
+          <div class="glass-panel" style="background:var(--surface-offwhite);">
+            <h3 style="font-family:var(--font-headline);font-size:1.1rem;color:var(--primary);margin-bottom:8px;">J.P. Morgan Onyx T+0 60/20/10/10 Waterfall</h3>
+            <p style="font-size:0.82rem;color:var(--on-surface-variant);margin-bottom:12px;">
+              Automated smart-contract settlement via <code>developer.jpm</code> Onyx ledger rails across athlete trusts, institutional programs, DRB IP licensing (2.5% band), and SCOC reserve vaults (7.5%).
+            </p>
+            <div class="field-group" style="margin-bottom:12px;">
+              <label class="field-label" for="onyx-gross-input">Gross Settlement Volume ($ USD)</label>
+              <input type="number" id="onyx-gross-input" class="field-control" value="250000" min="1000" step="1000" oninput="updateOnyxWaterfall()">
+            </div>
+            <div class="capsule-hud-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">60% Athlete Trust Disbursement</div>
+                <div class="capsule-pill-val" id="onyx-60">$150,000.00</div>
+              </div>
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">20% Collegiate / Club Program</div>
+                <div class="capsule-pill-val" id="onyx-20">$50,000.00</div>
+              </div>
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">10% Platform &amp; DRB IP (2.5%)</div>
+                <div class="capsule-pill-val" id="onyx-10a">$25,000.00</div>
+              </div>
+              <div class="capsule-pill">
+                <div class="capsule-pill-title">10% Reserve Pool (7.5% + Escrow)</div>
+                <div class="capsule-pill-val" id="onyx-10b">$25,000.00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RACI Matrix -->
+          <div>
+            <h3 style="font-family:var(--font-headline);font-size:1.1rem;color:var(--primary);margin-bottom:8px;">Institutional Desk RACI Governance Matrix</h3>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Workflow Stage</th>
+                    <th>Quant CIO</th>
+                    <th>Medical / Coach</th>
+                    <th>Onyx Ops</th>
+                    <th>Compliance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>0–100 FICO Scalar Sign-Off</td>
+                    <td>I</td>
+                    <td><strong>A / R</strong></td>
+                    <td>I</td>
+                    <td>C</td>
+                  </tr>
+                  <tr>
+                    <td>Bio-SL Circuit Breaker</td>
+                    <td><strong>R</strong></td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td><strong>A</strong></td>
+                  </tr>
+                  <tr>
+                    <td>SCOC Margin Vault Clearing</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td><strong>A / R</strong></td>
+                    <td>C</td>
+                  </tr>
+                  <tr>
+                    <td>60/20/10/10 Onyx Payout</td>
+                    <td>I</td>
+                    <td>I</td>
+                    <td><strong>R</strong></td>
+                    <td><strong>A</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEC / FINRA WORM Immutable Logs -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <h3 style="font-family:var(--font-headline);font-size:1.1rem;color:var(--primary);">SEC Rule 17a-4 / FINRA WORM Provenance Audit Log</h3>
+            <span class="stamp-tag pos">Immutable SHA-256 Chain</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp (UTC)</th>
+                  <th>Event Type</th>
+                  <th>Instrument / Scalar</th>
+                  <th>WORM Hash Provenance</th>
+                  <th>Policy Check</th>
+                </tr>
+              </thead>
+              <tbody id="worm-logs-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TAB 6: EXECUTIVE ADMIN CLIENT CRM                            -->
+    <!-- ============================================================ -->
+    <section id="tab-crm" class="tab-panel" aria-label="Executive Admin Client CRM">
+
+      <!-- Dynamic Revenue KPIs -->
+      <div class="card-grid">
+        <div class="figure-card">
+          <div class="figure-label">Academic &amp; B-School ARR</div>
+          <div class="figure-value">$420,000</div>
+          <div class="figure-delta positive">+18.4% YoY &middot; 28 Universities</div>
+        </div>
+        <div class="figure-card">
+          <div class="figure-label">Quant Hedge Fund MRR</div>
+          <div class="figure-value">$140,000</div>
+          <div class="figure-delta positive">$1.68M Run-Rate &middot; PCIe Tier</div>
+        </div>
+        <div class="figure-card">
+          <div class="figure-label">Hardware &amp; Storefront GMV</div>
+          <div class="figure-value">$1,200,000</div>
+          <div class="figure-delta">Tech+Ball, BallerCam &amp; Vests</div>
+        </div>
+        <div class="figure-card">
+          <div class="figure-label">Corporate Sponsor Rebates</div>
+          <div class="figure-value">$840,000</div>
+          <div class="figure-delta positive">Nike, Adidas, Jordan, UA</div>
+        </div>
+      </div>
+
+      <!-- CRM Filter & Lead Table -->
+      <div class="glass-panel gold-edged">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Institutional Client Lead Database &amp; Export</h2>
+            <p class="section-subtitle">Multi-Tier Pipeline &middot; CSV / JSON Telemetry Compliance Export</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm btn-outline" onclick="exportCrm('csv')">Export CSV</button>
+            <button type="button" class="btn btn-sm btn-gold" onclick="exportCrm('json')">Export JSON</button>
+          </div>
+        </div>
+
+        <div class="form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:var(--space-md);">
+          <div class="field-group">
+            <label class="field-label" for="crm-search">Search Institution / Contact</label>
+            <input type="text" id="crm-search" class="field-control" placeholder="Filter by firm, school, or lead..." oninput="renderCrmTable()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="crm-tier-filter">Market Tier</label>
+            <select id="crm-tier-filter" class="field-control" onchange="renderCrmTable()">
+              <option value="ALL">All Tiers</option>
+              <option value="Quant Hedge Fund">Quant Hedge Fund</option>
+              <option value="Collegiate / NIL">Collegiate / NIL</option>
+              <option value="Pro Franchise">Pro Franchise</option>
+              <option value="Brand Sponsor">Brand Sponsor</option>
+              <option value="Academic B-School">Academic B-School</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="crm-stage-filter">Pipeline Stage</label>
+            <select id="crm-stage-filter" class="field-control" onchange="renderCrmTable()">
+              <option value="ALL">All Stages</option>
+              <option value="Closed Won">Closed Won</option>
+              <option value="Active Pilot">Active Pilot</option>
+              <option value="Due Diligence">Due Diligence</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-bottom:var(--space-lg);">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Institution / Partner</th>
+                <th>Tier</th>
+                <th>Key Stakeholder</th>
+                <th>Primary Module</th>
+                <th class="num">Annual Value</th>
+                <th>Stage</th>
+              </tr>
+            </thead>
+            <tbody id="crm-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Add Lead Form -->
+        <div class="glass-panel" style="background:var(--surface-offwhite);">
+          <h3 style="font-family:var(--font-headline);font-size:1.05rem;color:var(--primary);margin-bottom:10px;">Register New Institutional Client Lead</h3>
+          <div class="form-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));">
+            <div class="field-group">
+              <label class="field-label" for="new-lead-org">Organization</label>
+              <input type="text" id="new-lead-org" class="field-control" placeholder="e.g. Columbia Athletics">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="new-lead-tier">Tier</label>
+              <select id="new-lead-tier" class="field-control">
+                <option value="Collegiate / NIL">Collegiate / NIL</option>
+                <option value="Quant Hedge Fund">Quant Hedge Fund</option>
+                <option value="Pro Franchise">Pro Franchise</option>
+                <option value="Brand Sponsor">Brand Sponsor</option>
+                <option value="Academic B-School">Academic B-School</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="new-lead-contact">Stakeholder</label>
+              <input type="text" id="new-lead-contact" class="field-control" placeholder="e.g. Athletic Director">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="new-lead-value">ACV ($ USD)</label>
+              <input type="number" id="new-lead-value" class="field-control" value="45000" min="1000">
+            </div>
+            <div class="field-group">
+              <button type="button" class="btn btn-primary" onclick="addCrmLead()">Add Client Lead</button>
+            </div>
+          </div>
+          <div id="crm-msg" class="inline-msg" style="display:none;"></div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MOBILE APPLICATION BOTTOM DOCK -->
+  <nav class="mobile-dock" aria-label="Mobile Terminal Navigation">
+    <button type="button" class="dock-btn active" data-tab="trading" onclick="switchTab('trading')">
+      <i data-lucide="candlestick-chart" style="width:18px;height:18px;" aria-hidden="true"></i>
+      <span>Trade</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="telemetry" onclick="switchTab('telemetry')">
+      <i data-lucide="radio" style="width:18px;height:18px;" aria-hidden="true"></i>
+      <span>Sensors</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="marketplace" onclick="switchTab('marketplace')">
+      <i data-lucide="layers" style="width:18px;height:18px;" aria-hidden="true"></i>
+      <span>Indices</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="xr" onclick="switchTab('xr')">
+      <i data-lucide="box" style="width:18px;height:18px;" aria-hidden="true"></i>
+      <span>XR Lab</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="quant" onclick="switchTab('quant')">
+      <i data-lucide="cpu" style="width:18px;height:18px;" aria-hidden="true"></i>
+      <span>Quant</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="crm" onclick="switchTab('crm')">
+      <i data-lucide="building-2" style="width:18px;height:18px;" aria-hidden="true"></i>
+      <span>Admin</span>
+    </button>
+  </nav>
+
+  <!-- ORDER PREVIEW CONFIRMATION MODAL -->
+  <div class="modal-backdrop" id="order-preview-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+    <div class="modal-card">
+      <div class="section-head" style="margin-top:0;">
+        <div>
+          <h3 id="order-modal-title" class="section-title" style="font-size:1.2rem;">Order Preview &amp; Compliance Check</h3>
+          <p class="section-subtitle">Investopedia Virtual Clearing &middot; 50% Diversification Rule</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeOrderPreviewModal()">Close</button>
+      </div>
+      <div id="order-modal-body" style="display:flex;flex-direction:column;gap:8px;font-size:0.88rem;"></div>
+      <div style="display:flex;gap:8px;margin-top:var(--space-lg);justify-content:flex-end;">
+        <button type="button" class="btn btn-outline" onclick="closeOrderPreviewModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirm-order-btn" onclick="executeConfirmedOrder()">Confirm &amp; Execute Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESERVE GPU CARD WAITLIST MODAL -->
+  <div class="modal-backdrop" id="gpu-waitlist-modal" role="dialog" aria-modal="true" aria-labelledby="gpu-modal-title">
+    <div class="modal-card">
+      <div class="section-head" style="margin-top:0;">
+        <div>
+          <h3 id="gpu-modal-title" class="section-title" style="font-size:1.2rem;">Reserve Alpha Quant Stream PCIe GPU Card</h3>
+          <p class="section-subtitle">Dual 100Gbps RDMA RoCEv2 &middot; FP8 Tensor Cores</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeGpuWaitlistModal()">Close</button>
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr;">
+        <div class="field-group">
+          <label class="field-label" for="gpu-firm-input">Institution / Quant Desk Name</label>
+          <input type="text" id="gpu-firm-input" class="field-control" placeholder="e.g. Citadel Quantitative Equities">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="gpu-qty-input">PCIe Card Allocation Quantity</label>
+          <input type="number" id="gpu-qty-input" class="field-control" value="4" min="1" max="64">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="gpu-tier-select">Deployment Architecture</label>
+          <select id="gpu-tier-select" class="field-control">
+            <option value="Co-Located CME Aurora Rack">Co-Located CME Aurora Rack (&lt;45&micro;s)</option>
+            <option value="Arena Edge Hub (LNX Verified)">Arena Edge Hub (LNX Verified)</option>
+            <option value="Academic B-School Research Node">Academic B-School Research Node</option>
+          </select>
+        </div>
+      </div>
+      <div id="gpu-modal-feedback" class="inline-msg" style="display:none;"></div>
+      <div style="display:flex;gap:8px;margin-top:var(--space-lg);justify-content:flex-end;">
+        <button type="button" class="btn btn-outline" onclick="closeGpuWaitlistModal()">Cancel</button>
+        <button type="button" class="btn btn-gold" onclick="submitGpuReservation()">Confirm Waitlist Reservation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN-TERMINAL COPILOT + AWS PEGA BOT DRAWER -->
+  <aside class="copilot-drawer" id="copilot-drawer" aria-label="Copilot and AWS Pega Assistant">
+    <div class="copilot-head">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <i data-lucide="bot" style="width:18px;height:18px;color:var(--outline);" aria-hidden="true"></i>
+        <div>
+          <div style="font-size:0.84rem;font-weight:700;">BIM Copilot + AWS Pega Bot</div>
+          <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--outline);">Scholastic &amp; Quant Execution Guide</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline" style="min-height:30px;padding:2px 8px;" onclick="toggleCopilot()">Hide</button>
+    </div>
+    <div class="copilot-body" id="copilot-messages">
+      <div class="chat-msg bot">
+        Welcome to the BIM-APES Terminal. Ask me about <strong>The Dashawn Bledsoe Principle</strong>, <strong>Bio-SL stop-losses</strong>, <strong>50% diversification cap</strong>, <strong>Onyx 60/20/10/10 settlement</strong>, or <strong>BLE 5.3 smart-ball pairing</strong>.
+      </div>
+    </div>
+    <div class="copilot-chips">
+      <button type="button" class="chip-btn" onclick="askCopilot('Bledsoe Principle')">Bledsoe Principle</button>
+      <button type="button" class="chip-btn" onclick="askCopilot('Bio-SL & Kin-Limit')">Bio-SL &amp; Kin-Limit</button>
+      <button type="button" class="chip-btn" onclick="askCopilot('50% Cap & Sunk Cost')">50% Cap &amp; Sunk Cost</button>
+      <button type="button" class="chip-btn" onclick="askCopilot('Onyx 60/20/10/10')">Onyx 60/20/10/10</button>
+    </div>
+    <form class="copilot-form" onsubmit="submitCopilotForm(event)">
+      <label class="field-label" for="copilot-input" style="position:absolute;left:-9999px;">Ask Copilot</label>
+      <input type="text" id="copilot-input" class="field-control" style="min-height:38px;" placeholder="Ask trading or telemetry question...">
+      <button type="submit" class="btn btn-sm btn-primary" style="min-height:38px;">Send</button>
+    </form>
+  </aside>
+
+  <api-shim></api-shim>
+  <script>
+    /* ==============================================================
+       DATA CATALOGS (Backtick template literals for safe escaping)
+       ============================================================== */
+    const ROLE_CONFIG = {
+      student: {
+        tag: `Active Workspace: Student-Athlete Mode`,
+        desc: `Monitoring Track A Amateur NIL Units, 60% Onyx T+0 trust disbursements, BallerCam pose verification, and the Sunk Cost Fallacy behavioral challenge.`,
+        ctaLabel: `Jump to Sunk Cost Challenge`,
+        targetTab: `trading`,
+        scrollTarget: `sunk-cost-section`
+      },
+      faculty: {
+        tag: `Active Workspace: Academic Faculty / B-School Mode`,
+        desc: `Classroom $100,000 NIL Collegiate Open enabled. Inspect Fama-MacBeth / GRS biometric factor pricing, 50% cap enforcement, and student behavioral risk metrics.`,
+        ctaLabel: `Open Index Synthesizer`,
+        targetTab: `marketplace`,
+        scrollTarget: null
+      },
+      quant: {
+        tag: `Active Workspace: Quant Hedge Fund CIO / Trader Mode`,
+        desc: `Track B Pro Swaps & 124% BLEI-E Capital Allocation Matrix active. Stream FP8 tensor outputs via Alpha Quant PCIe RDMA cards with sub-50µs execution.`,
+        ctaLabel: `Inspect Alpha Quant PCIe`,
+        targetTab: `quant`,
+        scrollTarget: null
+      },
+      coach: {
+        tag: `Active Workspace: Athletic Director / Coach / Medical Mode`,
+        desc: `Injury-days avoided & readiness monitoring active. Configure Bio-SL automated triggers, inspect 120fps BallerCam kinematics, and review XR pitch glow rings.`,
+        ctaLabel: `Open XR Performance Lab`,
+        targetTab: `xr`,
+        scrollTarget: null
+      },
+      sponsor: {
+        tag: `Active Workspace: Corporate Brand Sponsor Mode`,
+        desc: `Nike, Adidas, Jordan Brand, & Under Armour activation cockpit. Track VVE-E virality velocity, CPM/CPI settlement, and $840K sponsor co-funding rebates.`,
+        ctaLabel: `Inspect Cloud Ball Bridge`,
+        targetTab: `telemetry`,
+        scrollTarget: null
+      },
+      admin: {
+        tag: `Active Workspace: Executive System Admin Mode`,
+        desc: `Full enterprise oversight: $420k ARR academic, $140k MRR quant, $1.2M GMV storefront, SEC/FINRA WORM provenance logs, and client CRM export.`,
+        ctaLabel: `Open Admin Client CRM`,
+        targetTab: `crm`,
+        scrollTarget: null
+      }
+    };
+
+    const ASSETS_DATA = [
+      { symbol: `D.BLEDSOE-NIL`, name: `Dashawn Bledsoe (Tech+Ball 7v7)`, track: `A`, sport: `Tech+Ball`, price: 142.80, model: 158.40, readiness: 88, factor: `PMF-E / FBR-E`, recovery: 86, stress: 36.2, fai: 22.4, velocity: 16.4, capM: 2.4 },
+      { symbol: `M.VANCE-NIL`, name: `Marcus Vance (Collegiate PG)`, track: `A`, sport: `Basketball`, price: 94.50, model: 103.20, readiness: 82, factor: `VVE-E / WD-CS-E`, recovery: 80, stress: 41.0, fai: 28.5, velocity: 14.8, capM: 1.8 },
+      { symbol: `K.SATO-NIL`, name: `Kenji Sato (Elite Pole Vault)`, track: `A`, sport: `Pole Vault`, price: 68.20, model: 74.90, readiness: 91, factor: `PMF-E / TPI`, recovery: 92, stress: 29.5, fai: 16.0, velocity: 15.6, capM: 1.1 },
+      { symbol: `T.OKAFOR-NIL`, name: `Tariq Okafor (Rugby Fly-Half)`, track: `A`, sport: `Rugby`, price: 112.40, model: 98.50, readiness: 61, factor: `CSE-E Fatigue Alert`, recovery: 54, stress: 68.4, fai: 76.8, velocity: 13.2, capM: 1.5 },
+      { symbol: `NBL-SWAP`, name: `NIBLS Pro 7v7 Cohort Swap`, track: `B`, sport: `Tech+Ball`, price: 248.00, model: 264.50, readiness: 87, factor: `PMF-E + FBR-E`, recovery: 85, stress: 38.0, fai: 24.0, velocity: 16.9, capM: 8.6 },
+      { symbol: `F1-APEX-IDX`, name: `F1 & Sim Telemetry Basket`, track: `B`, sport: `Formula 1 / Sim`, price: 315.60, model: 332.10, readiness: 89, factor: `CSE-E / WD-CS-E`, recovery: 88, stress: 33.1, fai: 19.5, velocity: 15.4, capM: 12.2 },
+      { symbol: `MMA-STRK-ETF`, name: `Combat Impact >35G ETF`, track: `B`, sport: `Boxing`, price: 186.25, model: 171.80, readiness: 63, factor: `CSE-E High Load`, recovery: 58, stress: 71.2, fai: 73.4, velocity: 11.8, capM: 5.4 },
+      { symbol: `ATH-BOND-DBBI`, name: `Dashawn Bledsoe Bond Index (6.5%+)`, track: `B`, sport: `Multi-Sport ILS`, price: 104.10, model: 106.80, readiness: 94, factor: `SEF-E / DBBI Hedge`, recovery: 93, stress: 22.0, fai: 14.2, velocity: 15.9, capM: 18.5 }
+    ];
+
+    const SPORTS_TELEMETRY = [
+      { id: `techball`, name: `Tech+Ball (Flagship)`, rate: `1000Hz IMU`, scalar: 88, summary: `Flagship 7v7 smart-ball gameplay enforcing >15 m/s velocity thresholds and zero-bounce possession mechanics.`, m1Label: `Pass Velocity`, m1Val: `16.4 m/s`, m2Label: `Bounce Rule`, m2Val: `0-Bounce Clean`, m3Label: `Spin Rate`, m3Val: `420 RPM`, m4Label: `Play-to-Earn`, m4Val: `NBL +10%` },
+      { id: `boxing`, name: `Boxing`, rate: `2000Hz Glove`, scalar: 84, summary: `5-axis smart glove capturing punch classification (jab, hook, uppercut), speed (m/s), and >35G impact shocks.`, m1Label: `Peak Impact`, m1Val: `38.4 G`, m2Label: `Punch Speed`, m2Val: `8.4 m/s`, m3Label: `Accuracy`, m3Val: `72% Elite`, m4Label: `Variety`, m4Val: `89 / 100` },
+      { id: `football`, name: `Football`, rate: `1000Hz Collision`, scalar: 81, summary: `Catapult PlayerTek GPS vests & Zebra RFID smart ball tracking spiral RPM, collision G-load, and sprint efforts.`, m1Label: `Throw Vel`, m1Val: `24.6 m/s`, m2Label: `Collision Load`, m2Val: `41.2 G`, m3Label: `Sprint Max`, m3Val: `9.4 m/s`, m4Label: `FAi Risk`, m4Val: `31%` },
+      { id: `basketball`, name: `Basketball`, rate: `500Hz Court`, scalar: 86, summary: `Court Impact Rating (CIR = 0.5 Off + 0.3 Def + 0.2 Trans) fused with Dribbleup & BallerCam optical arcs.`, m1Label: `CIR Rating`, m1Val: `91.4`, m2Label: `Shot Arc`, m2Val: `47.2 deg`, m3Label: `Virality VVE`, m3Val: `+22.5%`, m4Label: `HRV Index`, m4Val: `74 ms` },
+      { id: `rugby`, name: `Rugby`, rate: `1000Hz Sportable`, scalar: 64, summary: `Sportable smart rugby ball telemetry combined with scrum torque, ruck impact density, and recovery velocity.`, m1Label: `Kick Distance`, m1Val: `52.4 m`, m2Label: `Scrum Force`, m2Val: `7.8 kN`, m3Label: `FAi Alert`, m3Val: `76.8%`, m4Label: `Availability`, m4Val: `Monitor` },
+      { id: `handball`, name: `Team Handball`, rate: `1000Hz Release`, scalar: 85, summary: `High-velocity jump-shot release tracking, mid-air steals, ball strips, and dual-gender club cohort scoring.`, m1Label: `Shot Speed`, m1Val: `28.1 m/s`, m2Label: `Mid-Air Steal`, m2Val: `15% Wt`, m3Label: `Pass Acc`, m3Val: `94.2%`, m4Label: `Composure`, m4Val: `85 / 100` },
+      { id: `tennis`, name: `Tennis`, rate: `120fps Optical`, scalar: 87, summary: `iPhone optical rig & Apple Watch IMU capturing serve velocity, topspin RPM, and open/closed stance stability.`, m1Label: `Serve Speed`, m1Val: `56.8 m/s`, m2Label: `Topspin`, m2Val: `2,840 RPM`, m3Label: `In-Bounds`, m3Val: `81.0%`, m4Label: `Footwork`, m4Val: `89 / 100` },
+      { id: `pickleball`, name: `Pickleball`, rate: `120fps Vision`, scalar: 83, summary: `SwingVision court heatmaps and kinetic injury-prevention monitoring for lateral lunge torque and wrist load.`, m1Label: `Dink Accuracy`, m1Val: `92.4%`, m2Label: `Drive Vel`, m2Val: `22.1 m/s`, m3Label: `Knee Torque`, m3Val: `Low Risk`, m4Label: `Rally Eff`, m4Val: `84 / 100` },
+      { id: `polevault`, name: `Pole Vault`, rate: `4-Cam Markerless`, scalar: 91, summary: `Four-camera markerless pose capture quantifying approach velocity, step lengths, CM kinematics, and plant impact.`, m1Label: `Approach Vel`, m1Val: `9.82 m/s`, m2Label: `Take-off Ang`, m2Val: `19.4 deg`, m3Label: `Plant Load`, m3Val: `3.4x BW`, m4Label: `CM Height`, m4Val: `5.88 m` },
+      { id: `f1`, name: `Formula 1`, rate: `1000Hz CAN-Bus`, scalar: 90, summary: `Floor flow ride-height aerodynamic stability, G-force cornering stress, and driver HRV/cortisol cockpit load.`, m1Label: `Lateral G`, m1Val: `5.2 G`, m2Label: `Floor Flow`, m2Val: `90 m/s Ref`, m3Label: `Driver HRV`, m3Val: `68 ms`, m4Label: `Cockpit Temp`, m4Val: `42.1 C` },
+      { id: `f1sim`, name: `F1 Sim & Esports`, rate: `2-3ms Stratum-1`, scalar: 89, summary: `Simucube 3 & Fanatec CAN-bus steering torque synchronized via Stratum-1 GPS/PPS clock (2–3ms sync accuracy).`, m1Label: `Wheel Torque`, m1Val: `21.5 N·m`, m2Label: `Sync Jitter`, m2Val: `2.4 ms`, m3Label: `Eye Cognitive`, m3Val: `Low Fatigue`, m4Label: `Lap Delta`, m4Val: `-0.142 s` },
+      { id: `a2rl`, name: `Autonomous (A2RL)`, rate: `1000Hz Lidar/IMU`, scalar: 93, summary: `Indy Autonomous Challenge & A2RL high-speed edge computing optimizing traction limits and slip-angle trajectories.`, m1Label: `Track Speed`, m1Val: `83.3 m/s`, m2Label: `Traction Margin`, m2Val: `96.4%`, m3Label: `Compute Loop`, m3Val: `4.1 ms`, m4Label: `Wake Stability`, m4Val: `Optimal` },
+      { id: `mtb`, name: `MTB (Flight Attendant)`, rate: `200Hz Suspension`, scalar: 85, summary: `SRAM / RockShox Flight Attendant electronically controlled damping adapting in real time to terrain shocks and climb effort.`, m1Label: `Pedal Efficiency`, m1Val: `+14.2%`, m2Label: `Shock Mode`, m2Val: `Auto-Pedal`, m3Label: `Impact Peak`, m3Val: `18.6 G`, m4Label: `Cadence`, m4Val: `86 RPM` }
+    ];
+
+    const PREBUILT_PACKS = [
+      { id: `pack-rugby`, name: `Rugby Impact Pack`, price: 1500, constituents: `Collision G, Scrum Torque, FAi, Recovery Vel`, desc: `Institutional risk feed calibrated for Sportable smart rugby telemetry and scrum fatigue forecasting.` },
+      { id: `pack-bball`, name: `Basketball Virality Pack`, price: 2500, constituents: `CIR Score, VVE-E Virality, BPI, Shot Arc`, desc: `Pairs BallerCam optical shot metrics with real-time social virality velocity for NIL valuation.` },
+      { id: `pack-fball`, name: `Football Collision Pack`, price: 2000, constituents: `Zebra Velocity, Peak G-Load, SSI, TPI`, desc: `High-frequency quarterback release and lineman impact load feed for injury-days reduction.` },
+      { id: `pack-auto`, name: `Autonomic Core Pack`, price: 800, constituents: `RHRi, HRV Recovery, Cortisol Cap CSE-E`, desc: `Foundational physiological stability baseline across all 13 sports using zero-custody scalars.` }
+    ];
+
+    const ALACARTE_INDICES = [
+      { code: `RHRi`, name: `Resting Heart Rate Index`, price: 150, desc: `Autonomic baseline & sleep readiness` },
+      { code: `BPI`, name: `Biomechanical Power Index`, price: 250, desc: `Explosive force & propulsion` },
+      { code: `FAI`, name: `Fatigue Accumulation Index`, price: 350, desc: `Cumulative joint/tissue stress load` },
+      { code: `BVI`, name: `Biometric Volatility Index`, price: 400, desc: `Intraday physiological variance` },
+      { code: `SSI`, name: `Sprint Symmetry Index`, price: 225, desc: `Bilateral stride balance & hamstring safety` },
+      { code: `CIS`, name: `Cognitive Impact Score`, price: 300, desc: `Decision speed under high-G/esports stress` },
+      { code: `ARC`, name: `Autonomic Recovery Curve`, price: 450, desc: `Center Line rebound velocity` },
+      { code: `TPI`, name: `Torque & Propulsion Index`, price: 500, desc: `Rotational torque & launch kinematics` }
+    ];
+
+    const SUNK_COST_SCENARIOS = [
+      {
+        title: `Scenario 1: Over-Fatigued Collegiate Fly-Half (T.OKAFOR-NIL)`,
+        prompt: `You entered T.OKAFOR-NIL at $128.00 ($12,800 notional). Live telemetry now shows Fatigue Accumulation Index (FAi) at 76.8% (crimson threshold >75%) and Center Line Recovery down to 54/100, while price sits at $112.40 (-12.2%). What is the disciplined institutional action?`,
+        options: [
+          { label: `Hold & double down to lower average cost basis before next match`, correct: false, reason: `Sunk Cost Fallacy trap: averaging down into a breached FAi (>75%) ignores the Volatility Horizon Warning and compounds non-linear injury drawdown.` },
+          { label: `Trigger Bio-SL exit & reallocate to high-readiness spread (>85) or DBBI hedge`, correct: true, reason: `Correct! Biometric Stop-Loss (Bio-SL) cuts exposure objectively when physical fatigue breaches critical thresholds, preserving capital regardless of sunk entry price.` },
+          { label: `Disable margin alerts and wait 30 days for box-score recovery`, correct: false, reason: `Ignoring live 100Hz biometric telemetry in favor of lagging T+1 box-scores recreates the exact basis dislocation risk BIM-APES eliminates.` }
+        ]
+      },
+      {
+        title: `Scenario 2: Viral Surge Above Intrinsic Model-NIL (M.VANCE-NIL)`,
+        prompt: `A highlight clip drives M.VANCE-NIL VVE-E virality up +40%, pushing Market-NIL to $138.00 while deterministic biomechanical Model-NIL remains $103.20 (overvalued by +33.7%). How should a quant desk respond?`,
+        options: [
+          { label: `Chase the momentum long at 5x leverage to 75% of account value`, correct: false, reason: `Violates both the 50% single-asset diversification cap and fundamental Model-vs-Market spread discipline.` },
+          { label: `Execute a capped SCOC collar or trim long exposure back inside Model-NIL bounds`, correct: true, reason: `Correct! Locking in gains or hedging the speculative delta via Synthetically Collateralized Options Contracts (SCOC) captures virality premium without overpaying.` },
+          { label: `Ignore virality metrics because media impressions do not affect Track A`, correct: false, reason: `Track A settles via CPM/CPI media impressions; virality affects short-term Market-NIL, creating a tradable mean-reversion spread.` }
+        ]
+      },
+      {
+        title: `Scenario 3: Single-Asset Concentration & 50% Diversification Rule`,
+        prompt: `Your portfolio shows strong conviction in D.BLEDSOE-NIL (Readiness 88/100, Model Spread +$15.60). You have $500,000 buying power. Can you allocate $350,000 (70%) into D.BLEDSOE-NIL?`,
+        options: [
+          { label: `Yes — high readiness eliminates idiosyncratic athlete risk`, correct: false, reason: `No single biometric asset is immune to acute on-field contact events. The 50% rule strictly caps single-asset exposure.` },
+          { label: `No — click "Show Max" to cap allocation at 50% ($250,000) and diversify across Track B/DBBI`, correct: true, reason: `Correct! Enforcing the 50% single-asset diversification cap protects the 25% maintenance buffer and prevents catastrophic margin liquidation.` },
+          { label: `Bypass the cap by splitting the same ticker across Market and Limit tickets`, correct: false, reason: `Position-level aggregation across order types still breaches institutional concentration limits and SEC/FINRA risk checks.` }
+        ]
+      }
+    ];
+
+    const WORM_LOGS_SEED = [
+      { ts: `2026-11-22 14:32:09Z`, type: `SCALAR_INGEST`, sym: `D.BLEDSOE-NIL (88/100)`, hash: `0x9f4a...7c21e8`, rule: `35 U.S.C. § 102 PASS` },
+      { ts: `2026-11-22 14:29:44Z`, type: `ONYX_T0_SETTLE`, sym: `60/20/10/10 ($125,000)`, hash: `0x3b81...e904a2`, rule: `SEC 17a-4 WORM` },
+      { ts: `2026-11-22 14:18:12Z`, type: `BIO_SL_ARMED`, sym: `T.OKAFOR-NIL (FAi >75%)`, hash: `0x7d12...4f88c9`, rule: `RISK BUFFER OK` },
+      { ts: `2026-11-22 13:55:03Z`, type: `LNX_CALIB_SIG`, sym: `Tech+Ball v4 (-48 dBm)`, hash: `0x1c65...a23b10`, rule: `ZERO-BIAS VERIFIED` }
+    ];
+
+    const CRM_LEADS_SEED = [
+      { org: `J.P. Morgan Onyx Clearing Desk`, tier: `Quant Hedge Fund`, contact: `VP Digital Settlements`, module: `Onyx T+0 + Alpha Quant PCIe`, acv: 185000, stage: `Closed Won` },
+      { org: `Columbia University Tech+Ball`, tier: `Academic B-School`, contact: `Sports Analytics Director`, module: `Track A NIL + Classroom Sim`, acv: 65000, stage: `Closed Won` },
+      { org: `Nike Performance Innovation`, tier: `Brand Sponsor`, contact: `VP Athlete Telemetry`, module: `Cloud Ball Bridge + VVE-E`, acv: 240000, stage: `Active Pilot` },
+      { org: `Morgan Stanley GSE Wealth`, tier: `Quant Hedge Fund`, contact: `Sports Wealth Advisory`, module: `BLEI-E 5-Factor Matrix`, acv: 210000, stage: `Active Pilot` },
+      { org: `Adidas Connected Football`, tier: `Brand Sponsor`, contact: `Global Smart Ball Lead`, module: `/stream/ballMetrics Webhook`, acv: 195000, stage: `Due Diligence` },
+      { org: `Big Ten Collegiate Athletics`, tier: `Collegiate / NIL`, contact: `Deputy AD Compliance`, module: `XR War Room + Bio-SL`, acv: 120000, stage: `Active Pilot` }
+    ];
+
+    /* ==============================================================
+       APPLICATION STATE (Persisted via window.notebookAppApi)
+       ============================================================== */
+    let appState = {
+      role: `student`,
+      activeTab: `trading`,
+      track: `A`,
+      subPortfolio: `stock`,
+      selectedSymbol: `D.BLEDSOE-NIL`,
+      cash: 100000.00,
+      realizedPnl: 0.00,
+      positions: [
+        { symbol: `D.BLEDSOE-NIL`, qty: 40, avgCost: 138.50, leverage: 1, type: `LONG` },
+        { symbol: `M.VANCE-NIL`, qty: 60, avgCost: 91.00, leverage: 1, type: `LONG` }
+      ],
+      scocOptions: [
+        { contract: `D.BLEDSOE 150C SCOC`, delta: `+0.62`, collateral: 2400.00, intrinsicSpread: `+$15.60`, expiry: `14d` },
+        { contract: `NBL-SWAP 255C SCOC`, delta: `+0.54`, collateral: 3100.00, intrinsicSpread: `+$16.50`, expiry: `30d` }
+      ],
+      shortPositions: [
+        { symbol: `T.OKAFOR-NIL`, qty: 25, entryPrice: 118.40, bioCoverTrigger: `FAi < 55%` }
+      ],
+      licensedPacks: [`pack-auto`],
+      selectedSynthIndices: [`FAI`, `ARC`, `BPI`],
+      synthWeights: { FAI: 40, ARC: 35, BPI: 25 },
+      mintedIndices: [
+        { name: `BIM-CORE-3`, formula: `40% FAI + 35% ARC + 25% BPI`, feePaid: 500 }
+      ],
+      sunkCostIdx: 0,
+      sunkCostAnswered: {},
+      gpuWaitlist: [],
+      crmLeads: CRM_LEADS_SEED.slice(),
+      wormLogs: WORM_LOGS_SEED.slice(),
+      copilotHistory: []
+    };
+
+    let selectedSportId = `techball`;
+    let selectedCloudPartner = `Adidas`;
+    let selectedRig = `ballercam`;
+    let selectedXrCam = `centerline`;
+    let selectedXrAthlete = `D.BLEDSOE-NIL`;
+    let selectedCodeLang = `cpp`;
+    let pendingOrder = null;
+
+    let arbitrageChartInstance = null;
+    let latencyChartInstance = null;
+    let xrThreeRenderer = null;
+    let xrThreeScene = null;
+    let xrThreeCamera = null;
+    let xrThreeRings = [];
+    let xrAnimFrame = null;
+    let poseAnimFrame = null;
+
+    /* Helper: Read CSS token values for Canvas/Charts */
+    function getCssVar(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function fmtUsd(n) {
+      const sign = n < 0 ? `-` : ``;
+      return `${sign}$${Math.abs(n).toLocaleString(`en-US`, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    /* ==============================================================
+       PERSISTENCE VIA notebookAppApi
+       ============================================================== */
+    async function saveAppState() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === `function`) {
+          await window.notebookAppApi.setAppState(appState);
+        }
+      } catch (err) {
+        console.warn(`State save skipped:`, err);
+      }
+    }
+
+    async function loadAndBoot() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === `object`) {
+            appState = Object.assign({}, appState, saved);
+          }
+        }
+      } catch (err) {
+        console.warn(`State load fallback:`, err);
+      }
+
+      /* Render all modules */
+      applyRoleUI(appState.role, false);
+      applyTabUI(appState.activeTab, false);
+      setTrack(appState.track, false);
+      populateSymbolSelect();
+      renderAccountKpis();
+      renderSubPortfolio();
+      renderDojiChart();
+      renderSunkCostScenario();
+      renderSportsGrid();
+      selectSport(selectedSportId);
+      selectCloudPartner(selectedCloudPartner);
+      selectCameraRig(selectedRig);
+      renderMarketplace();
+      renderSynthSliders();
+      renderMintedIndices();
+      renderXrAthleteButtons();
+      initOrUpdateArbitrageChart();
+      switchCodeLang(selectedCodeLang);
+      initOrUpdateLatencyChart();
+      updateOnyxWaterfall();
+      renderWormLogs();
+      renderCrmTable();
+      updateGpuWaitlistCount();
+      restoreCopilotHistory();
+
+      if (window.lucide && typeof window.lucide.createIcons === `function`) {
+        window.lucide.createIcons();
+      }
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === `function`) {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    /* ==============================================================
+       NAVIGATION & ROLE SWITCHING
+       ============================================================== */
+    function switchRole(roleKey) {
+      applyRoleUI(roleKey, true);
+    }
+
+    function applyRoleUI(roleKey, persist) {
+      if (!ROLE_CONFIG[roleKey]) return;
+      appState.role = roleKey;
+      const cfg = ROLE_CONFIG[roleKey];
+      const tagEl = document.getElementById(`persona-tag`);
+      const descEl = document.getElementById(`persona-desc`);
+      const ctaEl = document.getElementById(`persona-cta`);
+      if (tagEl) tagEl.textContent = cfg.tag;
+      if (descEl) descEl.textContent = cfg.desc;
+      if (ctaEl) ctaEl.textContent = cfg.ctaLabel;
+
+      const btns = document.querySelectorAll(`.role-btn`);
+      btns.forEach(function (b) {
+        b.classList.toggle(`active`, b.dataset.role === roleKey);
+      });
+      if (persist) saveAppState();
+    }
+
+    function runPersonaQuickAction() {
+      const cfg = ROLE_CONFIG[appState.role];
+      if (!cfg) return;
+      switchTab(cfg.targetTab);
+      if (cfg.scrollTarget) {
+        const el = document.getElementById(cfg.scrollTarget);
+        if (el) el.scrollIntoView({ behavior: `smooth`, block: `start` });
+      }
+    }
+
+    function switchTab(tabKey) {
+      applyTabUI(tabKey, true);
+    }
+
+    function applyTabUI(tabKey, persist) {
+      appState.activeTab = tabKey;
+      document.querySelectorAll(`.tab-panel`).forEach(function (p) {
+        p.classList.toggle(`active`, p.id === `tab-${tabKey}`);
+      });
+      document.querySelectorAll(`.nav-tab, .dock-btn`).forEach(function (b) {
+        b.classList.toggle(`active`, b.dataset.tab === tabKey);
+      });
+
+      if (tabKey === `xr`) {
+        setTimeout(function () {
+          initXrPitch();
+          initOrUpdateArbitrageChart();
+        }, 40);
+      } else if (tabKey === `quant`) {
+        setTimeout(function () { initOrUpdateLatencyChart(); }, 40);
+      } else if (tabKey === `telemetry`) {
+        setTimeout(function () { startPoseRigAnimation(); }, 40);
+      } else if (tabKey === `trading`) {
+        setTimeout(function () { renderDojiChart(); }, 40);
+      }
+      if (persist) saveAppState();
+    }
+
+    function resetTerminalPrompt(btn) {
+      if (btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Click Again to Confirm Reset`;
+        setTimeout(function () {
+          if (btn) {
+            btn.dataset.armed = `false`;
+            btn.textContent = `Reset Virtual Account`;
+          }
+        }, 4000);
+        return;
+      }
+      btn.dataset.armed = `false`;
+      btn.textContent = `Reset Virtual Account`;
+      appState.cash = 100000.00;
+      appState.realizedPnl = 0.00;
+      appState.positions = [
+        { symbol: `D.BLEDSOE-NIL`, qty: 40, avgCost: 138.50, leverage: 1, type: `LONG` },
+        { symbol: `M.VANCE-NIL`, qty: 60, avgCost: 91.00, leverage: 1, type: `LONG` }
+      ];
+      appState.sunkCostAnswered = {};
+      appState.sunkCostIdx = 0;
+      renderAccountKpis();
+      renderSubPortfolio();
+      renderSunkCostScenario();
+      saveAppState();
+    }
+
+    /* ==============================================================
+       ACCOUNT KPIs & DUAL-TRACK MARKET TABLE
+       ============================================================== */
+    function renderAccountKpis() {
+      let equityValue = 0;
+      let marginUsed = 0;
+      appState.positions.forEach(function (pos) {
+        const asset = ASSETS_DATA.find(function (a) { return a.symbol === pos.symbol; });
+        const px = asset ? asset.price : pos.avgCost;
+        const notional = pos.qty * px;
+        const costBasis = pos.qty * pos.avgCost;
+        const pnl = pos.type === `SHORT` ? (costBasis - notional) : (notional - costBasis);
+        equityValue += (costBasis / pos.leverage) + pnl;
+        marginUsed += notional / pos.leverage;
+      });
+      const totalAccount = appState.cash + equityValue;
+      const totalReturnPct = ((totalAccount - 100000) / 100000) * 100;
+      const buyingPower = Math.max(0, totalAccount * 5 - marginUsed * 5 + marginUsed);
+      const marginHealth = Math.max(12, Math.min(100, 100 - (marginUsed / Math.max(1, totalAccount)) * 35));
+
+      const accEl = document.getElementById(`kpi-account-value`);
+      const retEl = document.getElementById(`kpi-total-return`);
+      const bpEl = document.getElementById(`kpi-buying-power`);
+      const cashEl = document.getElementById(`kpi-cash-balance`);
+      const healthEl = document.getElementById(`kpi-margin-health`);
+      const healthBar = document.getElementById(`kpi-health-bar`);
+
+      if (accEl) accEl.textContent = fmtUsd(totalAccount);
+      if (retEl) {
+        const diff = totalAccount - 100000;
+        retEl.textContent = `${totalReturnPct >= 0 ? `+` : ``}${totalReturnPct.toFixed(2)}% (${fmtUsd(diff)})`;
+        retEl.className = `figure-delta ${diff >= 0 ? `positive` : `negative`}`;
+      }
+      if (bpEl) bpEl.textContent = fmtUsd(buyingPower);
+      if (cashEl) cashEl.textContent = fmtUsd(appState.cash);
+      if (healthEl) healthEl.textContent = `${marginHealth.toFixed(1)}%`;
+      if (healthBar) {
+        healthBar.style.width = `${marginHealth.toFixed(0)}%`;
+        healthBar.style.backgroundColor = marginHealth < 45 ? getCssVar(`--error`) : getCssVar(`--positive`);
+      }
+    }
+
+    function setTrack(trackKey, persist) {
+      appState.track = trackKey;
+      const btnA = document.getElementById(`track-a-btn`);
+      const btnB = document.getElementById(`track-b-btn`);
+      const ctxBar = document.getElementById(`track-context-bar`);
+      if (btnA) btnA.classList.toggle(`active`, trackKey === `A`);
+      if (btnB) btnB.classList.toggle(`active`, trackKey === `B`);
+      if (ctxBar) {
+        ctxBar.innerHTML = trackKey === `A`
+          ? `<strong>Track A — Amateur &amp; Collegiate NIL:</strong> Tracks Model NIL vs. Market NIL dislocation spread, CPM/CPI media settlement, and automated <strong>60% Student-Athlete Trust Disbursements</strong> via J.P. Morgan Onyx T+0.`
+          : `<strong>Track B — Pro Swaps &amp; BLEI-E Baskets:</strong> Institutional cohort swaps and <strong>BLEI-E 5-Factor Risk Engine</strong> (PMF-E Physiological Load, CSE-E Cortisol Stress, FBR-E Fan Base Revenue, SEF-E Sponsor Equity, WD-CS-E Virality Quality).`;
+      }
+      renderMarketAssetsTable();
+      if (persist !== false) saveAppState();
+    }
+
+    function renderMarketAssetsTable() {
+      const tbody = document.getElementById(`market-assets-tbody`);
+      if (!tbody) return;
+      const filtered = ASSETS_DATA.filter(function (a) { return a.track === appState.track; });
+      tbody.innerHTML = filtered.map(function (a) {
+        const spread = a.model - a.price;
+        const spreadPct = (spread / a.price) * 100;
+        const spreadCls = spread >= 0 ? `pos` : `neg`;
+        const readyCls = a.readiness >= 75 ? `pos` : `neg`;
+        const isSel = appState.selectedSymbol === a.symbol ? `selected-row` : ``;
+        return `
+          <tr class="${isSel}">
+            <td style="font-family:var(--font-mono);font-weight:600;">${a.symbol}</td>
+            <td>${a.name}</td>
+            <td>${a.sport}</td>
+            <td class="num">${fmtUsd(a.price)}</td>
+            <td class="num">${fmtUsd(a.model)}</td>
+            <td class="num"><span class="stamp-tag ${spreadCls}">${spread >= 0 ? `+` : ``}${spreadPct.toFixed(1)}%</span></td>
+            <td class="num"><span class="stamp-tag ${readyCls}">${a.readiness} / 100</span></td>
+            <td><span class="stamp-tag navy">${a.factor}</span></td>
+            <td class="num">
+              <button type="button" class="btn btn-sm btn-outline" onclick="selectAssetForTrade('${a.symbol}')">Trade / Chart</button>
+            </td>
+          </tr>
+        `;
+      }).join(``);
+    }
+
+    function selectAssetForTrade(symbol) {
+      appState.selectedSymbol = symbol;
+      const sel = document.getElementById(`order-symbol`);
+      if (sel) sel.value = symbol;
+      renderMarketAssetsTable();
+      onOrderSymbolChange();
+      renderDojiChart();
+      saveAppState();
+    }
+
+    function populateSymbolSelect() {
+      const sel = document.getElementById(`order-symbol`);
+      if (!sel) return;
+      sel.innerHTML = ASSETS_DATA.map(function (a) {
+        return `<option value="${a.symbol}">${a.symbol} — ${a.name}</option>`;
+      }).join(``);
+      sel.value = appState.selectedSymbol;
+      onOrderSymbolChange();
+    }
+
+    /* ==============================================================
+       BIOMETRIC FATIGUE DOJI CANDLESTICK + BIOMECHFLOW HUD
+       ============================================================== */
+    function renderDojiChart() {
+      const canvas = document.getElementById(`doji-canvas`);
+      if (!canvas) return;
+      const asset = ASSETS_DATA.find(function (a) { return a.symbol === appState.selectedSymbol; }) || ASSETS_DATA[0];
+      const titleEl = document.getElementById(`doji-chart-title`);
+      if (titleEl) titleEl.textContent = `Biometric Fatigue Doji — ${asset.symbol}`;
+
+      const hudRec = document.getElementById(`hud-recovery`);
+      const hudStr = document.getElementById(`hud-stress`);
+      const hudFai = document.getElementById(`hud-fai`);
+      const hudVel = document.getElementById(`hud-velocity`);
+      if (hudRec) hudRec.textContent = `${asset.recovery.toFixed(1)} / 100`;
+      if (hudStr) hudStr.textContent = `${asset.stress.toFixed(1)} N·m`;
+      if (hudFai) hudFai.textContent = `${asset.fai.toFixed(1)}% ${asset.fai > 70 ? `HIGH` : `Low`}`;
+      if (hudVel) hudVel.textContent = `${asset.velocity.toFixed(1)} m/s`;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const w = Math.max(320, Math.floor(rect.width - 16));
+      const h = 300;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext(`2d`);
+      ctx.clearRect(0, 0, w, h);
+
+      const navy = getCssVar(`--primary`);
+      const gold = getCssVar(`--outline`);
+      const pos = getCssVar(`--positive`);
+      const err = getCssVar(`--error`);
+      const gridCol = getCssVar(`--outline-variant`);
+      const textMuted = getCssVar(`--on-surface-variant`);
+
+      /* Generate deterministic 14-candle sequence ending at asset.price */
+      const candles = [];
+      let base = asset.price * 0.94;
+      for (let i = 0; i < 14; i++) {
+        const seed = (asset.symbol.charCodeAt(0) + i * 7) % 11;
+        const isDoji = (i === 5 || i === 10 || (asset.fai > 70 && i === 13));
+        const delta = isDoji ? (seed % 2 === 0 ? 0.35 : -0.35) : ((seed - 4.5) * 1.15);
+        const open = base;
+        const close = i === 13 ? asset.price : Math.max(10, open + delta);
+        const wick = isDoji ? 5.8 : 2.6;
+        const high = Math.max(open, close) + wick + (seed % 3);
+        const low = Math.min(open, close) - wick - ((seed + 1) % 3);
+        const overlayVal = Math.max(15, Math.min(95, asset.fai + (i - 10) * 1.8 + (isDoji ? 18 : 0)));
+        candles.push({ open, close, high, low, isDoji, overlayVal });
+        base = close;
+      }
+
+      const minP = Math.min.apply(null, candles.map(function (c) { return c.low; })) - 3;
+      const maxP = Math.max.apply(null, candles.map(function (c) { return c.high; })) + 3;
+      const padL = 52;
+      const padR = 46;
+      const padT = 22;
+      const padB = 28;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      function yForPrice(p) {
+        return padT + plotH - ((p - minP) / Math.max(1, maxP - minP)) * plotH;
+      }
+      function yForOverlay(v) {
+        return padT + plotH - (v / 100) * plotH;
+      }
+
+      /* Horizontal gridlines & labels */
+      ctx.font = `500 11px "IBM Plex Mono", monospace`;
+      ctx.lineWidth = 1;
+      for (let g = 0; g <= 4; g++) {
+        const py = padT + (plotH / 4) * g;
+        const priceTick = maxP - ((maxP - minP) / 4) * g;
+        ctx.strokeStyle = gridCol;
+        ctx.beginPath();
+        ctx.moveTo(padL, py);
+        ctx.lineTo(w - padR, py);
+        ctx.stroke();
+        ctx.fillStyle = textMuted;
+        ctx.textAlign = `right`;
+        ctx.fillText(`$${priceTick.toFixed(0)}`, padL - 6, py + 4);
+      }
+
+      /* Draw overlay biometric curve */
+      ctx.strokeStyle = gold;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const stepX = plotW / candles.length;
+      candles.forEach(function (c, idx) {
+        const cx = padL + stepX * idx + stepX / 2;
+        const cy = yForOverlay(c.overlayVal);
+        if (idx === 0) ctx.moveTo(cx, cy);
+        else ctx.lineTo(cx, cy);
+      });
+      ctx.stroke();
+
+      /* Draw candlesticks */
+      candles.forEach(function (c, idx) {
+        const cx = padL + stepX * idx + stepX / 2;
+        const yHigh = yForPrice(c.high);
+        const yLow = yForPrice(c.low);
+        const yOpen = yForPrice(c.open);
+        const yClose = yForPrice(c.close);
+        const bullish = c.close >= c.open;
+        const color = c.isDoji ? gold : (bullish ? pos : err);
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(cx, yHigh);
+        ctx.lineTo(cx, yLow);
+        ctx.stroke();
+
+        const bw = Math.max(6, Math.min(18, stepX * 0.52));
+        const bodyTop = Math.min(yOpen, yClose);
+        const bodyH = Math.max(2, Math.abs(yClose - yOpen));
+        ctx.fillStyle = color;
+        ctx.fillRect(cx - bw / 2, bodyTop, bw, bodyH);
+
+        if (c.isDoji) {
+          ctx.fillStyle = navy;
+          ctx.textAlign = `center`;
+          ctx.fillText(`DOJI`, cx, yHigh - 6);
+        }
+      });
+
+      /* Right axis label for overlay */
+      const ovSelect = document.getElementById(`doji-overlay-select`);
+      const ovName = ovSelect ? ovSelect.value : `FAI`;
+      ctx.fillStyle = gold;
+      ctx.textAlign = `left`;
+      ctx.fillText(`${ovName} %`, w - padR + 4, padT + 10);
+    }
+
+    function simulateTelemetryTick() {
+      ASSETS_DATA.forEach(function (a) {
+        const jitter = (Math.random() - 0.48) * 1.4;
+        a.price = Math.max(15, Number((a.price + jitter).toFixed(2)));
+        a.velocity = Number(Math.max(10, Math.min(22, a.velocity + (Math.random() - 0.5) * 0.6)).toFixed(1));
+        a.recovery = Number(Math.max(40, Math.min(98, a.recovery + (Math.random() - 0.5) * 2)).toFixed(1));
+      });
+      renderMarketAssetsTable();
+      onOrderSymbolChange();
+      renderDojiChart();
+      renderAccountKpis();
+      renderSubPortfolio();
+    }
+
+    /* ==============================================================
+       INVESTOPEDIA ORDER TICKET & 50% CAP ENFORCEMENT
+       ============================================================== */
+    function onOrderSymbolChange() {
+      const sel = document.getElementById(`order-symbol`);
+      if (!sel) return;
+      appState.selectedSymbol = sel.value;
+      const asset = ASSETS_DATA.find(function (a) { return a.symbol === sel.value; });
+      const pill = document.getElementById(`ticket-quote-pill`);
+      if (pill && asset) pill.textContent = `Quote: ${fmtUsd(asset.price)}`;
+      updateOrderPreviewEstimate();
+    }
+
+    function onOrderTypeChange() {
+      const typeEl = document.getElementById(`order-type`);
+      const trigEl = document.getElementById(`order-trigger`);
+      const lblEl = document.getElementById(`order-trigger-label`);
+      if (!typeEl || !trigEl || !lblEl) return;
+      const t = typeEl.value;
+      if (t === `BIO-SL`) {
+        lblEl.textContent = `Bio-SL Trigger (FAi % Threshold)`;
+        trigEl.value = `FAi > 75% OR Recovery < 50`;
+      } else if (t === `KIN-LIMIT`) {
+        lblEl.textContent = `Kin-Limit Smart-Ball Trigger`;
+        trigEl.value = `Ball Speed > 15.0 m/s`;
+      } else if (t === `LIMIT`) {
+        const asset = ASSETS_DATA.find(function (a) { return a.symbol === appState.selectedSymbol; });
+        lblEl.textContent = `Limit Price ($ USD)`;
+        trigEl.value = asset ? (asset.price * 0.98).toFixed(2) : `100.00`;
+      } else {
+        lblEl.textContent = `Execution Condition`;
+        trigEl.value = t === `MARKET` ? `Market Spot` : `5% Trailing / OCO`;
+      }
+      updateOrderPreviewEstimate();
+    }
+
+    function getMaxUnitsFor50Cap(price, leverage) {
+      const maxSingleNotional = 250000; /* 50% of $500,000 buying power */
+      const affordableNotional = Math.min(maxSingleNotional, appState.cash * leverage);
+      return Math.max(1, Math.floor(affordableNotional / Math.max(1, price)));
+    }
+
+    function applyShowMaxCap() {
+      const asset = ASSETS_DATA.find(function (a) { return a.symbol === appState.selectedSymbol; });
+      const levEl = document.getElementById(`order-leverage`);
+      const qtyEl = document.getElementById(`order-qty`);
+      if (!asset || !levEl || !qtyEl) return;
+      const lev = Number(levEl.value) || 1;
+      const maxUnits = getMaxUnitsFor50Cap(asset.price, lev);
+      qtyEl.value = maxUnits;
+      updateOrderPreviewEstimate();
+    }
+
+    function updateOrderPreviewEstimate() {
+      const asset = ASSETS_DATA.find(function (a) { return a.symbol === appState.selectedSymbol; });
+      const qtyEl = document.getElementById(`order-qty`);
+      const levEl = document.getElementById(`order-leverage`);
+      const estEl = document.getElementById(`order-ticket-estimate`);
+      if (!asset || !qtyEl || !levEl || !estEl) return;
+
+      const qty = Math.max(1, Number(qtyEl.value) || 1);
+      const lev = Number(levEl.value) || 1;
+      const notional = qty * asset.price;
+      const marginReq = notional / lev;
+      const capPass = notional <= 250000;
+      const cashPass = marginReq <= appState.cash;
+      estEl.className = `inline-msg ${capPass && cashPass ? `` : `error`}`;
+      estEl.innerHTML = `Estimated Notional: <strong>${fmtUsd(notional)}</strong> &middot; Margin Req: <strong>${fmtUsd(marginReq)}</strong> &middot; 50% Cap ($250k): <strong>${capPass ? `PASS` : `BREACH (Reduce Qty)`}</strong>`;
+    }
+
+    function openOrderPreviewModal() {
+      const asset = ASSETS_DATA.find(function (a) { return a.symbol === appState.selectedSymbol; });
+      const action = document.getElementById(`order-action`).value;
+      const type = document.getElementById(`order-type`).value;
+      const lev = Number(document.getElementById(`order-leverage`).value) || 1;
+      const qty = Math.max(1, Number(document.getElementById(`order-qty`).value) || 1);
+      const trigger = document.getElementById(`order-trigger`).value;
+      if (!asset) return;
+
+      const notional = qty * asset.price;
+      const marginReq = notional / lev;
+      const commission = appState.track === `A` ? 0 : Number((notional * 0.0025).toFixed(2));
+      const capPass = notional <= 250000;
+
+      pendingOrder = { symbol: asset.symbol, action, type, lev, qty, price: asset.price, notional, marginReq, commission, trigger, capPass };
+
+      const body = document.getElementById(`order-modal-body`);
+      const confirmBtn = document.getElementById(`confirm-order-btn`);
+      if (body) {
+        body.innerHTML = `
+          <div><strong>Symbol:</strong> ${asset.symbol} (${asset.name})</div>
+          <div><strong>Action &amp; Type:</strong> ${action} &middot; ${type} (${trigger})</div>
+          <div><strong>Quantity &amp; Leverage:</strong> ${qty} units @ ${lev}x</div>
+          <div><strong>Estimated Fill Price:</strong> ${fmtUsd(asset.price)}</div>
+          <div><strong>Gross Notional:</strong> ${fmtUsd(notional)}</div>
+          <div><strong>Margin Required:</strong> ${fmtUsd(marginReq)}</div>
+          <div><strong>Commission / DRB IP Fee:</strong> ${fmtUsd(commission)}</div>
+          <div class="inline-msg ${capPass ? `success` : `error`}">
+            ${capPass ? `50% Single-Asset Diversification Cap: COMPLIANT ($${notional.toLocaleString()} <= $250,000)` : `BLOCKED: Exceeds 50% single-asset diversification cap ($250,000 max). Use Show Max to resize.`}
+          </div>
+        `;
+      }
+      if (confirmBtn) confirmBtn.disabled = !capPass;
+      const modal = document.getElementById(`order-preview-modal`);
+      if (modal) modal.classList.add(`open`);
+    }
+
+    function closeOrderPreviewModal() {
+      const modal = document.getElementById(`order-preview-modal`);
+      if (modal) modal.classList.remove(`open`);
+    }
+
+    function executeConfirmedOrder() {
+      if (!pendingOrder || !pendingOrder.capPass) return;
+      const o = pendingOrder;
+      if (o.action === `BUY`) {
+        if (o.marginReq + o.commission > appState.cash) {
+          closeOrderPreviewModal();
+          return;
+        }
+        appState.cash -= (o.marginReq + o.commission);
+        const existing = appState.positions.find(function (p) { return p.symbol === o.symbol && p.type === `LONG`; });
+        if (existing) {
+          const totalQty = existing.qty + o.qty;
+          existing.avgCost = ((existing.qty * existing.avgCost) + (o.qty * o.price)) / totalQty;
+          existing.qty = totalQty;
+        } else {
+          appState.positions.push({ symbol: o.symbol, qty: o.qty, avgCost: o.price, leverage: o.lev, type: `LONG` });
+        }
+      } else if (o.action === `SELL`) {
+        const idx = appState.positions.findIndex(function (p) { return p.symbol === o.symbol && p.type === `LONG`; });
+        if (idx >= 0) {
+          const pos = appState.positions[idx];
+          const sellQty = Math.min(pos.qty, o.qty);
+          const proceeds = (sellQty * pos.avgCost) / pos.leverage + sellQty * (o.price - pos.avgCost);
+          appState.cash += proceeds;
+          pos.qty -= sellQty;
+          if (pos.qty <= 0) appState.positions.splice(idx, 1);
+        }
+      } else if (o.action === `SHORT`) {
+        appState.shortPositions.push({ symbol: o.symbol, qty: o.qty, entryPrice: o.price, bioCoverTrigger: o.trigger });
+      } else if (o.action === `COVER`) {
+        appState.shortPositions = appState.shortPositions.filter(function (s) { return s.symbol !== o.symbol; });
+      }
+
+      appState.wormLogs.unshift({
+        ts: new Date().toISOString().replace(`T`, ` `).slice(0, 19) + `Z`,
+        type: `${o.action}_${o.type}`,
+        sym: `${o.symbol} x${o.qty}`,
+        hash: `0x${Math.floor(Math.random() * 99999).toString(16)}...worm`,
+        rule: `50% CAP & SEC 17a-4 OK`
+      });
+
+      closeOrderPreviewModal();
+      renderAccountKpis();
+      renderSubPortfolio();
+      renderWormLogs();
+      saveAppState();
+    }
+
+    function switchSubPortfolio(key) {
+      appState.subPortfolio = key;
+      document.getElementById(`subport-stock-btn`).classList.toggle(`active`, key === `stock`);
+      document.getElementById(`subport-option-btn`).classList.toggle(`active`, key === `option`);
+      document.getElementById(`subport-short-btn`).classList.toggle(`active`, key === `short`);
+      renderSubPortfolio();
+      saveAppState();
+    }
+
+    function renderSubPortfolio() {
+      const thead = document.getElementById(`subportfolio-thead`);
+      const tbody = document.getElementById(`subportfolio-tbody`);
+      if (!thead || !tbody) return;
+
+      if (appState.subPortfolio === `stock`) {
+        thead.innerHTML = `<tr><th>Symbol</th><th class="num">Qty</th><th class="num">Avg Cost</th><th class="num">Last Price</th><th class="num">Market Value</th><th class="num">Unrealized P&amp;L</th></tr>`;
+        tbody.innerHTML = appState.positions.length ? appState.positions.map(function (p) {
+          const asset = ASSETS_DATA.find(function (a) { return a.symbol === p.symbol; });
+          const px = asset ? asset.price : p.avgCost;
+          const mkt = p.qty * px;
+          const pnl = (px - p.avgCost) * p.qty;
+          return `<tr><td style="font-family:var(--font-mono);font-weight:600;">${p.symbol}</td><td class="num">${p.qty}</td><td class="num">${fmtUsd(p.avgCost)}</td><td class="num">${fmtUsd(px)}</td><td class="num">${fmtUsd(mkt)}</td><td class="num"><span class="stamp-tag ${pnl >= 0 ? `pos` : `neg`}">${pnl >= 0 ? `+` : ``}${fmtUsd(pnl)}</span></td></tr>`;
+        }).join(``) : `<tr><td colspan="6">No active long holdings. Use the Order Ticket to place a virtual trade.</td></tr>`;
+      } else if (appState.subPortfolio === `option`) {
+        thead.innerHTML = `<tr><th>SCOC Contract</th><th class="num">Delta</th><th class="num">Collateral Locked</th><th class="num">Intrinsic Spread</th><th class="num">Expiry</th></tr>`;
+        tbody.innerHTML = appState.scocOptions.map(function (o) {
+          return `<tr><td style="font-family:var(--font-mono);font-weight:600;">${o.contract}</td><td class="num">${o.delta}</td><td class="num">${fmtUsd(o.collateral)}</td><td class="num"><span class="stamp-tag pos">${o.intrinsicSpread}</span></td><td class="num">${o.expiry}</td></tr>`;
+        }).join(``);
+      } else {
+        thead.innerHTML = `<tr><th>Shorted Symbol</th><th class="num">Qty Borrowed</th><th class="num">Entry Price</th><th class="num">Current Price</th><th>Bio-Cover Trigger</th></tr>`;
+        tbody.innerHTML = appState.shortPositions.length ? appState.shortPositions.map(function (s) {
+          const asset = ASSETS_DATA.find(function (a) { return a.symbol === s.symbol; });
+          const px = asset ? asset.price : s.entryPrice;
+          return `<tr><td style="font-family:var(--font-mono);font-weight:600;">${s.symbol}</td><td class="num">${s.qty}</td><td class="num">${fmtUsd(s.entryPrice)}</td><td class="num">${fmtUsd(px)}</td><td><span class="stamp-tag navy">${s.bioCoverTrigger}</span></td></tr>`;
+        }).join(``) : `<tr><td colspan="5">No open short positions.</td></tr>`;
+      }
+    }
+
+    /* ==============================================================
+       SUNK COST FALLACY CHALLENGE
+       ============================================================== */
+    function renderSunkCostScenario() {
+      const idx = appState.sunkCostIdx;
+      const sc = SUNK_COST_SCENARIOS[idx];
+      if (!sc) return;
+      document.getElementById(`sc-scenario-counter`).textContent = `SCENARIO ${idx + 1} OF ${SUNK_COST_SCENARIOS.length}`;
+      document.getElementById(`sc-scenario-title`).textContent = sc.title;
+      document.getElementById(`sc-scenario-prompt`).textContent = sc.prompt;
+
+      const optWrap = document.getElementById(`sc-options-container`);
+      const chosen = appState.sunkCostAnswered[idx];
+      optWrap.innerHTML = sc.options.map(function (o, oIdx) {
+        const isSel = chosen && chosen.choice === oIdx;
+        return `<button type="button" class="btn ${isSel ? `btn-primary` : `btn-outline`}" style="justify-content:flex-start;text-align:left;" onclick="answerSunkCost(${idx}, ${oIdx})">${o.label}</button>`;
+      }).join(``);
+
+      const fb = document.getElementById(`sc-feedback-box`);
+      if (chosen) {
+        const opt = sc.options[chosen.choice];
+        fb.innerHTML = `<div class="inline-msg ${opt.correct ? `success` : `error`}" style="margin-top:0;">${opt.reason}</div>`;
+      } else {
+        fb.textContent = `Select an execution choice to evaluate against the Dashawn Bledsoe Risk Protocol and BLEI-E stop-loss math.`;
+      }
+
+      const score = Object.values(appState.sunkCostAnswered).filter(function (v) { return v.correct; }).length;
+      document.getElementById(`sunk-cost-score-badge`).textContent = `Challenge Score: ${score} / ${SUNK_COST_SCENARIOS.length}`;
+    }
+
+    function answerSunkCost(sIdx, oIdx) {
+      const opt = SUNK_COST_SCENARIOS[sIdx].options[oIdx];
+      appState.sunkCostAnswered[sIdx] = { choice: oIdx, correct: opt.correct };
+      renderSunkCostScenario();
+      saveAppState();
+    }
+
+    function nextSunkScenario() {
+      appState.sunkCostIdx = (appState.sunkCostIdx + 1) % SUNK_COST_SCENARIOS.length;
+      renderSunkCostScenario();
+    }
+
+    function prevSunkScenario() {
+      appState.sunkCostIdx = (appState.sunkCostIdx - 1 + SUNK_COST_SCENARIOS.length) % SUNK_COST_SCENARIOS.length;
+      renderSunkCostScenario();
+    }
+
+    /* ==============================================================
+       TAB 2: MULTI-SPORT SENSORS, DUAL SMART BALL BRIDGE & RIGS
+       ============================================================== */
+    function renderSportsGrid() {
+      const grid = document.getElementById(`sports-grid`);
+      if (!grid) return;
+      grid.innerHTML = SPORTS_TELEMETRY.map(function (s) {
+        const active = s.id === selectedSportId ? `active` : ``;
+        return `
+          <button type="button" class="sport-tile ${active}" onclick="selectSport('${s.id}')">
+            <span style="font-weight:700;font-size:0.84rem;color:var(--primary);">${s.name}</span>
+            <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--tertiary);">Scalar ${s.scalar}/100 &middot; ${s.rate}</span>
+          </button>
+        `;
+      }).join(``);
+    }
+
+    function selectSport(id) {
+      selectedSportId = id;
+      const s = SPORTS_TELEMETRY.find(function (item) { return item.id === id; }) || SPORTS_TELEMETRY[0];
+      renderSportsGrid();
+      document.getElementById(`sport-detail-title`).textContent = s.name;
+      document.getElementById(`sport-detail-rate`).textContent = s.rate;
+      document.getElementById(`sport-detail-desc`).textContent = s.summary;
+      document.getElementById(`sport-fico-scalar`).textContent = `${s.scalar} / 100`;
+      document.getElementById(`sport-detail-metrics`).innerHTML = `
+        <div class="capsule-pill"><div class="capsule-pill-title">${s.m1Label}</div><div class="capsule-pill-val">${s.m1Val}</div></div>
+        <div class="capsule-pill"><div class="capsule-pill-title">${s.m2Label}</div><div class="capsule-pill-val">${s.m2Val}</div></div>
+        <div class="capsule-pill"><div class="capsule-pill-title">${s.m3Label}</div><div class="capsule-pill-val">${s.m3Val}</div></div>
+        <div class="capsule-pill"><div class="capsule-pill-title">${s.m4Label}</div><div class="capsule-pill-val">${s.m4Val}</div></div>
+      `;
+    }
+
+    function selectBleDevice() {
+      const dev = document.getElementById(`ble-device-select`).value;
+      document.getElementById(`ble-status-tag`).textContent = `Paired: ${dev.split(` `)[0]}`;
+      pulseBleTelemetry();
+    }
+
+    function updateBleStats() {
+      pulseBleTelemetry();
+    }
+
+    function pulseBleTelemetry() {
+      const rssi = -42 - Math.floor(Math.random() * 14);
+      document.getElementById(`ble-rssi-val`).textContent = `${rssi} dBm`;
+      document.getElementById(`ble-loss-val`).textContent = `0.00%`;
+    }
+
+    function runZeroBiasCalibration() {
+      const dev = document.getElementById(`ble-device-select`).value;
+      const rate = document.getElementById(`ble-poll-rate`).value;
+      document.getElementById(`ble-bias-val`).textContent = `0.000 g`;
+      document.getElementById(`ble-calib-msg`).className = `inline-msg success`;
+      document.getElementById(`ble-calib-msg`).textContent = `Zero-bias calibration complete for ${dev} @ ${rate}. LNX Fairness Microchip provenance signed.`;
+    }
+
+    function selectCloudPartner(partner) {
+      selectedCloudPartner = partner;
+      document.querySelectorAll(`#cloud-partner-buttons button`).forEach(function (b) {
+        const match = b.textContent.trim() === partner;
+        b.className = `btn btn-sm ${match ? `btn-primary` : `btn-outline`}`;
+      });
+      emitCloudBallEvent();
+    }
+
+    function emitCloudBallEvent() {
+      const vel = (15.1 + Math.random() * 2.5).toFixed(2);
+      const rpm = Math.floor(380 + Math.random() * 110);
+      const angle = (0.62 + Math.random() * 0.2).toFixed(3);
+      const impact = (0.74 + Math.random() * 0.22).toFixed(3);
+      const payload = {
+        schema: `/stream/ballMetrics`,
+        partnerOrigin: selectedCloudPartner,
+        lnxVerified: true,
+        timestampUtc: new Date().toISOString(),
+        normalized: {
+          velocity_ms: Number(vel),
+          spinRate_rpm: rpm,
+          trajectoryAngle_scalar: Number(angle),
+          impactForce_scalar: Number(impact),
+          zeroBounceFlag: true
+        }
+      };
+      document.getElementById(`cloud-stream-json`).textContent = JSON.stringify(payload, null, 2);
+    }
+
+    function selectCameraRig(rigKey) {
+      selectedRig = rigKey;
+      document.getElementById(`rig-ballercam-btn`).classList.toggle(`active`, rigKey === `ballercam`);
+      document.getElementById(`rig-sandmarc-btn`).classList.toggle(`active`, rigKey === `sandmarc`);
+      document.getElementById(`rig-leica-btn`).classList.toggle(`active`, rigKey === `leica`);
+
+      const configs = {
+        ballercam: {
+          title: `BallerCam AI on iPhone 16 / 18 Pro Mount`,
+          specs: `Equipped with 80" courtside & 15' field tripods, 10,000mAh hot-swappable battery pack (+3 hrs), Vtrox DCT1 monitor bracket, and automated multi-player skeletal pose capture.`,
+          fps: `120 fps`, agree: `99.2%`, mount: `80"/15' Tripod + 10Ah`, lat: `7.8 ms`
+        },
+        sandmarc: {
+          title: `Sandmarc Pro Optics & Anamorphic Cinema Rig`,
+          specs: `Precision aluminum iPhone Pro lens cage with 1.33x anamorphic optics and telephoto stabilization for crisp baseline-to-baseline kinematic landmarking.`,
+          fps: `120 fps`, agree: `98.7%`, mount: `Pro Cage + Tele 2x`, lat: `8.4 ms`
+        },
+        leica: {
+          title: `Leica AI Action Cam — High-Dynamic Outdoor Rig`,
+          specs: `Ruggedized weatherproof 4-camera perimeter array calibrated for outdoor pole vault, rugby, and motorsport trackside skeletal landmark estimation.`,
+          fps: `120 fps`, agree: `99.5%`, mount: `4-Cam Markerless`, lat: `6.2 ms`
+        }
+      };
+      const c = configs[rigKey];
+      document.getElementById(`rig-title`).textContent = c.title;
+      document.getElementById(`rig-specs`).textContent = c.specs;
+      document.getElementById(`rig-fps`).textContent = c.fps;
+      document.getElementById(`rig-agreement`).textContent = c.agree;
+      document.getElementById(`rig-mount`).textContent = c.mount;
+      document.getElementById(`rig-latency`).textContent = c.lat;
+      startPoseRigAnimation();
+    }
+
+    function startPoseRigAnimation() {
+      const canvas = document.getElementById(`pose-rig-canvas`);
+      if (!canvas) return;
+      const ctx = canvas.getContext(`2d`);
+      cancelAnimationFrame(poseAnimFrame);
+      let phase = 0;
+
+      function drawFrame() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const w = Math.max(300, Math.floor(rect.width - 16));
+        const h = 240;
+        if (canvas.width !== w) canvas.width = w;
+        if (canvas.height !== h) canvas.height = h;
+
+        const navy = getCssVar(`--primary`);
+        const gold = getCssVar(`--outline`);
+        const pos = getCssVar(`--positive`);
+
+        ctx.fillStyle = navy;
+        ctx.fillRect(0, 0, w, h);
+
+        /* Court calibration grid */
+        ctx.strokeStyle = `rgba(212, 175, 55, 0.22)`;
+        ctx.lineWidth = 1;
+        for (let gx = 40; gx < w; gx += 48) {
+          ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+        }
+        for (let gy = 30; gy < h; gy += 40) {
+          ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+        }
+
+        /* Animated skeletal pose athlete */
+        phase += 0.04;
+        const cx = w * 0.5 + Math.sin(phase * 0.7) * 40;
+        const cy = h * 0.52;
+        const armSwing = Math.sin(phase) * 22;
+        const legStride = Math.cos(phase) * 20;
+
+        const joints = {
+          head: [cx, cy - 58],
+          neck: [cx, cy - 42],
+          hip: [cx, cy + 4],
+          lHand: [cx - 28, cy - 22 + armSwing],
+          rHand: [cx + 28, cy - 22 - armSwing],
+          lFoot: [cx - 18 + legStride, cy + 58],
+          rFoot: [cx + 18 - legStride, cy + 58]
+        };
+
+        ctx.strokeStyle = pos;
+        ctx.lineWidth = 2.5;
+        const bones = [
+          [`head`, `neck`], [`neck`, `hip`],
+          [`neck`, `lHand`], [`neck`, `rHand`],
+          [`hip`, `lFoot`], [`hip`, `rFoot`]
+        ];
+        bones.forEach(function (b) {
+          ctx.beginPath();
+          ctx.moveTo(joints[b[0]][0], joints[b[0]][1]);
+          ctx.lineTo(joints[b[1]][0], joints[b[1]][1]);
+          ctx.stroke();
+        });
+
+        Object.values(joints).forEach(function (pt) {
+          ctx.fillStyle = gold;
+          ctx.beginPath();
+          ctx.arc(pt[0], pt[1], 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        /* Smart Ball trajectory arc */
+        const bx = cx + 65 + Math.cos(phase * 1.4) * 35;
+        const by = cy - 35 - Math.abs(Math.sin(phase * 1.4)) * 45;
+        ctx.fillStyle = gold;
+        ctx.beginPath();
+        ctx.arc(bx, by, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `#ffffff`;
+        ctx.font = `500 11px "IBM Plex Mono", monospace`;
+        ctx.fillText(`RIG: ${selectedRig.toUpperCase()} | 120FPS SKELETAL POSE LOCK | 16.4 m/s`, 12, 20);
+
+        poseAnimFrame = requestAnimationFrame(drawFrame);
+      }
+      drawFrame();
+    }
+
+    /* ==============================================================
+       TAB 3: BIOMETRIC INDEX MARKETPLACE & SYNTHESIZER
+       ============================================================== */
+    function renderMarketplace() {
+      const packsGrid = document.getElementById(`prebuilt-packs-grid`);
+      if (packsGrid) {
+        packsGrid.innerHTML = PREBUILT_PACKS.map(function (p) {
+          const licensed = appState.licensedPacks.indexOf(p.id) >= 0;
+          return `
+            <div class="figure-card" style="gap:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="figure-label">${p.name}</span>
+                <span class="stamp-tag ${licensed ? `pos` : ``}">${licensed ? `Licensed` : `$${p.price.toLocaleString()}`}</span>
+              </div>
+              <p style="font-size:0.82rem;color:var(--on-surface-variant);">${p.desc}</p>
+              <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--primary);">${p.constituents}</div>
+              <button type="button" class="btn btn-sm ${licensed ? `btn-outline` : `btn-primary`}" onclick="toggleLicensePack('${p.id}')">
+                ${licensed ? `Active in Terminal` : `License Pack ($${p.price.toLocaleString()})`}
+              </button>
+            </div>
+          `;
+        }).join(``);
+      }
+      document.getElementById(`licensed-count-badge`).textContent = `Active Licenses: ${appState.licensedPacks.length}`;
+
+      const alaGrid = document.getElementById(`alacarte-grid`);
+      if (alaGrid) {
+        alaGrid.innerHTML = ALACARTE_INDICES.map(function (idx) {
+          const picked = appState.selectedSynthIndices.indexOf(idx.code) >= 0;
+          return `
+            <button type="button" class="sport-tile ${picked ? `active` : ``}" onclick="toggleSynthIndex('${idx.code}')">
+              <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+                <strong style="font-family:var(--font-mono);color:var(--primary);">${idx.code}</strong>
+                <span class="stamp-tag">$${idx.price}</span>
+              </div>
+              <span style="font-size:0.78rem;font-weight:600;color:var(--on-surface);">${idx.name}</span>
+              <span style="font-size:0.72rem;color:var(--on-surface-variant);">${idx.desc}</span>
+            </button>
+          `;
+        }).join(``);
+      }
+    }
+
+    function toggleLicensePack(packId) {
+      const i = appState.licensedPacks.indexOf(packId);
+      if (i >= 0) appState.licensedPacks.splice(i, 1);
+      else appState.licensedPacks.push(packId);
+      renderMarketplace();
+      saveAppState();
+    }
+
+    function toggleSynthIndex(code) {
+      const i = appState.selectedSynthIndices.indexOf(code);
+      if (i >= 0) {
+        if (appState.selectedSynthIndices.length <= 2) return;
+        appState.selectedSynthIndices.splice(i, 1);
+        delete appState.synthWeights[code];
+      } else {
+        if (appState.selectedSynthIndices.length >= 5) return;
+        appState.selectedSynthIndices.push(code);
+        appState.synthWeights[code] = 20;
+      }
+      renderMarketplace();
+      renderSynthSliders();
+      saveAppState();
+    }
+
+    function renderSynthSliders() {
+      const wrap = document.getElementById(`synth-sliders-list`);
+      if (!wrap) return;
+      wrap.innerHTML = appState.selectedSynthIndices.map(function (code) {
+        const w = appState.synthWeights[code] !== undefined ? appState.synthWeights[code] : 25;
+        return `
+          <div style="display:grid;grid-template-columns:80px 1fr 74px;gap:10px;align-items:center;">
+            <label class="field-label" for="synth-num-${code}">${code}</label>
+            <input type="range" id="synth-slider-${code}" min="0" max="100" value="${w}" oninput="syncSynthFromSlider('${code}', this.value)">
+            <input type="number" id="synth-num-${code}" class="field-control" style="min-height:36px;padding:4px 8px;" min="0" max="100" value="${w}" oninput="syncSynthFromNumber('${code}', this.value)">
+          </div>
+        `;
+      }).join(``);
+      updateSynthWeightTotal();
+    }
+
+    function syncSynthFromSlider(code, val) {
+      const n = Math.max(0, Math.min(100, Number(val) || 0));
+      appState.synthWeights[code] = n;
+      const numEl = document.getElementById(`synth-num-${code}`);
+      if (numEl) numEl.value = n;
+      updateSynthWeightTotal();
+    }
+
+    function syncSynthFromNumber(code, val) {
+      const n = Math.max(0, Math.min(100, Number(val) || 0));
+      appState.synthWeights[code] = n;
+      const slEl = document.getElementById(`synth-slider-${code}`);
+      if (slEl) slEl.value = n;
+      updateSynthWeightTotal();
+    }
+
+    function updateSynthWeightTotal() {
+      const sum = appState.selectedSynthIndices.reduce(function (acc, code) {
+        return acc + (Number(appState.synthWeights[code]) || 0);
+      }, 0);
+      const badge = document.getElementById(`synth-weight-status`);
+      if (badge) {
+        badge.textContent = `Total: ${sum}%`;
+        badge.className = `stamp-tag ${sum === 100 ? `pos` : `neg`}`;
+      }
+      return sum;
+    }
+
+    function autoBalanceSynthWeights() {
+      const count = appState.selectedSynthIndices.length;
+      if (!count) return;
+      const base = Math.floor(100 / count);
+      let rem = 100 - base * count;
+      appState.selectedSynthIndices.forEach(function (code) {
+        appState.synthWeights[code] = base + (rem > 0 ? 1 : 0);
+        if (rem > 0) rem--;
+      });
+      renderSynthSliders();
+      saveAppState();
+    }
+
+    function mintCustomIndex() {
+      const sum = updateSynthWeightTotal();
+      const msgEl = document.getElementById(`synth-mint-msg`);
+      const nameInput = document.getElementById(`custom-index-name`);
+      const ticker = (nameInput && nameInput.value.trim()) ? nameInput.value.trim().toUpperCase() : `BIM-CUSTOM`;
+
+      if (sum !== 100) {
+        msgEl.className = `inline-msg error`;
+        msgEl.textContent = `Weights sum to ${sum}%. Adjust sliders or click Auto-Balance 100% before minting.`;
+        return;
+      }
+      const formula = appState.selectedSynthIndices.map(function (c) { return `${appState.synthWeights[c]}% ${c}`; }).join(` + `);
+      appState.mintedIndices.unshift({ name: ticker, formula, feePaid: 500 });
+
+      /* Deploy into Doji overlay & Bio-SL options */
+      const ovSel = document.getElementById(`doji-overlay-select`);
+      if (ovSel) {
+        const opt = document.createElement(`option`);
+        opt.value = ticker;
+        opt.textContent = `${ticker} (Custom Mint)`;
+        ovSel.appendChild(opt);
+        ovSel.value = ticker;
+      }
+
+      msgEl.className = `inline-msg success`;
+      msgEl.textContent = `Minted ${ticker} ($500 fee logged) and deployed to Biometric Fatigue Doji & Bio-SL triggers.`;
+      renderMintedIndices();
+      renderDojiChart();
+      saveAppState();
+    }
+
+    function renderMintedIndices() {
+      const wrap = document.getElementById(`minted-indices-list`);
+      if (!wrap) return;
+      wrap.innerHTML = appState.mintedIndices.map(function (m) {
+        return `<div class="capsule-pill" style="display:flex;justify-content:space-between;align-items:center;"><span><strong>${m.name}</strong> &middot; ${m.formula}</span><span class="stamp-tag pos">Deployed</span></div>`;
+      }).join(``);
+    }
+
+    /* ==============================================================
+       TAB 4: XR PERFORMANCE LAB & ARBITRAGE STRESS TEST
+       ============================================================== */
+    function initXrPitch() {
+      const container = document.getElementById(`xr-stage-container`);
+      if (!container) return;
+
+      /* Keep HUD overlay intact */
+      if (!xrThreeRenderer && window.THREE) {
+        try {
+          const w = Math.max(320, container.clientWidth);
+          const h = 390;
+          xrThreeScene = new THREE.Scene();
+          xrThreeScene.background = new THREE.Color(0x081426);
+
+          xrThreeCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+          xrThreeRenderer = new THREE.WebGLRenderer({ antialias: true });
+          xrThreeRenderer.setSize(w, h);
+          container.appendChild(xrThreeRenderer.domElement);
+
+          /* Pitch Plane & Gold Grid */
+          const pitchGeo = new THREE.PlaneGeometry(18, 12);
+          const pitchMat = new THREE.MeshBasicMaterial({ color: 0x0f2544, side: THREE.DoubleSide });
+          const pitch = new THREE.Mesh(pitchGeo, pitchMat);
+          pitch.rotation.x = -Math.PI / 2;
+          xrThreeScene.add(pitch);
+
+          const grid = new THREE.GridHelper(18, 18, 0xd4af37, 0x1e3a8a);
+          grid.position.y = 0.02;
+          xrThreeScene.add(grid);
+
+          /* Athlete Avatars + Volumetric NIL Glow Rings */
+          const coords = [[-4.5, -2], [-1.5, 2.2], [2.2, -1.8], [5.0, 1.5]];
+          xrThreeRings = [];
+          ASSETS_DATA.slice(0, 4).forEach(function (a, i) {
+            const pos = coords[i];
+            const radius = 0.7 + (a.capM * 0.25);
+            const ringColor = a.readiness >= 75 ? 0x15803d : 0xb91c1c;
+
+            const ringGeo = new THREE.RingGeometry(radius, radius + 0.18, 40);
+            const ringMat = new THREE.MeshBasicMaterial({ color: ringColor, side: THREE.DoubleSide });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = -Math.PI / 2;
+            ring.position.set(pos[0], 0.06, pos[1]);
+            xrThreeScene.add(ring);
+
+            const bodyGeo = new THREE.CylinderGeometry(0.22, 0.28, 1.2, 16);
+            const bodyMat = new THREE.MeshBasicMaterial({ color: 0xd4af37 });
+            const avatar = new THREE.Mesh(bodyGeo, bodyMat);
+            avatar.position.set(pos[0], 0.65, pos[1]);
+            xrThreeScene.add(avatar);
+
+            xrThreeRings.push({ ring, symbol: a.symbol, baseRadius: radius });
+          });
+
+          setXrCamera(selectedXrCam);
+          cancelAnimationFrame(xrAnimFrame);
+          function animateXr() {
+            const t = Date.now() * 0.002;
+            xrThreeRings.forEach(function (item, idx) {
+              const pulse = 1 + Math.sin(t + idx) * 0.06;
+              item.ring.scale.set(pulse, pulse, 1);
+            });
+            xrThreeRenderer.render(xrThreeScene, xrThreeCamera);
+            xrAnimFrame = requestAnimationFrame(animateXr);
+          }
+          animateXr();
+        } catch (err) {
+          console.warn(`WebGL fallback active:`, err);
+        }
+      }
+    }
+
+    function setXrCamera(view) {
+      selectedXrCam = view;
+      document.getElementById(`cam-centerline-btn`).classList.toggle(`active`, view === `centerline`);
+      document.getElementById(`cam-aerial-btn`).classList.toggle(`active`, view === `aerial`);
+      document.getElementById(`cam-goalline-btn`).classList.toggle(`active`, view === `goalline`);
+      const readout = document.getElementById(`xr-cam-readout`);
+      if (readout) readout.textContent = `Camera: ${view.charAt(0).toUpperCase() + view.slice(1)} (100Hz Sync)`;
+
+      if (xrThreeCamera) {
+        if (view === `centerline`) {
+          xrThreeCamera.position.set(0, 6.5, 13.5);
+        } else if (view === `aerial`) {
+          xrThreeCamera.position.set(0, 16, 0.5);
+        } else {
+          xrThreeCamera.position.set(13.5, 4.5, 0);
+        }
+        xrThreeCamera.lookAt(0, 0, 0);
+      }
+    }
+
+    function renderXrAthleteButtons() {
+      const wrap = document.getElementById(`xr-athlete-selector`);
+      if (!wrap) return;
+      wrap.innerHTML = ASSETS_DATA.slice(0, 4).map(function (a) {
+        const cls = a.symbol === selectedXrAthlete ? `btn-primary` : `btn-outline`;
+        return `<button type="button" class="btn btn-sm ${cls}" onclick="selectXrAthlete('${a.symbol}')">${a.symbol}</button>`;
+      }).join(``);
+      selectXrAthlete(selectedXrAthlete);
+    }
+
+    function selectXrAthlete(sym) {
+      selectedXrAthlete = sym;
+      const a = ASSETS_DATA.find(function (item) { return item.symbol === sym; }) || ASSETS_DATA[0];
+      const chip = document.getElementById(`xr-selected-athlete`);
+      if (chip) {
+        const stateLabel = a.readiness >= 75 ? `Emerald Composure` : `Crimson Fatigue`;
+        chip.textContent = `Selected: ${a.symbol} · ${stateLabel} (${a.readiness}/100)`;
+      }
+      document.querySelectorAll(`#xr-athlete-selector button`).forEach(function (b) {
+        b.className = `btn btn-sm ${b.textContent.trim() === sym ? `btn-primary` : `btn-outline`}`;
+      });
+    }
+
+    function onStressSliderChange() {
+      const f = Number(document.getElementById(`stress-fatigue-slider`).value);
+      const v = Number(document.getElementById(`stress-virality-slider`).value);
+      const c = Number(document.getElementById(`stress-cortisol-slider`).value);
+      document.getElementById(`stress-fatigue-val`).textContent = `${f}%`;
+      document.getElementById(`stress-virality-val`).textContent = `${v >= 0 ? `+` : ``}${v}%`;
+      document.getElementById(`stress-cortisol-val`).textContent = `${c}%`;
+
+      /* Dynamically shift 3D ring color if fatigue shock is severe */
+      if (xrThreeRings.length) {
+        xrThreeRings.forEach(function (item, idx) {
+          const base = ASSETS_DATA[idx].readiness;
+          const adj = base - f * 0.7 - c * 0.5;
+          item.ring.material.color.setHex(adj >= 70 ? 0x15803d : 0xb91c1c);
+        });
+      }
+      initOrUpdateArbitrageChart();
+    }
+
+    function initOrUpdateArbitrageChart() {
+      const canvas = document.getElementById(`arbitrage-chart`);
+      if (!canvas || !window.Chart) return;
+      const f = Number(document.getElementById(`stress-fatigue-slider`).value) || 0;
+      const v = Number(document.getElementById(`stress-virality-slider`).value) || 0;
+      const c = Number(document.getElementById(`stress-cortisol-slider`).value) || 0;
+
+      const sample = ASSETS_DATA.slice(0, 4);
+      const labels = sample.map(function (a) { return a.symbol.replace(`-NIL`, ``); });
+      const marketVals = sample.map(function (a) { return Number((a.price * (1 + v * 0.004)).toFixed(2)); });
+      const modelVals = sample.map(function (a) { return Number((a.model * (1 - f * 0.005 - c * 0.003)).toFixed(2)); });
+
+      const avgSpread = modelVals.reduce(function (acc, m, i) { return acc + (m - marketVals[i]); }, 0) / sample.length;
+      const sumEl = document.getElementById(`xr-arbitrage-summary`);
+      if (sumEl) {
+        sumEl.className = `inline-msg ${avgSpread >= 0 ? `success` : `warn`}`;
+        sumEl.innerHTML = `Net Arbitrage Alpha: <strong>${avgSpread >= 0 ? `+` : ``}${fmtUsd(avgSpread)} / unit</strong> &middot; Signal: <strong>${avgSpread >= 0 ? `LONG UNDERVALUED NIL` : `HEDGE / BIO-SL SHORT`}</strong>`;
+      }
+
+      if (arbitrageChartInstance) {
+        arbitrageChartInstance.data.labels = labels;
+        arbitrageChartInstance.data.datasets[0].data = marketVals;
+        arbitrageChartInstance.data.datasets[1].data = modelVals;
+        arbitrageChartInstance.update();
+        return;
+      }
+
+      arbitrageChartInstance = new Chart(canvas, {
+        type: `bar`,
+        data: {
+          labels: labels,
+          datasets: [
+            { label: `Market NIL ($)`, data: marketVals, backgroundColor: getCssVar(`--primary`) },
+            { label: `Model NIL ($)`, data: modelVals, backgroundColor: getCssVar(`--gold-mid`) }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: `bottom` } }
+        }
+      });
+    }
+
+    /* ==============================================================
+       TAB 5: ALPHA QUANT PCIe & HEDGE FUND DESK HANDBOOK
+       ============================================================== */
+    function switchCodeLang(lang) {
+      selectedCodeLang = lang;
+      document.getElementById(`code-cpp-btn`).classList.toggle(`active`, lang === `cpp`);
+      document.getElementById(`code-py-btn`).classList.toggle(`active`, lang === `py`);
+      const block = document.getElementById(`quant-code-block`);
+      if (!block) return;
+
+      block.textContent = lang === `cpp`
+        ? `// Alpha Quant Stream PCIe RDMA RoCEv2 Zero-Copy Client
+#include <bim/alpha_quant_grpc.hpp>
+int main() {
+  bim::RdmaStreamClient client("rdma://cme-aurora-01:50051");
+  client.subscribe({"D.BLEDSOE-NIL", "NBL-SWAP"}, [](const auto& tick) {
+    if (tick.fai_scalar > 75.0 || tick.ball_velocity_ms > 15.0) {
+      client.dispatch_bio_sl(tick.symbol, tick.model_spread_bps); // <42us
+    }
+  });
+}`
+        : `# Alpha Quant Stream Python AsyncIO FP8 gRPC Client
+import asyncio, bim_quant_pb2_grpc as bim
+
+async def stream_factors():
+    async with bim.connect_rdma("rocev2://ny4-onyx-node:50051") as ch:
+        async for scalar in ch.stream_scalars(["PMF-E", "CSE-E", "VVE-E"]):
+            if scalar.readiness < 65:
+                await ch.trigger_scoc_hedge(scalar.ticker, buffer=0.25)
+
+asyncio.run(stream_factors())`;
+    }
+
+    function initOrUpdateLatencyChart() {
+      const canvas = document.getElementById(`latency-chart`);
+      if (!canvas || !window.Chart) return;
+      if (latencyChartInstance) return;
+      latencyChartInstance = new Chart(canvas, {
+        type: `bar`,
+        data: {
+          labels: [`Legacy REST Webhook`, `Standard WebSocket`, `Alpha Quant PCIe RDMA`],
+          datasets: [{
+            label: `Execution Latency (microseconds, lower is faster)`,
+            data: [18400, 4200, 41.2],
+            backgroundColor: [getCssVar(`--data-context`), getCssVar(`--primary-mid`), getCssVar(`--outline`)]
+          }]
+        },
+        options: {
+          indexAxis: `y`,
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: `bottom` } }
+        }
+      });
+    }
+
+    function openGpuWaitlistModal() {
+      const m = document.getElementById(`gpu-waitlist-modal`);
+      if (m) m.classList.add(`open`);
+    }
+
+    function closeGpuWaitlistModal() {
+      const m = document.getElementById(`gpu-waitlist-modal`);
+      if (m) m.classList.remove(`open`);
+    }
+
+    function submitGpuReservation() {
+      const firm = document.getElementById(`gpu-firm-input`).value.trim();
+      const qty = Math.max(1, Number(document.getElementById(`gpu-qty-input`).value) || 1);
+      const tier = document.getElementById(`gpu-tier-select`).value;
+      const fb = document.getElementById(`gpu-modal-feedback`);
+      if (!firm) {
+        fb.style.display = `block`;
+        fb.className = `inline-msg error`;
+        fb.textContent = `Please enter an Institution or Quant Desk name.`;
+        return;
+      }
+      appState.gpuWaitlist.push({ firm, qty, tier, date: new Date().toISOString().slice(0, 10) });
+      fb.style.display = `block`;
+      fb.className = `inline-msg success`;
+      fb.textContent = `Confirmed waitlist allocation: ${qty}x Alpha Quant Stream PCIe Cards for ${firm} (${tier}).`;
+      updateGpuWaitlistCount();
+      saveAppState();
+    }
+
+    function updateGpuWaitlistCount() {
+      const total = appState.gpuWaitlist.reduce(function (a, b) { return a + b.qty; }, 0);
+      const badge = document.getElementById(`gpu-waitlist-count`);
+      if (badge) badge.textContent = `Reserved Cards: ${total}`;
+    }
+
+    function updateOnyxWaterfall() {
+      const gross = Math.max(0, Number(document.getElementById(`onyx-gross-input`).value) || 0);
+      document.getElementById(`onyx-60`).textContent = fmtUsd(gross * 0.60);
+      document.getElementById(`onyx-20`).textContent = fmtUsd(gross * 0.20);
+      document.getElementById(`onyx-10a`).textContent = fmtUsd(gross * 0.10);
+      document.getElementById(`onyx-10b`).textContent = fmtUsd(gross * 0.10);
+    }
+
+    function renderWormLogs() {
+      const tbody = document.getElementById(`worm-logs-tbody`);
+      if (!tbody) return;
+      tbody.innerHTML = appState.wormLogs.slice(0, 8).map(function (l) {
+        return `<tr><td style="font-family:var(--font-mono);">${l.ts}</td><td><span class="stamp-tag navy">${l.type}</span></td><td>${l.sym}</td><td style="font-family:var(--font-mono);">${l.hash}</td><td><span class="stamp-tag pos">${l.rule}</span></td></tr>`;
+      }).join(``);
+    }
+
+    /* ==============================================================
+       TAB 6: EXECUTIVE ADMIN CLIENT CRM & EXPORT
+       ============================================================== */
+    function renderCrmTable() {
+      const q = (document.getElementById(`crm-search`).value || ``).toLowerCase();
+      const tier = document.getElementById(`crm-tier-filter`).value;
+      const stage = document.getElementById(`crm-stage-filter`).value;
+      const tbody = document.getElementById(`crm-tbody`);
+      if (!tbody) return;
+
+      const filtered = appState.crmLeads.filter(function (l) {
+        const matchQ = !q || l.org.toLowerCase().includes(q) || l.contact.toLowerCase().includes(q) || l.module.toLowerCase().includes(q);
+        const matchT = tier === `ALL` || l.tier === tier;
+        const matchS = stage === `ALL` || l.stage === stage;
+        return matchQ && matchT && matchS;
+      });
+
+      tbody.innerHTML = filtered.map(function (l) {
+        const stCls = l.stage === `Closed Won` ? `pos` : (l.stage === `Active Pilot` ? `navy` : ``);
+        return `<tr><td><strong>${l.org}</strong></td><td>${l.tier}</td><td>${l.contact}</td><td>${l.module}</td><td class="num">${fmtUsd(l.acv)}</td><td><span class="stamp-tag ${stCls}">${l.stage}</span></td></tr>`;
+      }).join(``);
+    }
+
+    function addCrmLead() {
+      const org = document.getElementById(`new-lead-org`).value.trim();
+      const tier = document.getElementById(`new-lead-tier`).value;
+      const contact = document.getElementById(`new-lead-contact`).value.trim() || `Executive Stakeholder`;
+      const acv = Math.max(1000, Number(document.getElementById(`new-lead-value`).value) || 45000);
+      const msg = document.getElementById(`crm-msg`);
+
+      if (!org) {
+        msg.style.display = `block`;
+        msg.className = `inline-msg error`;
+        msg.textContent = `Please provide an Organization name before adding a lead.`;
+        return;
+      }
+
+      appState.crmLeads.unshift({ org, tier, contact, module: `Full Platform Pilot`, acv, stage: `Active Pilot` });
+      document.getElementById(`new-lead-org`).value = ``;
+      document.getElementById(`new-lead-contact`).value = ``;
+      msg.style.display = `block`;
+      msg.className = `inline-msg success`;
+      msg.textContent = `Added ${org} (${tier}) to institutional CRM pipeline.`;
+      renderCrmTable();
+      saveAppState();
+    }
+
+    function exportCrm(format) {
+      if (!window.notebookAppApi || typeof window.notebookAppApi.triggerFileDownload !== `function`) return;
+      if (format === `csv`) {
+        const rows = [`Organization,Tier,Stakeholder,Module,ACV_USD,Stage`].concat(
+          appState.crmLeads.map(function (l) {
+            return `"${l.org}","${l.tier}","${l.contact}","${l.module}",${l.acv},"${l.stage}"`;
+          })
+        );
+        window.notebookAppApi.triggerFileDownload({
+          content: rows.join(`\n`),
+          contentType: `text/csv`,
+          encoding: `UTF-8`,
+          filename: `bim_apes_client_crm.csv`
+        });
+      } else {
+        window.notebookAppApi.triggerFileDownload({
+          content: JSON.stringify(appState.crmLeads, null, 2),
+          contentType: `text/plain`,
+          encoding: `UTF-8`,
+          filename: `bim_apes_client_crm.json`
+        });
+      }
+    }
+
+    /* ==============================================================
+       IN-TERMINAL COPILOT + AWS PEGA BOT
+       ============================================================== */
+    function toggleCopilot() {
+      const d = document.getElementById(`copilot-drawer`);
+      if (d) d.classList.toggle(`open`);
+    }
+
+    function askCopilot(topic) {
+      const inp = document.getElementById(`copilot-input`);
+      if (inp) inp.value = topic;
+      handleCopilotQuery(topic);
+    }
+
+    function submitCopilotForm(e) {
+      e.preventDefault();
+      const inp = document.getElementById(`copilot-input`);
+      if (!inp || !inp.value.trim()) return;
+      const q = inp.value.trim();
+      inp.value = ``;
+      handleCopilotQuery(q);
+    }
+
+    function handleCopilotQuery(query) {
+      const q = query.toLowerCase();
+      let reply = `BIM Copilot (AWS Pega Guidance): Use the Dual-Track switcher to move between Collegiate NIL Units (Track A) and Pro Swaps / BLEI-E Baskets (Track B), or open the Custom Index Synthesizer to mint a composite indicator.`;
+
+      if (q.includes(`bledsoe`) || q.includes(`principle`) || q.includes(`custody`)) {
+        reply = `<strong>The Dashawn Bledsoe Principle (35 U.S.C. § 102):</strong> Exchanges and clearinghouses never store raw biological or HIPAA-sensitive telemetry. Instead, they license standardized output-only FICO-style readiness scalars (0–100) and real-time Model-vs-Market spreads via B2B APIs.`;
+      } else if (q.includes(`bio-sl`) || q.includes(`kin-limit`) || q.includes(`stop`)) {
+        reply = `<strong>Bio-SL &amp; Kin-Limit Orders:</strong> Bio-SL automatically liquidates or hedges a position when Fatigue Accumulation Index (FAi) exceeds 75% or Center Line Recovery drops below 50. Kin-Limit executes on verified smart-ball velocity spikes (&gt;15.0 m/s).`;
+      } else if (q.includes(`50%`) || q.includes(`cap`) || q.includes(`sunk`)) {
+        reply = `<strong>50% Diversification Rule &amp; Sunk Cost Discipline:</strong> Click "Show Max" on the Order Ticket to cap any single asset at 50% of buying power ($250,000). Combine with the Sunk Cost Fallacy Challenge to avoid averaging down into high-fatigue drawdowns.`;
+      } else if (q.includes(`onyx`) || q.includes(`60/20/10/10`) || q.includes(`settle`)) {
+        reply = `<strong>J.P. Morgan Onyx T+0 60/20/10/10 Split:</strong> Automated instant clearing routes 60% to the Student-Athlete Trust, 20% to the Collegiate/Club Program, 10% to Platform &amp; DRB IP (2.5% band), and 10% to the SCOC Contract Reserve Pool.`;
+      } else if (q.includes(`ble`) || q.includes(`ball`) || q.includes(`bridge`)) {
+        reply = `<strong>Dual Smart Ball Bridge:</strong> Mode 1 pairs directly via BLE 5.3 GATT (100Hz, live RSSI dBm, zero-bias calibration). Mode 2 ingests Adidas, Nike, Wilson, Sportable, and Dribbleup webhooks into the normalized /stream/ballMetrics schema.`;
+      }
+
+      appState.copilotHistory.push({ q: query, a: reply });
+      appendCopilotMessages(query, reply);
+      saveAppState();
+    }
+
+    function appendCopilotMessages(q, a) {
+      const body = document.getElementById(`copilot-messages`);
+      if (!body) return;
+      const u = document.createElement(`div`);
+      u.className = `chat-msg user`;
+      u.textContent = q;
+      const b = document.createElement(`div`);
+      b.className = `chat-msg bot`;
+      b.innerHTML = a;
+      body.appendChild(u);
+      body.appendChild(b);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function restoreCopilotHistory() {
+      if (!appState.copilotHistory || !appState.copilotHistory.length) return;
+      appState.copilotHistory.slice(-6).forEach(function (item) {
+        appendCopilotMessages(item.q, item.a);
+      });
+    }
+
+    window.addEventListener(`DOMContentLoaded`, loadAndBoot);
+  </script>
+</body>
+</html>

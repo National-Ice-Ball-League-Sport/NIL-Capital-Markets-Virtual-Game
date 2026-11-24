@@ -1,9 +1,12 @@
 #include "MarketModel.h"
 
 #include <QRandomGenerator>
+#include <QSettings>
 #include <QtMath>
+#include <algorithm>
+#include <cmath>
 
-MarketModel::MarketModel(QObject *parent)
+MarketModel::MarketModel(QObject *parent, bool persistenceEnabled)
     : QObject(parent),
       m_assets{
           {QStringLiteral("HOOP"), QStringLiteral("Basketball"), 40.00, 58.50, 88},
@@ -11,8 +14,11 @@ MarketModel::MarketModel(QObject *parent)
           {QStringLiteral("HNDL-6M"), QStringLiteral("Team Handball"), 34.50, 43.20, 85},
           {QStringLiteral("RUGBY-GLOU"), QStringLiteral("Rugby"), 61.00, 57.80, 64},
           {QStringLiteral("FBALL-QB"), QStringLiteral("American Football"), 74.00, 88.90, 81}
-      }
+      },
+      m_persistenceEnabled(persistenceEnabled)
 {
+    if (m_persistenceEnabled)
+        loadState();
 }
 
 double MarketModel::cash() const
@@ -83,6 +89,7 @@ void MarketModel::simulateTick()
     emit positionsChanged();
     emit accountChanged();
     setMessage(QStringLiteral("Sample market tick generated · demo data only"));
+    saveState();
 }
 
 void MarketModel::placeVirtualBuy(const QString &symbol, int quantity)
@@ -118,6 +125,7 @@ void MarketModel::placeVirtualBuy(const QString &symbol, int quantity)
     emit accountChanged();
     emit positionsChanged();
     setMessage(QStringLiteral("Paper buy recorded · no real order was sent"));
+    saveState();
 }
 
 MarketModel::Asset *MarketModel::findAsset(const QString &symbol)
@@ -136,6 +144,44 @@ const MarketModel::Asset *MarketModel::findAsset(const QString &symbol) const
             return &asset;
     }
     return nullptr;
+}
+
+void MarketModel::loadState()
+{
+    QSettings settings;
+    const double savedCash = settings.value(QStringLiteral("paperAccount/cash"), m_cash).toDouble();
+    if (std::isfinite(savedCash) && savedCash >= 0.0)
+        m_cash = savedCash;
+
+    const QVariantList savedPositions = settings.value(QStringLiteral("paperAccount/positions")).toList();
+    for (const QVariant &entry : savedPositions) {
+        const QVariantMap map = entry.toMap();
+        const QString symbol = map.value(QStringLiteral("symbol")).toString();
+        const int quantity = map.value(QStringLiteral("quantity")).toInt();
+        const double averageCost = map.value(QStringLiteral("averageCost")).toDouble();
+        if (findAsset(symbol) && quantity > 0 && std::isfinite(averageCost) && averageCost > 0.0)
+            m_positions.append({symbol, quantity, averageCost});
+    }
+}
+
+void MarketModel::saveState() const
+{
+    if (!m_persistenceEnabled)
+        return;
+
+    QVariantList savedPositions;
+    for (const Position &position : m_positions) {
+        savedPositions.append(QVariantMap{
+            {QStringLiteral("symbol"), position.symbol},
+            {QStringLiteral("quantity"), position.quantity},
+            {QStringLiteral("averageCost"), position.averageCost}
+        });
+    }
+
+    QSettings settings;
+    settings.setValue(QStringLiteral("paperAccount/cash"), m_cash);
+    settings.setValue(QStringLiteral("paperAccount/positions"), savedPositions);
+    settings.sync();
 }
 
 void MarketModel::setMessage(const QString &message)

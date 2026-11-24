@@ -2,7 +2,6 @@
 
 #include <QObject>
 #include <QVariantList>
-#include <QVariantMap>
 #include <QVector>
 
 class MarketModel final : public QObject
@@ -15,7 +14,7 @@ class MarketModel final : public QObject
     Q_PROPERTY(QString message READ message NOTIFY messageChanged)
 
 public:
-    explicit MarketModel(QObject *parent = nullptr);
+    explicit MarketModel(QObject *parent = nullptr, bool persistenceEnabled = true);
 
     double cash() const;
     double equity() const;
@@ -50,9 +49,12 @@ private:
     Asset *findAsset(const QString &symbol);
     const Asset *findAsset(const QString &symbol) const;
     void setMessage(const QString &message);
+    void loadState();
+    void saveState() const;
 
     QVector<Asset> m_assets;
     QVector<Position> m_positions;
     double m_cash = 100000.0;
+    bool m_persistenceEnabled = true;
     QString m_message = QStringLiteral("Demo mode · virtual account");
 };

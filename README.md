@@ -1,68 +1,49 @@
 # NIL Capital Markets Virtual Game
 
-An educational sports-finance simulator exploring how performance telemetry could inform virtual NIL-market instruments. The repository includes two browser prototypes and a cross-platform **C++/Qt Quick** mobile application foundation for iOS and Android.
+Educational sports-finance simulator exploring how performance telemetry could inform virtual NIL-market instruments. The repository has two standalone HTML prototypes and a cross-platform **C++17 / Qt Quick** mobile-app starter for desktop, Android, and iOS.
 
-> **Simulation only:** Quotes, balances, telemetry, orders, settlement figures, partner connections, and account data are sample/demo values. Nothing here connects to a broker, processes real payments, stores real athlete biometrics, or provides investment, medical, or legal advice. Do not enter real credentials, API keys, health data, or financial information.
+> **Demo only:** Quotes, balances, telemetry examples, and orders are simulated. The app does not connect to a broker, execute real trades, or provide investment, medical, or legal advice. Never enter real financial credentials or health data.
 
 ## Applications
 
-### Native mobile app (C++ with Qt Quick)
-
-The `mobile/` application uses a C++/Qt backend for typed market and virtual-order logic, with Qt Quick/QML for the adaptive mobile interface. It is intended as a shared iOS and Android codebase; use a Qt installation with the relevant mobile toolchains to build device packages.
-
-Current mobile starter features:
-
-- Mobile-first market dashboard with virtual quotes and readiness indicators.
-- Virtual cash balance, portfolio equity, and simple long-position tracking.
-- Simulated quote ticks and paper-buy actions.
-- Bottom navigation for Markets, Portfolio, Telemetry, and Profile.
-- No live brokerage, account authentication, or hardware telemetry integration.
-
-### Browser prototypes
-
-- `NIL_Capital_Markets__Institutional_Scholastic_Terminal.html` — institutional terminal prototype with trading, telemetry, index marketplace, XR, quant, and CRM concepts.
-- `Tech_Ball_Hub_Digital_Ecosystem_Specifications (4).html` — hardware-powered simulator prototype with portfolio, trading, research, index store, XR, and CRM concepts.
-
-These standalone HTML files are concept prototypes. They include simulated/demo interactions and are not connected to production services.
+- **Native app (`mobile/`)** — Qt Quick/QML interface with C++ market model. The starter currently demonstrates sample quotes, virtual balances, paper buys, and bottom navigation. It does not have real account authentication, brokerage, or hardware telemetry.
+- **Browser prototypes** — `NIL_Capital_Markets__Institutional_Scholastic_Terminal.html` and `Tech_Ball_Hub_Digital_Ecosystem_Specifications (4).html`. Both are standalone concept demos, not production services.
 
 ## Requirements
 
-- Qt 6.5 or later with **Qt Quick**, **Qt Quick Controls**, and CMake support.
-- A C++17-capable compiler.
-- For iOS builds: macOS, Xcode, and the iOS components/toolchain installed through Qt.
-- For Android builds: Android SDK/NDK and JDK configured in Qt Creator or the Qt toolchain environment.
+- Qt 6.5+ with Qt Quick and Qt Quick Controls.
+- C++17 compiler and CMake 3.21+.
+- Desktop builds: a Qt desktop kit.
+- Android: Qt Android kit plus configured Android SDK/NDK and JDK.
+- iOS: macOS, Xcode, Qt iOS kit, and signing configuration for device deployment.
 
 ## Build and run
 
-Open `mobile/CMakeLists.txt` in Qt Creator, select a desktop kit to try the UI locally, or select an iOS/Android kit to build for a device or emulator. Alternatively, with Qt and CMake available:
+Open `mobile/CMakeLists.txt` in Qt Creator, select a desktop kit, then build and run. Alternatively, with Qt available through `CMAKE_PREFIX_PATH`:
 
 ```sh
-cmake -S mobile -B mobile/build
-cmake --build mobile/build
+cmake -S mobile -B build -DCMAKE_PREFIX_PATH="$QT_PREFIX"
+cmake --build build --parallel
 ```
 
-Run the generated `NilMarketsMobile` executable on desktop. For iOS and Android, configure the corresponding Qt kit and deploy through Qt Creator; mobile packaging requires the platform toolchains and signing configuration.
+For Android and iOS, use the matching Qt Creator kit and its configured platform toolchain to build and deploy to a device or emulator. Desktop CMake settings are not substitutes for platform-specific kits.
 
 ## Project layout
 
 ```text
 mobile/
   CMakeLists.txt       Qt Quick / CMake application target
-  qml/Main.qml         Adaptive mobile screens and navigation
-  src/main.cpp         Qt application startup and QML context setup
-  src/MarketModel.h    C++ app state and invokable interface
-  src/MarketModel.cpp  Sample market data and paper-trading logic
-NIL_Capital_Markets__Institutional_Scholastic_Terminal.html
-Tech_Ball_Hub_Digital_Ecosystem_Specifications (4).html
+  qml/Main.qml         Mobile interface and navigation
+  src/main.cpp         Qt application startup
+  src/MarketModel.h    C++ app state and invokable API
+  src/MarketModel.cpp  Sample market data and paper-buy logic
 ```
 
-## Next steps
+## Development roadmap
 
-1. Install Qt 6 and build/deploy the starter on iOS and Android devices.
-2. Add automated C++ tests and persistence for virtual portfolios.
-3. Design any real telemetry/API integration with explicit consent, privacy safeguards, and threat modeling before implementation.
-4. Keep financial and biometric behavior clearly labeled as simulated until reviewed and backed by real, compliant services.
+- Add unit tests and local persistence for the virtual portfolio.
+- Expand paper-trading actions and portfolio history.
+- Keep sensor access disabled until supported hardware, user consent, permissions, and data-retention/privacy controls are designed and tested.
+- Add CI for desktop builds and tests; document platform-specific mobile build requirements.
 
-## License
-
-No license has been specified yet. All rights are reserved unless the repository owner adds a license.
+No license has been specified; all rights are reserved unless the repository owner adds a license.
